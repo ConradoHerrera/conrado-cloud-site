@@ -312,6 +312,12 @@ body{
 .cs__figure .frame{width:100%;aspect-ratio:16/10;overflow:hidden;background:var(--paper-2)}
 .cs__figure.is-tall .frame{aspect-ratio:4/5}
 .cs__figure .frame img{width:100%;height:100%;object-fit:cover}
+.cs__figure .frame[data-fit="top"] img{object-position:top}
+.points{display:grid;gap:clamp(1rem,2vw,1.4rem);max-width:56ch}
+.points > li{display:grid;gap:.3rem;padding-left:1.1rem;position:relative}
+.points > li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;
+  border-radius:50%;background:var(--accent)}
+.points > li > p:last-child{font-size:clamp(1.0625rem,1.15vw,1.25rem);line-height:1.5;letter-spacing:-.014em}
 .cs__figure figcaption{padding-top:.85rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
 .cs__pair{display:grid;grid-template-columns:1fr 1fr;gap:clamp(.75rem,2vw,1.5rem)}
 @media(max-width:700px){.cs__pair{grid-template-columns:1fr}}
@@ -489,7 +495,7 @@ body{
 
 .clip__btn{
   position:relative;width:2.3rem;height:2.3rem;border-radius:50%;padding:0;
-  display:grid;place-items:center;cursor:pointer;color:#fff;
+  display:grid;place-items:center;cursor:pointer;color:rgb(255 255 255 / .88);
   border:1px solid rgb(255 255 255 / .30);
   background:linear-gradient(148deg,rgb(14 16 19 / .60) 0%,rgb(14 16 19 / .42) 52%,rgb(14 16 19 / .52) 100%);
   -webkit-backdrop-filter:blur(16px) saturate(1.7);
@@ -501,7 +507,14 @@ body{
 .clip__btn:hover{transform:translateY(-1px);border-color:rgb(255 255 255 / .48);
   background:linear-gradient(148deg,rgb(14 16 19 / .76) 0%,rgb(14 16 19 / .58) 52%,rgb(14 16 19 / .68) 100%)}
 .clip__btn:active{transform:translateY(0)}
-.clip__btn svg{width:1.02rem;height:1.02rem;display:block}
+.clip__btn:hover{color:#fff}
+.clip__ic{position:relative;display:grid;place-items:center;width:1.05rem;height:1.05rem;flex:none}
+.clip__ic--tall{width:.92rem}
+.clip__ic .ic{position:absolute;top:0;left:50%;transform:translateX(-50%);
+  height:100%;width:auto;display:block;transition:opacity .24s var(--ease)}
+.clip__ic .ic--b{opacity:0}
+.clip__btn:hover .clip__ic .ic--a{opacity:0}
+.clip__btn:hover .clip__ic .ic--b{opacity:1}
 
 .clip__info{position:relative;display:inline-flex}
 .clip__panel{

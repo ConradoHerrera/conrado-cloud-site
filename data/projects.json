@@ -234,13 +234,12 @@
       {
         "kind": "brief",
         "head": "Your brief",
-        "body": "Rebuilt 23 Sep from your third markup. The big change is structural: the per-clip essays are gone.",
+        "body": "Rebuilt 27 Sep from review batch 1.",
         "list": [
-          "Each clip now carries its own description in a glass panel that opens from an info button, next to replay. Both buttons appear only when you hover the clip, as you asked. Worth knowing the trade you just made: a visitor who never hovers a clip never reads a word of that text, so everything load-bearing lives in the page copy above and below the set.",
-          "Note cards are real glass now: translucent, backdrop-blurred, and they lift a couple of pixels on hover.",
-          "Type sizes cut down. Note copy is now the same size as body copy, so the page runs on five sizes: title, the serif line, body, mono label, and the panel text.",
-          "Send me the SVGs when you have them and I will drop them straight into the two buttons.",
-          "Still to do: the em dash and AI-tell sweep across the other four live pages and the about section."
+          "The DRC and DOAR block moved up, right under the exhibits, and its title is generic now with the firms named in the body.",
+          "The confidentiality note is last.",
+          "The craft section leads with information design, then isometric illustration, and puts timelines and infographics at the end, where they read as range rather than as your ceiling.",
+          "Copy Desk now shows each clip's description as a block under the clip, so batch 2 can mark those up too."
         ]
       },
       {
@@ -282,23 +281,23 @@
       },
       {
         "kind": "text",
-        "head": "What I got good at",
-        "body": "Timelines and processes, mostly. A lot of this work is a sequence of events or a system with stages, and after two years of them I can lay one out fast and know what will read at a distance and what will not. Isometric drawing became the house move, because it holds a whole process in one picture without flattening it. The illustration work sits alongside that and has its own trap, which is tone. Something that looks playful in a courtroom stops being useful, however good the idea behind it is."
+        "head": "The work",
+        "body": "At DRC and now at DOAR, the same discipline in both. This is federal litigation at the top end, where the parties are global technology companies, federal agencies and national retailers. That is where the standard comes from. There is no margin for error on an exhibit, because anything you put up can be challenged, and on a matter that size nobody wants to be the reason a room stops trusting the graphics. I also learned to work a war room: the week before trial, everyone in one place, graphics changing as the testimony does."
       },
       {
         "kind": "text",
-        "head": "At DRC and now DOAR",
-        "body": "Same discipline at both, and the run where I actually learned it. This is federal litigation at the top end, where the parties are global technology companies, federal agencies and national retailers. That is where the standard comes from. There is no margin for error on an exhibit, because anything you put up can be challenged, and what it costs to get wrong is the case. I also learned to work a war room: the week before trial, everyone in one place, graphics changing as the testimony does."
+        "head": "What the work is made of",
+        "body": "Most of it is information design in the plain sense. Deciding what a picture has to prove, what goes where, what earns emphasis, and what gets cut so the rest can be read. Then illustration, mostly isometric, because a whole system fits into one frame that way without being flattened. And then the formats litigation runs on: infographics, timelines, process boards. I have built enough of those now to lay one out quickly and know what will hold at a distance."
+      },
+      {
+        "kind": "text",
+        "head": "What it did for me",
+        "body": "Two things. My design standards went up permanently, because here a single overstated word can be challenged in front of a judge. And the thinking behind the design got sharper: hierarchy, what the eye reaches first, how a layout can carry an argument instead of just holding it. That second one is what I would keep if I had to choose. It applies to anything, and it is what I bring to work that has nothing to do with courtrooms."
       },
       {
         "kind": "note",
         "label": "On confidentiality",
         "body": "Every exhibit on this page had its parties, names and identifying figures removed before it was ever shown outside the case. Real client material is confidential and does not appear here in any form."
-      },
-      {
-        "kind": "text",
-        "head": "What I took from it",
-        "body": "Two things I use every day now. First, working out what we are actually trying to say and who has to understand it, before opening any design tool. Litigation does not let you skip that. Second, the standard. When one wrong word can be challenged in front of a judge, you stop being casual about your own work, and that does not switch off when the project is something else."
       }
     ],
     "feature": true
@@ -376,13 +375,13 @@
       },
       {
         "kind": "text",
-        "head": "In the salons",
-        "body": "I was there constantly, shooting clients mid-appointment, the rooms, the light on the day, cutting reels from the same visits, with the stylists sending me footage in between. The typeface and the all-lowercase rule were the owner's, inherited and not up for debate. Most of the craft was building a system that held inside them."
+        "head": "What I did",
+        "body": "I was in the salons constantly, shooting clients mid-appointment, the rooms, the light on the day, and cutting reels from the same visits, with the stylists sending me footage in between. The typeface and the all-lowercase rule were the owner's, inherited and not up for debate. Most of the craft was building a system that held inside them."
       },
       {
         "kind": "video",
         "cols": 3,
-        "caption": "Reels shot and cut in the salons. The first one is the Green Circle story.",
+        "caption": "Reels shot and cut in the salons.",
         "src": [
           "hernan/reel-mission.mp4",
           "hernan/reel-salon.mp4",
@@ -412,8 +411,26 @@
       },
       {
         "kind": "text",
-        "head": "Where the generated imagery came in",
-        "body": "For the newsletter I set the voice first, how the brand sounds and what it never says, then drafted against it and edited every line by hand. The imagery was never meant to pass as photography. It was the one place both sides of the service could share a frame: the plant ingredients that go into a treatment, and the finish they produce. This was 2022, right at the start of generative imagery, and looking nothing like a photograph was the point."
+        "head": "Generative imagery, in 2022",
+        "body": "This was 2022, when the first generative image tools had only just arrived, and I put them straight onto live client work. That is roughly how I have handled every new tool since. The images were never meant to pass as photographs. They were the one place both halves of the service could share a frame: the plant ingredients that go into a treatment, and the hair they produce."
+      },
+      {
+        "kind": "points",
+        "head": "Where it ran",
+        "items": [
+          {
+            "label": "The newsletter",
+            "body": "I set the voice first, how the brand sounds and what it never says, then drafted against it and edited every line by hand. The generated imagery carried the header of each send."
+          },
+          {
+            "label": "Social, between shoots",
+            "body": "The same imagery ran as posts on the weeks there was no shoot, so the feed kept moving without padding it out with stock."
+          },
+          {
+            "label": "What actually worked",
+            "body": "Generated hair with real botanical elements around it. Not a photograph and not pretending to be one, and closer to how the salon feels than stock ever got."
+          }
+        ]
       },
       {
         "kind": "grid",
@@ -445,46 +462,65 @@
     ],
     "role": "Digital Artist · the whole digital function",
     "cover": "placeholders/carolina-cover.jpg",
-    "idea": "Three and a half years as the only designer a one-person business had.",
+    "idea": "One coach, one designer, and everything the business showed the world.",
     "summary": "The entire digital function for a life coach: ebooks, course manuals, workshop films, the site and store behind them, and the social work that pointed at all of it.",
     "sections": [
       {
         "kind": "brief",
         "head": "Your brief",
-        "body": "carolinarazo.com no longer resolves — the domain is gone, not just the site. Two dead links removed: the one on this page and the one on your homepage timeline, which is the worse of the two. On whether to keep this page at all: keep it, but stop letting the website be the headline.",
+        "body": "Rebuilt 27 Sep from review batch 1.",
         "list": [
-          "Two of the new assets are in: the blog grid and the Vision Board workbook page. The rest were device mockups and stay out — the store screens and the three-screen render add nothing the blog doesn't already say better.",
-          "A client winding down a site doesn't invalidate the work. She moved to social, which is what a lot of personal brands did between 2023 and 2026 — it's a normal outcome, not a failure of the thing you built. If anyone asks, say exactly that.",
-          "What it does change is what this page can lead with. A website nobody can visit is a weak headline, so the lead is now the length of the relationship — three and a half years with one client is a credential that doesn't depend on any URL still being up.",
-          "The decision gate: this page is already off the index, reachable only from the timeline, so the bar is 'honest and not embarrassing', not 'portfolio-grade'. If you can gather four or five decent assets in under an hour, keep it. If you can't, cut the page and keep the role on the timeline and CV. Either is fine — do not spend real hours here with five new pieces still to make.",
-          "Fix the typo regardless. 'Destruye la Procastinación' is missing an R and it's still live on your old site.",
-          "Best remaining assets: the '2nd Workshop Storie' film, which has real footage of her, and flat captures of the blog and the email-capture screen. Skip the device mockups entirely.",
-          "The 136k follower figure stays off. If you want it: 'her following passed 136k while I ran the digital side' — true, and claims nothing you'd have to defend."
+          "The 136k line is in, phrased so it claims nothing you would have to defend: her following passed it while you ran the digital side.",
+          "Webinar Storytime moved out of the LOCH folder, where it had been filed by mistake, and onto this page.",
+          "The Vision Board screenshot is 883 by 2560, which is why it looked cropped in a square tile. It has its own tall frame now, aligned to the top.",
+          "Still thin on visuals compared with the other pages. If any ebook spreads or course manual layouts survive, they belong here."
         ]
       },
       {
         "kind": "text",
-        "head": "The whole function",
-        "body": "There was no team. I designed and formatted the ebooks and the freebie documents, laid out the manuals for her courses, made the films that announced each workshop, and built and ran the site and store they all pointed at. Then I made the social work that pointed at that."
+        "head": "My role",
+        "body": "There was no team. I designed and formatted the ebooks and the free downloads, laid out the manuals for her courses, made the films that announced each workshop, built and ran the site and the store behind it, produced the graphics for social, ran her Facebook ads, and set up the email capture so the people those ads reached had somewhere to go."
       },
       {
         "kind": "text",
-        "head": "A coach is her own product",
-        "body": "That shapes every decision. There's no catalogue to photograph and no packaging to design. The product is one person's method, and the job is making it look like something you can buy, follow and finish. Every layout is really an argument that her thinking is worth paying for."
+        "head": "Three and a half years",
+        "body": "A rotating set of projects for the same person over that long is not a campaign, it is a working relationship. Caro kept coming back, and the visual language got more certain every year because I was never starting from nothing. Her following passed 136k while I ran the digital side. That growth was hers, not mine, but the work was there for all of it."
       },
       {
-        "kind": "text",
-        "head": "The long version",
-        "body": "Three and a half years is the part I'd point at. A rotating set of projects for the same person over that long isn't a campaign, it's a working relationship. She kept coming back, and the visual language got more certain each year because I wasn't starting from nothing every time."
-      },
-      {
-        "kind": "grid",
+        "kind": "video",
         "cols": 2,
-        "caption": "The blog, and the Vision Board workbook.",
+        "aspect": "1/1",
+        "caption": "Destruye la Procrastinacion. Workshop film.",
         "src": [
-          "carolina/caro-blog.png",
-          "carolina/caro-visionboard.jpg"
+          "carolina/workshop.mp4"
+        ],
+        "poster": [
+          "carolina/workshop-poster.jpg"
         ]
+      },
+      {
+        "kind": "video",
+        "cols": 2,
+        "aspect": "9/16",
+        "caption": "Storytime webinar promo.",
+        "src": [
+          "carolina/webinar.mp4"
+        ],
+        "poster": [
+          "carolina/webinar-poster.jpg"
+        ]
+      },
+      {
+        "kind": "figure",
+        "src": "carolina/caro-blog.png",
+        "caption": "The blog."
+      },
+      {
+        "kind": "figure",
+        "src": "carolina/caro-visionboard.jpg",
+        "tall": true,
+        "fit": "top",
+        "caption": "The Vision Board workbook."
       }
     ],
     "feature": false
@@ -503,8 +539,8 @@
     ],
     "role": "Digital Manager · motion, web, and a team of four",
     "cover": null,
-    "idea": "Joined as one of two designers. Left running the department.",
-    "summary": "Nearly seven years at a Mexican marketing agency covering Mexico, Central America and the Caribbean. LiuGong and Mahindra among the clients, a four-person digital team by the end, and a monthly score card in front of every one of them.",
+    "idea": "Started as a junior, still in college. Left running the department.",
+    "summary": "Nearly seven years at a Mexican marketing agency covering Mexico, Central America and the Caribbean. LiuGong and Mahindra among the clients, a four-person digital team by the end, and a monthly score card presented to every client.",
     "sections": [
       {
         "kind": "brief",
@@ -532,8 +568,8 @@
       },
       {
         "kind": "text",
-        "head": "The same move, twice",
-        "body": "Both Christmas films do the same thing: make the client's own product the Christmas object. LiuGong builds machines, so a loader carries the gift and the whole scene turns out to be a snow globe. Planasa breeds berry varieties, so the ornaments hanging on the branch are a strawberry, a raspberry, blueberries and a blackberry. It's the simplest idea in advertising, saying the thing only this client could say, and it works on a construction manufacturer and a fruit breeder equally well."
+        "head": "What I can show",
+        "body": "Most of what I made there is not mine to publish, so this is a small sample, picked because it shows the motion work rather than the campaigns behind it. Both films are Christmas pieces, which is mostly an accident of what I was able to keep. The thinking in them is the one I used everywhere: make the client's own product the object in the frame. LiuGong builds machines, so a loader carries the gift. Planasa breeds berry varieties, so the ornaments on the branch are a strawberry, a raspberry, blueberries and a blackberry. The LiuGong spot is After Effects built in 3D layers, so there is real depth and camera movement without any modelled geometry, and the balloons in the agency piece are Cinema 4D: modelled, lit and rendered."
       },
       {
         "kind": "video",
@@ -567,11 +603,6 @@
       },
       {
         "kind": "text",
-        "head": "How they were made",
-        "body": "The LiuGong spot is After Effects, built in 3D layers, so there is real depth and camera movement without any modelled geometry. The balloons in the agency piece are Cinema 4D: modelled, lit and rendered. The rest is 2D animation and compositing."
-      },
-      {
-        "kind": "text",
         "head": "Learning it while doing it",
         "body": "Motion wasn't part of what the agency offered when I arrived. I learned After Effects and Cinema 4D and started putting them into client work, and by the end it was something we sold. I was still finishing my degree for the first years of that, which meant every skill on this page went into a live client project roughly as fast as I acquired it."
       },
@@ -588,7 +619,7 @@
       {
         "kind": "text",
         "head": "The websites",
-        "body": "Ana Ascencio is a property developer, and her site had to do two jobs at once: look like somewhere you'd spend two million pesos, and actually sort inventory: preventa, venta, terrenos, acciones. Dark ground, gold for anything you can act on, and a three-step enquiry form instead of one long wall of fields, because the people filling it in were doing it from a phone on a plot of land."
+        "body": "I built and looked after the websites for most of the agency's accounts across those years, dozens of them. Almost none are still online in the form I made them, which is ordinary for agency web work. Ana Ascencio is the one I can still show. She is a property developer, and her site had to do two jobs at once: look like somewhere you would spend two million pesos, and actually sort inventory: preventa, venta, terrenos, acciones. Dark ground, gold for anything you can act on, and a three-step enquiry form instead of one long wall of fields, because the people filling it in were doing it from a phone on a plot of land."
       },
       {
         "kind": "figure",
@@ -603,13 +634,6 @@
           "loch/ana-tablets.jpg",
           "loch/ana-form.jpg"
         ]
-      },
-      {
-        "kind": "seealso",
-        "head": "On the side",
-        "to": "green-mountain",
-        "label": "Green Mountain",
-        "body": "During the agency years I took one client on my own: a berry and vegetable producer that wanted to be read as a food company rather than a farm. It's the only thing on this site I won and delivered under my own name."
       }
     ]
   },
@@ -644,7 +668,7 @@
       {
         "kind": "text",
         "head": "The brief",
-        "body": "Freelance, taken on in late 2018 while I was at the agency and still in Mexico. The only client on this site I won and delivered on my own name. A Mexican producer of berries and vegetables, selling to buyers rather than shoppers. The work had to carry two things at once: the scale a commercial buyer needs to see, meaning hectares, greenhouses and volume, and the care that justifies the premium, which lives in hands and rows and the look of the fruit itself."
+        "body": "Freelance, taken on in late 2018, when I was still in Mexico. The only client on this site I won and delivered under my own name. A Mexican producer of berries and vegetables, selling to buyers rather than shoppers. The work had to carry two things at once: the scale a commercial buyer needs to see, meaning hectares, greenhouses and volume, and the care that justifies the premium, which lives in hands and rows and the look of the fruit itself."
       },
       {
         "kind": "figure",

@@ -2,4 +2,17 @@
 dist/
 dist-preview/
 upload.log
-assets/img/placeholders/
+retry.log
+retire.log
+
+# review-tool scratch
+_rv*/
+review-pages.json
+_frames/
+_ops/
+
+# dead FTP flow, kept locally only
+_upload.sh
+deploy.sh
+setup-ftp.sh
+.gitmsg

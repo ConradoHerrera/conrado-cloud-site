@@ -46,7 +46,7 @@ def lint():
 def head(title, desc, depth=0, path=""):
     up = "../" * depth
     base = "https://" + SITE["domain"]
-    canon = base + "/" + path
+    canon = base + "/" + (path[:-5] if path.endswith(".html") else path)
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -294,6 +294,15 @@ def build_case(p, projects, i, preview):
       <div class="col-4"></div>
       <div class="col-7"><div class="cs__note" data-anim>{label}<p>{E(s['body'])}</p></div></div>
     </div>""")
+        elif k == "points":
+            items = "".join(
+                f'<li><p class="mono dim">{E(it.get("label", ""))}</p>'
+                f'<p>{E(it.get("body", ""))}</p></li>'
+                for it in s.get("items", []))
+            blocks.append(f"""<div class="cols" style="padding-block:clamp(1.25rem,3vw,2.5rem)">
+      <div class="col-4"><p class="mono dim">{E(s.get('head',''))}</p></div>
+      <div class="col-7" data-anim><ul class="points">{items}</ul></div>
+    </div>""")
         elif k == "seealso":
             # Cross-link to another project page, for work that belongs beside this
             # one but has no place of its own in the experience timeline.
@@ -305,8 +314,10 @@ def build_case(p, projects, i, preview):
       </div>
     </div>""")
         elif k == "figure":
+            fcls = "frame" + (" frame--tall" if s.get("tall") else "")
+            fatt = f' data-fit="{E(s["fit"])}"' if s.get("fit") else ""
             blocks.append(f"""<figure class="cs__figure" data-anim>
-      <div class="frame">{media(s.get('src'), s.get('caption', p['title']), 1, preview, p['slug'])}</div>
+      <div class="{fcls}"{fatt}>{media(s.get('src'), s.get('caption', p['title']), 1, preview, p['slug'])}</div>
       <figcaption class="mono dim"><span>{E(s.get('caption',''))}</span></figcaption>
     </figure>""")
         elif k == "youtube":
@@ -338,12 +349,56 @@ def build_case(p, projects, i, preview):
                 mode = ' muted playsinline preload="auto" data-playonce'
             else:
                 mode = ' muted loop playsinline autoplay preload="metadata"'
-            I_INFO = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" '
-                      'stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.1"/>'
-                      '<path d="M12 11.2v5.3"/><path d="M12 7.5h.01"/></svg>')
-            I_REPLAY = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" '
-                        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
-                        '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>')
+            # SF Symbols supplied by Conrado: info.circle, info.circle.fill, arrow.clockwise.
+            SVG = ('<svg viewBox="{vb}" fill="currentColor" aria-hidden="true" '
+                   'class="ic {cls}">{d}</svg>')
+            P_INFO = ('<path d="M9.95469 19.9094C15.4553 19.9094 19.9197 15.4553 19.9197 9.95469'
+                      'C19.9197 4.45408 15.4553 0 9.95469 0C4.46443 0 0 4.45408 0 9.95469'
+                      'C0 15.4553 4.46443 19.9094 9.95469 19.9094ZM9.95469 18.2559'
+                      'C5.36575 18.2559 1.66174 14.5436 1.66174 9.95469C1.66174 5.36575 5.36575 1.6535 '
+                      '9.95469 1.6535C14.5436 1.6535 18.2559 5.36575 18.2559 9.95469'
+                      'C18.2559 14.5436 14.5436 18.2559 9.95469 18.2559Z"/>'
+                      '<path d="M7.73051 15.2996L12.6273 15.2996C13.0273 15.2996 13.3423 15.0115 13.3423 '
+                      '14.6053C13.3423 14.2219 13.0273 13.9214 12.6273 13.9214L11.0098 13.9214L11.0098 '
+                      '9.0754C11.0098 8.54711 10.7466 8.20513 10.243 8.20513L7.8921 8.20513C7.5045 '
+                      '8.20513 7.18745 8.50571 7.18745 8.88084C7.18745 9.28492 7.5045 9.57514 7.8921 '
+                      '9.57514L9.45152 9.57514L9.45152 13.9214L7.73051 13.9214C7.33045 13.9214 7.02586 '
+                      '14.2219 7.02586 14.6053C7.02586 15.0115 7.33045 15.2996 7.73051 15.2996ZM9.86153 '
+                      '6.69958C10.6059 6.69958 11.1948 6.10456 11.1948 5.37057C11.1948 4.62412 10.6059 '
+                      '4.03523 9.86153 4.03523C9.12754 4.03523 8.53654 4.62412 8.53654 5.37057C8.53654 '
+                      '6.10456 9.12754 6.69958 9.86153 6.69958Z"/>')
+            P_INFO_FILL = ('<path d="M19.9197 9.95469C19.9197 15.4407 15.4511 19.9094 9.95469 19.9094'
+                           'C4.46866 19.9094 0 15.4407 0 9.95469C0 4.46866 4.46866 0 9.95469 0'
+                           'C15.4511 0 19.9197 4.46866 19.9197 9.95469ZM7.8921 8.20513C7.47345 8.20513 '
+                           '7.14605 8.51606 7.14605 8.90978C7.14605 9.32632 7.47345 9.6269 7.8921 '
+                           '9.6269L9.48046 9.6269L9.48046 14.0973L7.70981 14.0973C7.30975 14.0973 6.9741 '
+                           '14.4083 6.9741 14.802C6.9741 15.2164 7.30975 15.5273 7.70981 15.5273L12.7722 '
+                           '15.5273C13.1722 15.5273 13.5079 15.2164 13.5079 14.802C13.5079 14.4083 '
+                           '13.1722 14.0973 12.7722 14.0973L11.0926 14.0973L11.0926 9.1168C11.0926 '
+                           '8.56781 10.8169 8.20513 10.3051 8.20513ZM8.53654 5.28777C8.53654 6.04246 '
+                           '9.14824 6.66853 9.91328 6.66853C10.6887 6.66853 11.2879 6.04246 11.2879 '
+                           '5.28777C11.2879 4.51237 10.6887 3.89032 9.91328 3.89032C9.14824 3.89032 '
+                           '8.53654 4.51237 8.53654 5.28777Z"/>')
+            P_REPLAY = ('<path d="M8.62177 20.9826C13.3895 20.9826 17.2435 17.1161 17.2435 12.3505'
+                        'C17.2435 11.9133 16.8851 11.5652 16.4603 11.5652C16.0334 11.5652 15.675 11.9133 '
+                        '15.675 12.3505C15.675 16.2458 12.5171 19.3912 8.62177 19.3912C4.72642 19.3912 '
+                        '1.57069 16.2458 1.57069 12.3505C1.57069 8.45515 4.72642 5.29731 8.62177 5.29731'
+                        'C9.49081 5.29731 10.3161 5.44514 11.0853 5.73847C11.5847 5.93744 12.1772 5.65144 '
+                        '12.1856 5.04246C12.1919 4.5412 11.8254 4.36273 11.5578 4.26726C10.6604 3.92218 '
+                        '9.66296 3.73908 8.62177 3.73908C3.85616 3.73908 0 7.59313 0 12.3608C0 17.1161 '
+                        '3.85616 20.9826 8.62177 20.9826ZM11.2701 4.90981L7.71383 8.427C7.55837 8.57211 '
+                        '7.49204 8.77932 7.49204 8.98041C7.49204 9.42378 7.8298 9.76365 8.2588 9.76365'
+                        'C8.50953 9.76365 8.68358 9.67662 8.82447 9.54397L12.8465 5.5008C13.0189 5.32635 '
+                        '13.0977 5.13773 13.0977 4.9077C13.0977 4.69626 13.0064 4.48694 12.8465 4.32706'
+                        'L8.82658 0.242488C8.68569 0.0994872 8.50339 0 8.25669 0C7.82769 0 7.49204 '
+                        '0.362676 7.49204 0.806048C7.49204 1.01748 7.55837 1.22259 7.70348 1.3677Z"/>')
+            I_INFO = ('<span class="clip__ic">'
+                      + SVG.format(vb="0 0 19.9197 19.9094", cls="ic--a", d=P_INFO)
+                      + SVG.format(vb="0 0 19.9197 19.9094", cls="ic--b", d=P_INFO_FILL)
+                      + '</span>')
+            I_REPLAY = ('<span class="clip__ic clip__ic--tall">'
+                        + SVG.format(vb="0 0 17.2435 20.9826", cls="ic--a", d=P_REPLAY)
+                        + '</span>')
 
             def clip_ui(idx, text):
                 """Glass controls over the clip: its description on hover, and replay."""
@@ -478,6 +533,12 @@ def emit(outdir, projects, preview):
     else:
         (out / "robots.txt").write_text(
             f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n", encoding="utf-8")
+        (out / "_redirects").write_text(
+            "/hernan-prada-hair/*        /work/hernan-prada          301\n"
+            "/loch-marketing/*           /work/loch                  301\n"
+            "/carolinarazo-com/*         /work/carolina-razo         301\n"
+            "/dubin-research-consulting/* /work/litigation-graphics  301\n",
+            encoding="utf-8")
         # Old WordPress permalinks -> new pages. Apache only; harmless elsewhere.
         (out / ".htaccess").write_text(
             "Options -Indexes\n"
@@ -488,7 +549,7 @@ def emit(outdir, projects, preview):
             "Redirect 301 /carolinarazo-com/ /work/carolina-razo.html\n"
             "Redirect 301 /dubin-research-consulting/ /work/litigation-graphics.html\n",
             encoding="utf-8")
-        urls = [""] + [f"work/{p['slug']}.html" for p in projects]
+        urls = [""] + [f"work/{p['slug']}" for p in projects]
         body = "".join(f"  <url><loc>{base}/{u}</loc></url>\n" for u in urls)
         (out / "sitemap.xml").write_text(
             '<?xml version="1.0" encoding="UTF-8"?>\n'

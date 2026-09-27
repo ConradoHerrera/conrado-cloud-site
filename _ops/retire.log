@@ -1,0 +1,26 @@
+MKD _retired-wordpress
+MOVED .htaccess.phpupgrader.8875bb5a
+MOVED .htaccess.phpupgrader.initial
+MOVED Conrado_Demo.pptx
+MOVED error_log
+MOVED index.php
+MOVED license.txt
+MOVED readme.html
+MOVED wp-activate.php
+MOVED wp-admin
+MOVED wp-blog-header.php
+MOVED wp-comments-post.php
+MOVED wp-config-sample.php
+MOVED wp-config.php
+MOVED wp-content
+MOVED wp-cron.php
+MOVED wp-includes
+MOVED wp-links-opml.php
+MOVED wp-load.php
+MOVED wp-login.php
+MOVED wp-mail.php
+MOVED wp-settings.php
+MOVED wp-signup.php
+MOVED wp-trackback.php
+MOVED xmlrpc.php
+DONE

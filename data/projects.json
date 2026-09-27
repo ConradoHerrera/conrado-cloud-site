@@ -1,0 +1,670 @@
+[
+  {
+    "slug": "brand-act",
+    "live": false,
+    "order": 1,
+    "title": "The Label That Reads You Back",
+    "client": "Self-initiated",
+    "year": "2026",
+    "disciplines": [
+      "Information Design",
+      "Brand Identity",
+      "Motion Design"
+    ],
+    "role": "Concept, design, direction",
+    "cover": "placeholders/brand-act-cover.jpg",
+    "idea": "A prescription label you can follow when English isn't the language you think in.",
+    "summary": "Roughly one in five American households speaks a language other than English at home. Prescription labels are still designed as if that weren't true — and the cost of misreading one is measured in emergency rooms.",
+    "sections": [
+      {
+        "kind": "brief",
+        "head": "Your brief",
+        "body": "This is the flagship. If a creative director only opens one project, it has to be this one. Human truth → one idea → three executions that prove the idea stretches. Do not start designing until the idea survives being said out loud in one sentence.",
+        "list": [
+          "Sept 21 – Oct 4 · 22 hours",
+          "Write the one-sentence idea first. If it needs a second sentence, it isn't done.",
+          "Deliverable 1 — the label system itself: dose, interval, warning. Printable on standard label stock, one template, any language.",
+          "Deliverable 2 — the pharmacy bag as a second surface, proving the system travels.",
+          "Deliverable 3 — a 20-second film for the in-store screen that teaches the system while someone waits.",
+          "One process image: the version that didn't work, and why. CDs read this as confidence.",
+          "The bar: an inspiring idea, beautifully crafted. Both halves, or it doesn't go in the book."
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "The human truth",
+        "body": "Nobody admits they can't read the label. They guess, they ask a child to translate, or they take the pill and hope. The failure is silent, which is exactly why it keeps happening."
+      },
+      {
+        "kind": "text",
+        "head": "The idea",
+        "body": "Stop translating the words. Redesign the instruction so it doesn't depend on words at all — dose, timing and warning carried by a visual system a pharmacist can print on any label stock, in any language, from the same template."
+      },
+      {
+        "kind": "figure",
+        "caption": "The label system — dose, interval, warning.",
+        "src": "placeholders/wide-a.jpg"
+      },
+      {
+        "kind": "pair",
+        "caption": "In-store and bag print.",
+        "src": [
+          "placeholders/tall-a.jpg",
+          "placeholders/tall-b.jpg"
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "Three executions",
+        "body": "The label itself. The pharmacy bag as a second surface. And a 20-second film for the waiting-area screen that teaches the system in the ninety seconds a customer already spends standing there."
+      },
+      {
+        "kind": "figure",
+        "caption": "Film — still frames.",
+        "src": "placeholders/wide-b.jpg"
+      }
+    ],
+    "feature": true
+  },
+  {
+    "slug": "brand-world",
+    "live": false,
+    "order": 2,
+    "title": "Brand World",
+    "client": "Self-initiated",
+    "year": "2026",
+    "disciplines": [
+      "Brand Identity",
+      "Motion Design"
+    ],
+    "role": "Identity and design system",
+    "cover": "placeholders/brand-world-cover.jpg",
+    "idea": "A complete identity for a category nobody has bothered to make beautiful.",
+    "summary": "A full identity system — mark, type, colour, motion, image direction, and the rules that hold them together — built for an unglamorous category, because that is where design still has room to move.",
+    "sections": [
+      {
+        "kind": "brief",
+        "head": "Your brief",
+        "body": "Build this first. It's the piece the motion cut is made from, so it has to exist before week six. Pick a category with no design culture — waste hauling, dental labs, HVAC, storage, tax prep, industrial cleaning. Glamorous categories make CDs compare you to the agency that already did it; unglamorous ones make them see you.",
+        "list": [
+          "Sept 7 – Sept 20 · 20 hours",
+          "Choose the category in the first two hours. Do not spend a week choosing.",
+          "Deliverable — logotype and mark, in the sizes it actually has to survive.",
+          "Deliverable — the type system: two families maximum, with the reasoning visible.",
+          "Deliverable — colour with a stated logic, not a swatch grid.",
+          "Deliverable — six to eight applications. Real substrates: a van, a form, an invoice, signage, a uniform.",
+          "Deliverable — one page of rules. This is the part most portfolios skip and the part that proves you can hand a system to someone else.",
+          "The bar: could a stranger apply this to a new item correctly, without asking you?"
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "Why this category",
+        "body": "Category to be selected. The filter is the same one used on every piece here: an inspiring idea, beautifully crafted."
+      },
+      {
+        "kind": "figure",
+        "caption": "Logotype and mark.",
+        "src": "placeholders/wide-c.jpg"
+      },
+      {
+        "kind": "pair",
+        "caption": "Type system and colour.",
+        "src": [
+          "placeholders/tall-c.jpg",
+          "placeholders/tall-d.jpg"
+        ]
+      },
+      {
+        "kind": "figure",
+        "caption": "Applications.",
+        "src": "placeholders/wide-d.jpg"
+      }
+    ],
+    "feature": true
+  },
+  {
+    "slug": "clarity",
+    "live": false,
+    "order": 3,
+    "title": "Clarity Piece",
+    "client": "Self-initiated",
+    "year": "2026",
+    "disciplines": [
+      "Information Design",
+      "Data Visualisation"
+    ],
+    "role": "Research, design",
+    "cover": "placeholders/clarity-cover.jpg",
+    "idea": "The courtroom skill, pointed at something people actually argue about.",
+    "summary": "One complicated, contested, culturally live subject — taken apart and rebuilt as a single piece of information design that settles the argument by making it visible.",
+    "sections": [
+      {
+        "kind": "brief",
+        "head": "Your brief",
+        "body": "This is the piece only you can make. It is your litigation skill applied to a subject a creative director already has an opinion about, which is what makes it land. Choose something contested but not partisan — rent, subway delays, hospital billing, streaming economics, tipping.",
+        "list": [
+          "Oct 5 – Oct 11 · 14 hours",
+          "Deliverable — one main plate. A single image that carries the whole argument.",
+          "Deliverable — two or three supporting details showing the system underneath.",
+          "Deliverable — 120 words explaining what you found, not what you made.",
+          "Source your data publicly and cite it on the plate. The citation is part of the craft.",
+          "The bar: someone who has never thought about this understands it, and is moved by it, in under a minute."
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "The premise",
+        "body": "Subject to be selected. The test is the one a jury applies: can a person with no stake and no background follow this, first time, without help."
+      },
+      {
+        "kind": "figure",
+        "caption": "The main plate.",
+        "src": "placeholders/wide-e.jpg"
+      },
+      {
+        "kind": "pair",
+        "caption": "Detail and system.",
+        "src": [
+          "placeholders/tall-e.jpg",
+          "placeholders/tall-f.jpg"
+        ]
+      }
+    ],
+    "feature": true
+  },
+  {
+    "slug": "motion-cut",
+    "live": false,
+    "order": 4,
+    "title": "Motion Cut",
+    "client": "Self-initiated",
+    "year": "2026",
+    "disciplines": [
+      "Motion Design",
+      "Brand Identity"
+    ],
+    "role": "Direction, design, animation",
+    "cover": "placeholders/motion-cover.jpg",
+    "idea": "Twenty seconds that prove the identity can move.",
+    "summary": "A short film built from the Brand World system, because an identity that only works standing still is half an identity.",
+    "sections": [
+      {
+        "kind": "brief",
+        "head": "Your brief",
+        "body": "Built entirely from Brand World — same type, same colour, same rules. Nothing new introduced. The point is not to show you can animate; it's to show the system holds under motion, which is what a CD is actually unsure about.",
+        "list": [
+          "Oct 12 – Oct 18 · 12 hours",
+          "15–20 seconds. Not 30. Not 60.",
+          "Sound designed, not library-tracked. A bad track undoes good motion.",
+          "Deliverable — the film, plus a strip of six key frames for people who won't press play.",
+          "Export a silent, looping version for the site. Most people will see it muted.",
+          "The bar: pause it at any second and the frame still looks composed."
+        ]
+      },
+      {
+        "kind": "figure",
+        "caption": "Film.",
+        "src": "placeholders/wide-f.jpg"
+      }
+    ],
+    "feature": true
+  },
+  {
+    "slug": "litigation-graphics",
+    "live": true,
+    "order": 5,
+    "title": "Litigation Graphics",
+    "client": "DOAR · DRC, New York",
+    "year": "2024–26",
+    "disciplines": [
+      "Litigation Graphics",
+      "Information Design",
+      "Data Visualisation",
+      "Motion Design"
+    ],
+    "role": [
+      "Graphics Associate, DOAR",
+      "Information Designer, DRC"
+    ],
+    "cover": "litigation/cover.jpg",
+    "idea": "Information design for high-stakes federal trials.",
+    "summary": "Two years designing the visual arguments that go in front of federal juries. Some of it is evidence made legible: documents, expert data, financial records. The rest is concepts too technical to show directly, which I build as visual analogies and animate in sequence so a jury can follow while the attorney talks. It has to be understood the first time, and it has to carry the argument rather than sit beside it.",
+    "sections": [
+      {
+        "kind": "brief",
+        "head": "Your brief",
+        "body": "Rebuilt 23 Sep from your third markup. The big change is structural: the per-clip essays are gone.",
+        "list": [
+          "Each clip now carries its own description in a glass panel that opens from an info button, next to replay. Both buttons appear only when you hover the clip, as you asked. Worth knowing the trade you just made: a visitor who never hovers a clip never reads a word of that text, so everything load-bearing lives in the page copy above and below the set.",
+          "Note cards are real glass now: translucent, backdrop-blurred, and they lift a couple of pixels on hover.",
+          "Type sizes cut down. Note copy is now the same size as body copy, so the page runs on five sizes: title, the serif line, body, mono label, and the panel text.",
+          "Send me the SVGs when you have them and I will drop them straight into the two buttons.",
+          "Still to do: the em dash and AI-tell sweep across the other four live pages and the about section."
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "How they are used",
+        "body": "These are built in stages and advanced on a click, so the attorney decides when each piece lands and can stay on any of them for as long as the argument needs. That changes how you design them. Everything can sit on the board at once, because nothing is shown until it is being talked about. The structure gets worked out with the attorneys before anything is drawn, so the picture says the thing they need said and nothing wider."
+      },
+      {
+        "kind": "video",
+        "cols": 1,
+        "aspect": "16/9",
+        "controls": false,
+        "playonce": true,
+        "src": [
+          "litigation/agreement.mp4",
+          "litigation/architecture.mp4",
+          "litigation/supply-chain.mp4",
+          "litigation/roadmap.mp4",
+          "litigation/software-steps.mp4",
+          "litigation/evidence-types.mp4"
+        ],
+        "poster": [
+          "litigation/agreement-poster.jpg",
+          "litigation/architecture-poster.jpg",
+          "litigation/supply-chain-poster.jpg",
+          "litigation/roadmap-poster.jpg",
+          "litigation/software-steps-poster.jpg",
+          "litigation/evidence-types-poster.jpg"
+        ],
+        "notes": [
+          "We wanted a visual way to explain what a contract was for, simply and with something to look at. My idea was to draw it as an isometric document with the things being exchanged sitting on top, so you see the deal instead of reading clauses. Everything in the frame was built for this one, apart from the money.",
+          "A software system drawn as a restaurant: the counter the customer sees, the kitchen behind it, the suppliers feeding both. Isometric lets every stage sit in one picture, so the attorney can walk through it a piece at a time and nobody has to hold a diagram in their head.",
+          "Three parties in a produce chain and what each one gained. The part that does not survive a screenshot: every icon along the bottom animates on its own beat, as the argument reaches it. Built with a colleague.",
+          "Two years of releases on a single axis. Twenty labelled moments, revealed one at a time, so the density never arrives all at once.",
+          "A development process, stage by stage. The same move as the roadmap: everything already placed, nothing shown until it is being spoken about.",
+          "Direct evidence is seeing the man out in the rain. Circumstantial is seeing him come through a door with a wet umbrella and working out the rest. I drew both scenes, and the harder part was the tone: no cartooning, a narrow palette, figures kept straight, so it still reads as a courtroom."
+        ],
+        "caption": "Six exhibits. Hover any of them for what it was doing."
+      },
+      {
+        "kind": "text",
+        "head": "What I got good at",
+        "body": "Timelines and processes, mostly. A lot of this work is a sequence of events or a system with stages, and after two years of them I can lay one out fast and know what will read at a distance and what will not. Isometric drawing became the house move, because it holds a whole process in one picture without flattening it. The illustration work sits alongside that and has its own trap, which is tone. Something that looks playful in a courtroom stops being useful, however good the idea behind it is."
+      },
+      {
+        "kind": "text",
+        "head": "At DRC and now DOAR",
+        "body": "Same discipline at both, and the run where I actually learned it. This is federal litigation at the top end, where the parties are global technology companies, federal agencies and national retailers. That is where the standard comes from. There is no margin for error on an exhibit, because anything you put up can be challenged, and what it costs to get wrong is the case. I also learned to work a war room: the week before trial, everyone in one place, graphics changing as the testimony does."
+      },
+      {
+        "kind": "note",
+        "label": "On confidentiality",
+        "body": "Every exhibit on this page had its parties, names and identifying figures removed before it was ever shown outside the case. Real client material is confidential and does not appear here in any form."
+      },
+      {
+        "kind": "text",
+        "head": "What I took from it",
+        "body": "Two things I use every day now. First, working out what we are actually trying to say and who has to understand it, before opening any design tool. Litigation does not let you skip that. Second, the standard. When one wrong word can be challenged in front of a judge, you stop being casual about your own work, and that does not switch off when the project is something else."
+      }
+    ],
+    "feature": true
+  },
+  {
+    "slug": "microbal",
+    "live": false,
+    "feature": true,
+    "order": 5.5,
+    "title": "Microbal",
+    "client": "Microbal · microbal.com.mx",
+    "year": "2026",
+    "disciplines": [
+      "Brand Identity"
+    ],
+    "role": "Design and build",
+    "cover": null,
+    "idea": "A supplier that sold by phone call, now selling by catalogue.",
+    "summary": "DRAFT — not written yet. An e-commerce build for a Mexican supplier: catalogue, product pages, and a checkout that has to work for buyers who have never bought from them online.",
+    "sections": [
+      {
+        "kind": "brief",
+        "head": "Your brief",
+        "body": "This is the sixth piece and it is not part of the Leo slate — do not let it eat hours from the five before October 19. It is the piece that opens a different door later, so it gets planned now and built after.",
+        "list": [
+          "The word you want from this page is UX, and UX is not earned by screens. It's earned by showing four things: who the buyer is, what they were doing before this existed, the one decision you made about the path to purchase, and what happened after launch. If the page can't show all four, it tags as Brand Identity and web build, and that's fine — it's still a shipped store.",
+          "Start collecting the 'before' now, while it still exists: how orders actually came in (calls, WhatsApp, quotes by email), how long a quote took, what people asked before buying. Screenshot the old flow. Once the store is live that evidence is gone and cannot be reconstructed honestly.",
+          "You called the current UI 'very Claude-generic'. That's the real risk on this page, and it's a design problem, not a Claude problem. Pick one thing the category never does well — product photography on a technical catalogue, or the spec table, or the quote-to-cart moment — and make that the piece.",
+          "You built it with Claude Code. That belongs in the case study body with a live URL, not in the tools list yet. When this page goes live, add a Build group to Tools and put Claude Code in it then — same rule as every other word on this site.",
+          "It's your father's company. Say so plainly on the page in one clause, the same way the LOCH page handles the family agency. Disclosed once it's context; discovered later it's a problem.",
+          "Tagging UX requires adding the word to disciplines_canonical in site.json. The build will reject it until then — deliberately. Add the word the day the page proves it, not before."
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "Placeholder",
+        "body": "Nothing written yet. This page exists so the assignment is on the board."
+      }
+    ]
+  },
+  {
+    "slug": "hernan-prada",
+    "live": true,
+    "feature": false,
+    "order": 6,
+    "title": "Hernan Prada Hair",
+    "client": "Hernan Prada Hair",
+    "year": "2022–23",
+    "disciplines": [
+      "Brand Identity",
+      "Generative AI"
+    ],
+    "role": "Social Media Manager · photography, reels, visual direction",
+    "cover": "hernan/Tuesday9.jpg",
+    "idea": "Plant-based, zero waste, Green Circle certified. The work was making it visible.",
+    "summary": "A year and a half of content for an eco-luxe salon group in Westchester. Photography and reels shot in the salons, generated imagery between shoots, all of it working inside a visual language the owner had already set.",
+    "sections": [
+      {
+        "kind": "brief",
+        "head": "Your brief",
+        "body": "Rewritten again against your notes. 'Wanted to be seen as' is gone everywhere — you're right that it implies they were reaching for something they hadn't earned. The plant-based fact you gave me does the job properly: it's true, it's specific, and it sets up why the work had to go to process and artistry rather than product shots.",
+        "list": [
+          "Green Circle and zero waste are in now, and they pull the page together: the hair-booms reel stops being a nice claim and becomes a certification doing visible work. That reel is still the strongest thing here.",
+          "Green Circle Salons is a proper noun — capitals, always. Worth getting right on the CV too; a certification named correctly reads as someone who was actually inside the business.",
+          "Nothing negative about the brand anywhere now — no 'hard to photograph', no drains, no missing pictures. The framing is that their commitment is invisible by nature, so the camera went to the craft instead.",
+          "Tell me the number of locations during your time there and I'll put it back in — a number beats no number.",
+          "There's still no word in your seven for shooting photo and video. If you want one, that's a deliberate vocabulary decision.",
+          "Still my view: this page belongs off the index, reachable from the timeline."
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "What they're about",
+        "body": "Every treatment is plant-based, with no harsh chemicals anywhere in the service. The salons are Green Circle certified and run close to zero waste: foils, colour tubes and clippings are all recovered, and the hair itself goes into booms that soak up oil spills. Almost none of that is visible from a chair. You can photograph a finish, not a supply chain. So the work went the other way, into the process and the artistry, the parts of an appointment most people never get to watch."
+      },
+      {
+        "kind": "text",
+        "head": "In the salons",
+        "body": "I was there constantly, shooting clients mid-appointment, the rooms, the light on the day, cutting reels from the same visits, with the stylists sending me footage in between. The typeface and the all-lowercase rule were the owner's, inherited and not up for debate. Most of the craft was building a system that held inside them."
+      },
+      {
+        "kind": "video",
+        "cols": 3,
+        "caption": "Reels shot and cut in the salons. The first one is the Green Circle story.",
+        "src": [
+          "hernan/reel-mission.mp4",
+          "hernan/reel-salon.mp4",
+          "hernan/reel-rooms.mp4"
+        ],
+        "poster": [
+          "hernan/poster-mission.jpg",
+          "hernan/poster-salon.jpg",
+          "hernan/poster-rooms.jpg"
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "The camera was part of the service",
+        "body": "Being visibly there with a camera did work of its own. A client whose appointment is worth filming starts to feel the appointment is worth more. The shoot wasn't only production. It became part of what people were paying for."
+      },
+      {
+        "kind": "grid",
+        "cols": 2,
+        "caption": "Photographed in the salons.",
+        "src": [
+          "hernan/IMG_9792.JPG",
+          "hernan/Tuesday9.jpg",
+          "hernan/HP-ecopash-teo-2.jpg",
+          "hernan/eco-pash-2.jpg"
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "Where the generated imagery came in",
+        "body": "For the newsletter I set the voice first, how the brand sounds and what it never says, then drafted against it and edited every line by hand. The imagery was never meant to pass as photography. It was the one place both sides of the service could share a frame: the plant ingredients that go into a treatment, and the finish they produce. This was 2022, right at the start of generative imagery, and looking nothing like a photograph was the point."
+      },
+      {
+        "kind": "grid",
+        "cols": 3,
+        "caption": "Generated imagery: ingredients and finish in one frame.",
+        "src": [
+          "hernan/Designer-3.jpeg",
+          "hernan/sustainable-beauty-1.jpg",
+          "hernan/IMG_0434.JPG"
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "Result",
+        "body": "Engagement over the period rose about 30%. The more useful outcome was a voice, a library of images and a set of reels the salons could keep using after I'd gone."
+      }
+    ]
+  },
+  {
+    "slug": "carolina-razo",
+    "live": true,
+    "order": 7,
+    "title": "Carolina Razo",
+    "client": "Carolina Razo",
+    "year": "2020–23",
+    "disciplines": [
+      "Brand Identity",
+      "Motion Design"
+    ],
+    "role": "Digital Artist · the whole digital function",
+    "cover": "placeholders/carolina-cover.jpg",
+    "idea": "Three and a half years as the only designer a one-person business had.",
+    "summary": "The entire digital function for a life coach: ebooks, course manuals, workshop films, the site and store behind them, and the social work that pointed at all of it.",
+    "sections": [
+      {
+        "kind": "brief",
+        "head": "Your brief",
+        "body": "carolinarazo.com no longer resolves — the domain is gone, not just the site. Two dead links removed: the one on this page and the one on your homepage timeline, which is the worse of the two. On whether to keep this page at all: keep it, but stop letting the website be the headline.",
+        "list": [
+          "Two of the new assets are in: the blog grid and the Vision Board workbook page. The rest were device mockups and stay out — the store screens and the three-screen render add nothing the blog doesn't already say better.",
+          "A client winding down a site doesn't invalidate the work. She moved to social, which is what a lot of personal brands did between 2023 and 2026 — it's a normal outcome, not a failure of the thing you built. If anyone asks, say exactly that.",
+          "What it does change is what this page can lead with. A website nobody can visit is a weak headline, so the lead is now the length of the relationship — three and a half years with one client is a credential that doesn't depend on any URL still being up.",
+          "The decision gate: this page is already off the index, reachable only from the timeline, so the bar is 'honest and not embarrassing', not 'portfolio-grade'. If you can gather four or five decent assets in under an hour, keep it. If you can't, cut the page and keep the role on the timeline and CV. Either is fine — do not spend real hours here with five new pieces still to make.",
+          "Fix the typo regardless. 'Destruye la Procastinación' is missing an R and it's still live on your old site.",
+          "Best remaining assets: the '2nd Workshop Storie' film, which has real footage of her, and flat captures of the blog and the email-capture screen. Skip the device mockups entirely.",
+          "The 136k follower figure stays off. If you want it: 'her following passed 136k while I ran the digital side' — true, and claims nothing you'd have to defend."
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "The whole function",
+        "body": "There was no team. I designed and formatted the ebooks and the freebie documents, laid out the manuals for her courses, made the films that announced each workshop, and built and ran the site and store they all pointed at. Then I made the social work that pointed at that."
+      },
+      {
+        "kind": "text",
+        "head": "A coach is her own product",
+        "body": "That shapes every decision. There's no catalogue to photograph and no packaging to design. The product is one person's method, and the job is making it look like something you can buy, follow and finish. Every layout is really an argument that her thinking is worth paying for."
+      },
+      {
+        "kind": "text",
+        "head": "The long version",
+        "body": "Three and a half years is the part I'd point at. A rotating set of projects for the same person over that long isn't a campaign, it's a working relationship. She kept coming back, and the visual language got more certain each year because I wasn't starting from nothing every time."
+      },
+      {
+        "kind": "grid",
+        "cols": 2,
+        "caption": "The blog, and the Vision Board workbook.",
+        "src": [
+          "carolina/caro-blog.png",
+          "carolina/caro-visionboard.jpg"
+        ]
+      }
+    ],
+    "feature": false
+  },
+  {
+    "slug": "loch",
+    "live": true,
+    "feature": false,
+    "order": 9,
+    "title": "LOCH Marketing",
+    "client": "LOCH Marketing",
+    "year": "2017–24",
+    "disciplines": [
+      "Motion Design",
+      "3D"
+    ],
+    "role": "Digital Manager · motion, web, and a team of four",
+    "cover": null,
+    "idea": "Joined as one of two designers. Left running the department.",
+    "summary": "Nearly seven years at a Mexican marketing agency covering Mexico, Central America and the Caribbean. LiuGong and Mahindra among the clients, a four-person digital team by the end, and a monthly score card in front of every one of them.",
+    "sections": [
+      {
+        "kind": "brief",
+        "head": "Your brief",
+        "body": "Rewritten from your answers. The old text was 2023 AI writing about a job — 'impactful digital solutions', 'seamless project execution'. Everything here is now something you actually told me, in your words where they were better than mine.",
+        "list": [
+          "Ana Ascencio is in. Your page claimed you kept the websites for the biggest clients and then showed no websites — that hole is now closed, and the three-step form is the best interface artifact in your whole back catalogue.",
+          "These are device mockups, which I told you to kill on the Carolina page. Consistent position: mockups are weaker than flat captures, but they're what survived, and the iMac shot is tight enough that the screen does the work. If you ever find flat captures, swap them.",
+          "Self-hosted now, so they play from a file:// open too — no YouTube, no origin problem, no cookies. Your files were already web-ready H.264, so I renamed rather than re-encoded: no quality lost.",
+          "Held back — Webinar Storytime: the type hierarchy is genuinely good, but the floating 3D icons are generic stock and it's the loudest thing in the set. It only earns a place if you want to show vertical format and English-language B2B, and the LiuGong film argues for you better.",
+          "Held back — Webinar Storytime: the type hierarchy is genuinely good, but the floating 3D icons are generic stock and it's the loudest thing in the set. It only earns a place if you want to show vertical format and English-language B2B, and the LiuGong film argues for you better.",
+          "The agency spot runs 35 seconds, which is long for a portfolio loop. If you ever recut it to 12–15 it would sit much better beside the others.",
+          "3D stays tagged, on the C4D in the agency spot."
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "How the job grew",
+        "body": "I joined a marketing agency in Mexico as one of two designers, doing websites, social graphics and print. By the end I was coordinating digital communications across a team of four (a social media manager, a web developer and two graphic designers) and working alongside the software engineer who built the heavier client platforms, an asset-management system and an app among them. I kept the parts I didn't want to hand over: the websites for the biggest clients, and the motion."
+      },
+      {
+        "kind": "text",
+        "head": "The clients",
+        "body": "We were LiuGong's agency for Mexico, Central America and the Caribbean, reporting to their North American executives. We also handled Mahindra Tractors' entry into Mexico, where I built the website. Mahindra withdrew from the country a few years later, which is its own lesson in what design can and can't fix."
+      },
+      {
+        "kind": "text",
+        "head": "The same move, twice",
+        "body": "Both Christmas films do the same thing: make the client's own product the Christmas object. LiuGong builds machines, so a loader carries the gift and the whole scene turns out to be a snow globe. Planasa breeds berry varieties, so the ornaments hanging on the branch are a strawberry, a raspberry, blueberries and a blackberry. It's the simplest idea in advertising, saying the thing only this client could say, and it works on a construction manufacturer and a fruit breeder equally well."
+      },
+      {
+        "kind": "video",
+        "cols": 3,
+        "aspect": "1/1",
+        "controls": true,
+        "caption": "LiuGong, Planasa and Los Tabiques.",
+        "src": [
+          "loch/liugong-xmas.mp4",
+          "loch/planasa-navidad.mp4",
+          "loch/los-tabiques-cafe.mp4"
+        ],
+        "poster": [
+          "loch/poster-liugong.jpg",
+          "loch/poster-planasa.jpg",
+          "loch/poster-tabiques.jpg"
+        ]
+      },
+      {
+        "kind": "video",
+        "cols": 1,
+        "aspect": "1152/720",
+        "controls": true,
+        "caption": "LOCH agency spot. Cinema 4D.",
+        "src": [
+          "loch/loch-agency.mp4"
+        ],
+        "poster": [
+          "loch/poster-agency.jpg"
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "How they were made",
+        "body": "The LiuGong spot is After Effects, built in 3D layers, so there is real depth and camera movement without any modelled geometry. The balloons in the agency piece are Cinema 4D: modelled, lit and rendered. The rest is 2D animation and compositing."
+      },
+      {
+        "kind": "text",
+        "head": "Learning it while doing it",
+        "body": "Motion wasn't part of what the agency offered when I arrived. I learned After Effects and Cinema 4D and started putting them into client work, and by the end it was something we sold. I was still finishing my degree for the first years of that, which meant every skill on this page went into a live client project roughly as fast as I acquired it."
+      },
+      {
+        "kind": "text",
+        "head": "In front of the client",
+        "body": "Every client got a monthly score card with the numbers, what moved and what didn't, and I presented them. I was in the room for new-business pitches talking through what we could do digitally, and in front of clients reviewing their sites in progress and taking changes on the spot. Explaining a bad month to the person paying for it is a skill nobody teaches you in design school."
+      },
+      {
+        "kind": "text",
+        "head": "In Spanish",
+        "body": "All of it was made and presented in Spanish, for audiences across Mexico, Central America and the Caribbean. Different market, different reference points, different sense of humour, which is most of the reason my early work looks unfamiliar to a US eye."
+      },
+      {
+        "kind": "text",
+        "head": "The websites",
+        "body": "Ana Ascencio is a property developer, and her site had to do two jobs at once: look like somewhere you'd spend two million pesos, and actually sort inventory: preventa, venta, terrenos, acciones. Dark ground, gold for anything you can act on, and a three-step enquiry form instead of one long wall of fields, because the people filling it in were doing it from a phone on a plot of land."
+      },
+      {
+        "kind": "figure",
+        "caption": "Ana Ascencio, financing page.",
+        "src": "loch/ana-financiamiento.jpg"
+      },
+      {
+        "kind": "grid",
+        "cols": 2,
+        "caption": "Site and the three-step enquiry form.",
+        "src": [
+          "loch/ana-tablets.jpg",
+          "loch/ana-form.jpg"
+        ]
+      },
+      {
+        "kind": "seealso",
+        "head": "On the side",
+        "to": "green-mountain",
+        "label": "Green Mountain",
+        "body": "During the agency years I took one client on my own: a berry and vegetable producer that wanted to be read as a food company rather than a farm. It's the only thing on this site I won and delivered under my own name."
+      }
+    ]
+  },
+  {
+    "slug": "green-mountain",
+    "live": true,
+    "feature": false,
+    "order": 10,
+    "title": "Green Mountain",
+    "client": "Green Mountain · freelance",
+    "year": "2018–19",
+    "disciplines": [
+      "Brand Identity"
+    ],
+    "role": "Freelance · site design and image direction",
+    "cover": null,
+    "idea": "A berry grower who wanted to be read as a food company, not a farm.",
+    "summary": "Site design and image direction for a Mexican berry and vegetable producer: product pages, mission, and a contact flow, built around their own photography.",
+    "sections": [
+      {
+        "kind": "brief",
+        "head": "Your brief",
+        "body": "This is the only independent client work on the site — won and delivered by you, outside any agency. That's worth more than it looks: it's the one page that proves you can hold a client relationship on your own name.",
+        "list": [
+          "Dated Nov 2018 – Jun 2019 in the timeline, and reachable from there as well as from the LOCH page.",
+          "Dated 2019, confirmed by Conrado. It sits mid-way through the LOCH years and before the move to New York, which is what the page already says.",
+          "No row in the experience timeline. A bar needs a start and an end, and inventing them to fill a gap is worse than not having the bar. The page carries its own context in the first line instead.",
+          "The photography is the strength here: the aerial of the fields, the worker picking, the greenhouse rows. That's art direction, not decoration. If you have more of it, or the originals rather than the mockups, send them.",
+          "The Fukuoka quote on the mission page is the one editorial decision in the whole set — a real agricultural philosopher rather than a stock inspirational line. Worth keeping and worth mentioning if anyone asks about it."
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "The brief",
+        "body": "Freelance, taken on in late 2018 while I was at the agency and still in Mexico. The only client on this site I won and delivered on my own name. A Mexican producer of berries and vegetables, selling to buyers rather than shoppers. The work had to carry two things at once: the scale a commercial buyer needs to see, meaning hectares, greenhouses and volume, and the care that justifies the premium, which lives in hands and rows and the look of the fruit itself."
+      },
+      {
+        "kind": "figure",
+        "caption": "Product page, raspberry.",
+        "src": "greenmountain/gm-frambuesa.jpg"
+      },
+      {
+        "kind": "grid",
+        "cols": 2,
+        "caption": "Mission and contact, built on their own photography.",
+        "src": [
+          "greenmountain/gm-contacto.jpg",
+          "greenmountain/gm-mision.jpg"
+        ]
+      },
+      {
+        "kind": "text",
+        "head": "Their own pictures",
+        "body": "Everything on the site is their land and their people: the aerial of the fields, the greenhouse rows, a picker working a blueberry line. On an agricultural site that isn't a stylistic preference: stock photography of generic farms is exactly what a buyer discounts, because every competitor has it."
+      }
+    ]
+  }
+]

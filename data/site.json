@@ -1,0 +1,158 @@
+{
+  "name": "Conrado Herrera",
+  "domain": "conrado.cloud",
+  "email": "design@conrado.cloud",
+  "identity": "Designer — Information, Brand, Motion",
+  "location": "Brooklyn, New York",
+  "headline": "I make complicated things impossible to misunderstand.",
+  "lede": "Conrado Herrera, designer, Brooklyn. Nearly seven years in digital marketing, then two designing the exhibits that go in front of federal juries.",
+  "links": [
+    {
+      "label": "LinkedIn",
+      "url": "https://linkedin.com/in/conradoherrera/"
+    }
+  ],
+  "_disciplines_note": "Canonical vocabulary. These seven words are the ONLY discipline tags allowed on a project. The marquee and the header list are generated from the projects that are actually live, so a word does not appear on the site until a piece proves it.",
+  "disciplines_canonical": [
+    "Information Design",
+    "Data Visualisation",
+    "Litigation Graphics",
+    "Motion Design",
+    "Brand Identity",
+    "Generative AI",
+    "3D"
+  ],
+  "about": [
+    "I came up in digital marketing: nearly seven years at LOCH, most of it running the department, learning in public what makes someone stop and what makes them scroll past. Then I moved into litigation graphics: the exhibits that go in front of federal juries, where the work is understood the first time or it hasn't worked at all.",
+    "Marketing taught me how to make someone care. Litigation taught me how to make someone understand. Very little design does both, and that's the work I want.",
+    "I use AI the way I use everything else on the list below. It gets me through exploration faster and widens what I can try in an afternoon, but it doesn't make the decisions."
+  ],
+  "experience": [
+    {
+      "role": "Graphics Associate",
+      "org": "DOAR",
+      "place": "New York",
+      "from": "May 2026",
+      "to": "Present",
+      "start": 2026.33,
+      "end": 2026.92,
+      "current": true,
+      "note": "Information design and demonstratives for federal litigation.",
+      "url": null,
+      "project": "litigation-graphics"
+    },
+    {
+      "role": "Information Designer",
+      "org": "Dubin Research & Consulting",
+      "place": "New York",
+      "from": "Aug 2024",
+      "to": "Jan 2026",
+      "start": 2024.58,
+      "end": 2026.0,
+      "note": "Trial demonstratives and legal graphics for major litigation.",
+      "url": null,
+      "project": "litigation-graphics"
+    },
+    {
+      "role": "Digital Manager",
+      "org": "LOCH Marketing",
+      "place": "Mexico City (hybrid)",
+      "from": "Dec 2017",
+      "to": "Aug 2024",
+      "start": 2017.92,
+      "end": 2024.67,
+      "note": "Led the department. Strategy, motion and content for national and international brands.",
+      "url": null,
+      "project": "loch"
+    },
+    {
+      "role": "Digital Artist",
+      "org": "Carolina Razo",
+      "place": "Remote",
+      "from": "Mar 2020",
+      "to": "Oct 2023",
+      "start": 2020.17,
+      "end": 2023.75,
+      "note": "Motion graphics and digital art across client projects.",
+      "url": null,
+      "project": "carolina-razo"
+    },
+    {
+      "role": "Social Media Manager",
+      "org": "Hernan Prada Hair",
+      "place": "New York",
+      "from": "Jan 2022",
+      "to": "Jul 2023",
+      "start": 2022.0,
+      "end": 2023.5,
+      "note": "Shot the photography on location for the salon group, and built the newsletter voice.",
+      "url": null,
+      "project": "hernan-prada"
+    },
+    {
+      "role": "Designer",
+      "org": "Green Mountain",
+      "place": "Freelance",
+      "from": "Nov 2018",
+      "to": "Jun 2019",
+      "start": 2018.83,
+      "end": 2019.42,
+      "note": "Site design and image direction for a berry and vegetable producer. My own client.",
+      "url": null,
+      "project": "green-mountain"
+    }
+  ],
+  "axis": {
+    "from": 2017.5,
+    "to": 2027.0,
+    "ticks": [
+      2018,
+      2020,
+      2022,
+      2024,
+      2026
+    ]
+  },
+  "education": [
+    {
+      "what": "B.A. Digital Arts",
+      "year": "2022"
+    },
+    {
+      "what": "Google UX Design Certificate",
+      "year": "2026"
+    }
+  ],
+  "tools": [
+    {
+      "group": "Design",
+      "items": [
+        "Figma",
+        "Illustrator",
+        "Photoshop",
+        "InDesign"
+      ]
+    },
+    {
+      "group": "Motion",
+      "items": [
+        "After Effects",
+        "Premiere"
+      ]
+    },
+    {
+      "group": "3D",
+      "items": [
+        "Blender",
+        "Unreal Engine"
+      ]
+    },
+    {
+      "group": "AI",
+      "items": [
+        "Claude",
+        "Generative image tools"
+      ]
+    }
+  ]
+}

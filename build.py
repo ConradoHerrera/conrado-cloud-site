@@ -113,6 +113,14 @@ def foot(depth=0):
 
 
 # ---------------------------------------------------------------- media
+def grid_cls(cols):
+    """A media grid's classes. The column count is a class, not an inline
+    custom property, so the narrow breakpoints can collapse 3 and 4 columns to
+    2 and then to 1 while a one-column section (a full-width film) stays one."""
+    n = max(1, min(4, int(cols)))
+    return f"cs__grid cs__grid--c{n}"
+
+
 def plate(label):
     return f'<div class="plate"><span>{E(label)}</span></div>'
 
@@ -630,7 +638,7 @@ def build_case(p, projects, i, preview):
                 f'<span class="yt__t mono">{E(v["title"])}</span></button>'
                 for v in s.get("videos", []))
             blocks.append(f"""<figure class="cs__figure" data-anim>
-      <div class="cs__grid" style="--cols:{s.get('cols', 2)}">{tiles}</div>
+      <div class="{grid_cls(s.get('cols', 2))}">{tiles}</div>
       <figcaption class="mono dim"><span>{E(s.get('caption',''))}</span></figcaption>
     </figure>""")
         elif k == "video":
@@ -723,7 +731,7 @@ def build_case(p, projects, i, preview):
                 + mode + '></video>' + clip_ui(n, tx) + '</div>'
                 for n, (v, po, tx) in enumerate(zip(srcs, posters, notes), 1))
             blocks.append(f"""<figure class="cs__figure" data-anim>
-      <div class="cs__grid" style="--cols:{s.get('cols', len([v for v in srcs if v]) or 1)}">{clips}</div>
+      <div class="{grid_cls(s.get('cols', len([v for v in srcs if v]) or 1))}">{clips}</div>
       <figcaption class="mono dim"><span>{E(s.get('caption',''))}</span></figcaption>
     </figure>""")
         elif k == "grid":
@@ -732,7 +740,7 @@ def build_case(p, projects, i, preview):
                 for x in (s.get("src") or []))
             cols = s.get("cols", 3)
             blocks.append(f"""<figure class="cs__figure" data-anim>
-      <div class="cs__grid" style="--cols:{cols}">{tiles}</div>
+      <div class="{grid_cls(cols)}">{tiles}</div>
       <figcaption class="mono dim"><span>{E(s.get('caption',''))}</span></figcaption>
     </figure>""")
         elif k == "pair":

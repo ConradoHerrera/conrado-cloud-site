@@ -540,8 +540,17 @@ body{
   .clip__panel{background:rgb(16 18 21 / .92)}
 }
 
-@media(max-width:900px){.cs__grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.cs__grid{grid-template-columns:1fr}}
+/* Media grids: tiles and film clips. The gap is what keeps two clips from
+   touching, and it matches the pair layout above so a two-up figure and a
+   two-up grid sit on the same rhythm. A one-column section is a full-width
+   film and stays one column at every width. */
+.cs__grid{display:grid;gap:clamp(.75rem,2vw,1.5rem)}
+.cs__grid--c1{grid-template-columns:minmax(0,1fr)}
+.cs__grid--c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cs__grid--c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cs__grid--c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:900px){.cs__grid--c3,.cs__grid--c4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.cs__grid--c2,.cs__grid--c3,.cs__grid--c4{grid-template-columns:minmax(0,1fr)}}
 
 /* --- Theme toggle icon ------------------------------------ */
 .tools button{display:inline-grid;place-items:center;width:2.4rem;height:2.4rem;padding:0;border-radius:50%}

@@ -24,6 +24,11 @@ PROJECTS = sorted(json.loads((DATA / "projects.json").read_text(encoding="utf-8"
                   key=lambda p: p.get("order", 99))
 CANON = SITE["disciplines_canonical"]
 
+# Cache stamp on every stylesheet and script. The markup and the CSS change
+# together (a class rename is useless if a browser keeps yesterday's CSS), so
+# they are versioned together. Bump this whenever assets/css or assets/js change.
+ASSET_V = "202609292215"
+
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []
 
@@ -69,7 +74,7 @@ def head(title, desc, depth=0, path=""):
 <link rel="icon" href="{up}assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{up}assets/apple-touch-icon.png">
 <link rel="preload" href="{up}assets/fonts/inter-tight-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="{up}assets/css/site.css">
+<link rel="stylesheet" href="{up}assets/css/site.css?v={ASSET_V}">
 </head>
 <body>"""
 
@@ -108,7 +113,7 @@ def foot(depth=0):
   <span>{E(SITE['location'])}</span>
   <span>{E(SITE['domain'])}</span>
 </footer>
-<script src="{up}assets/js/site.js" defer></script>
+<script src="{up}assets/js/site.js?v={ASSET_V}" defer></script>
 </body></html>"""
 
 
@@ -282,9 +287,6 @@ def build_index(projects, preview):
 #     --outfile=meadow.js
 # then copy meadow.js to assets/js/ and bump ASSET_V below.
 
-ASSET_V = "202609292215"   # cache stamp for home.css and meadow.js
-
-
 def home_rows(projects):
     """Selected Work: one .index__row per featured project, in order.
 
@@ -426,7 +428,7 @@ def build_home(projects, preview):
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/inter-tight-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/site.css?v={ASSET_V}">
 <link rel="stylesheet" href="assets/css/home.css?v={ASSET_V}">
 </head>
 <body>

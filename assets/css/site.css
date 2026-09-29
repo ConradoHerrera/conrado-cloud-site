@@ -10,6 +10,8 @@
 
 /* --- Tokens --- */
 :root{
+  /* the window on the homepage is cut to this; media follows it */
+  --radius-card:14px;
   --paper:#EFEDE7;
   --paper-2:#E7E4DC;
   --ink:#12110F;
@@ -322,7 +324,7 @@ body{
 .cs__pair{display:grid;grid-template-columns:1fr 1fr;gap:clamp(.75rem,2vw,1.5rem)}
 @media(max-width:700px){.cs__pair{grid-template-columns:1fr}}
 .cs__note{
-  border:1px solid var(--rule-strong);border-radius:14px;
+  border:1px solid var(--rule-strong);border-radius:var(--radius-card);
   background:rgb(var(--paper-2-rgb)/.72);
   -webkit-backdrop-filter:blur(10px) saturate(1.25);
   backdrop-filter:blur(10px) saturate(1.25);
@@ -545,6 +547,9 @@ body{
    two-up grid sit on the same rhythm. A one-column section is a full-width
    film and stays one column at every width. */
 .cs__grid{display:grid;gap:clamp(.75rem,2vw,1.5rem)}
+/* Media corners match the window on the homepage, so a still, a film and the
+   scene are all cut to the same radius. */
+.cs__figure .frame,.cs__clip{border-radius:var(--radius-card)}
 .cs__grid--c1{grid-template-columns:minmax(0,1fr)}
 .cs__grid--c2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .cs__grid--c3{grid-template-columns:repeat(3,minmax(0,1fr))}

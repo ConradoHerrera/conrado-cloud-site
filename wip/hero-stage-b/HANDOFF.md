@@ -11,7 +11,7 @@ morphs between them. Text inside the window is white; text outside it is ink on 
 
 | file | role |
 | --- | --- |
-| `index.html` | markup + page CSS (on top of the site's `assets/css/site.css`) + two small inline scripts |
+| `index.html` | markup + two small inline scripts. The page CSS is `../../assets/css/home.css`, the same file the built homepage links, so this prototype and the live page cannot drift apart; the dev HUD's rules live there too. |
 | `src/main.js` | the scene, camera shots, window, scroll choreography, day/night (source of truth) |
 | `src/dof.js` | depth-of-field pass |
 | `meadow.js` | **built** bundle of `src/` (never edit by hand) |

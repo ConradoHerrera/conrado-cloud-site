@@ -274,7 +274,7 @@ def build_index(projects, preview):
 #     --outfile=meadow.js
 # then copy meadow.js to assets/js/ and bump ASSET_V below.
 
-ASSET_V = "202609291200"   # cache stamp for home.css and meadow.js
+ASSET_V = "202609292215"   # cache stamp for home.css and meadow.js
 
 
 def home_rows(projects):

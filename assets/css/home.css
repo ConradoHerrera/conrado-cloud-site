@@ -33,7 +33,13 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
 .s-hero > .hero__meta,.s-hero > .display{margin-inline:clamp(1.25rem,3vw,3rem)}
 .s-hero .display{font-size:clamp(3rem,10.4vw,10rem)}
 .s-hero .hero__meta{padding-bottom:1.1rem}
-.s-hero .hero__foot{margin-top:auto;margin-bottom:7vh}
+/* the intro row is on screen from the first frame, centred in the air under the
+   headline; the scroll that follows is the window travelling down to it */
+/* the intro row is on screen from the first frame: the hero box is 122vh and the
+   row's bottom sits 32vh up from its end, so the row lands at 90vh whatever the
+   copy runs to. What is left under it is the scroll the window travels to reach
+   it, which is where the row gets its moment. */
+.s-hero .hero__foot{margin-top:auto;margin-bottom:32vh}
 
 /* work: the list keeps to the left; the window holds the right */
 .s-work{padding-top:16vh;padding-bottom:40vh}
@@ -128,6 +134,7 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
   .s-hero{padding-top:16vh}
   .s-exp .tl__note{display:none}
   .s-hero{min-height:138vh}
+  .s-hero .hero__foot{margin-bottom:48vh}
 }
 @media(max-width:1000px){
   /* experience on a phone or narrow window: one compact line per role (title · dates) with its bar under it, so all six fit the window */

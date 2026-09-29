@@ -27,7 +27,7 @@ CANON = SITE["disciplines_canonical"]
 # Cache stamp on every stylesheet and script. The markup and the CSS change
 # together (a class rename is useless if a browser keeps yesterday's CSS), so
 # they are versioned together. Bump this whenever assets/css or assets/js change.
-ASSET_V = "202609292300"
+ASSET_V = "202609301710"
 
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []

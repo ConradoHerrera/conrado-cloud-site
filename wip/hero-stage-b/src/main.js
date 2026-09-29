@@ -791,6 +791,11 @@ let morphP = 0;
 function morph(A, B, u) {
   u = clamp01(u);
   if (u <= 0) return { ...A }; if (u >= 1) return { ...B };
+  // Two states with the same rectangle (About into Experience, say) have nothing
+  // to travel between. Without this the breath still plays, and a window that
+  // pinches and rounds itself while standing still reads as a glitch, not a move.
+  if (Math.abs(A.x - B.x) < 1.5 && Math.abs(A.y - B.y) < 1.5 &&
+      Math.abs(A.w - B.w) < 1.5 && Math.abs(A.h - B.h) < 1.5) return { ...B };
   const lead = easeIO(clamp01(u / 0.7)), lag = easeIO(clamp01((u - 0.3) / 0.7)), mid = easeIO(u);
   const dy = (B.y + B.h / 2) - (A.y + A.h / 2), dx = (B.x + B.w / 2) - (A.x + A.w / 2);
   const pick = (d, move) => Math.abs(d) < 2 ? mid : (Math.sign(move) === Math.sign(d) ? lead : lag);

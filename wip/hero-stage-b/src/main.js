@@ -547,7 +547,7 @@ function makeDaisies(count) {
         vec2 windDir = normalize(vec2(1.0, 0.45));
         vec2 sway = windDir * w * 0.12 + vec2(sin(uTime*1.7 + base.x*3.0), cos(uTime*1.3 + base.y*3.0))*0.006*uWind;
         vec2 push = vec2(0.0);
-        if(uTouchR > 0.0){ float dl = length(base - uTouch.xy); float kT = 1.0 - smoothstep(0.0, uTouchR, dl); push = uTouch.zw * kT * kT * 0.1; }
+        if(uTouchR > 0.0){ float dl = length(base - uTouch.xy); float kT = 1.0 - smoothstep(0.0, uTouchR, dl); push = uTouch.zw * kT * kT * 0.14; }
         H *= 1.0 - 0.8*occFlatten(base, H);
         mat3 R = rotY(iRot.x) * rotX(iRot.y*0.6 + sway.y*2.0) * rotZ(iRot.z*0.6 - sway.x*2.0);
         vec3 local = position; float isStem = step(position.y, -0.001);
@@ -1032,16 +1032,19 @@ function touch(dt) {
     if (!touchHas) { _last.set(gx, gz); _hit.set(gx, gz); touchHas = true; }
     const vx = (gx - _last.x) / Math.max(dt, 1e-3), vz = (gz - _last.y) / Math.max(dt, 1e-3);
     _last.set(gx, gz);
-    const sp = Math.hypot(vx, vz), cap = touchR * 1.5, k = sp > cap ? cap / sp : 1;
-    _wind.x += (vx * k / touchR * 0.55 - _wind.x) * (1 - Math.exp(-dt * 6));
-    _wind.y += (vz * k / touchR * 0.55 - _wind.y) * (1 - Math.exp(-dt * 6));
+    // GAIN is how hard the pointer leans on the grass; CAP is how fast a swipe can
+    // get before it stops counting for more. Both were raised about 40% from the
+    // first pass, which was legible but easy to miss.
+    const sp = Math.hypot(vx, vz), cap = touchR * 1.9, k = sp > cap ? cap / sp : 1;
+    _wind.x += (vx * k / touchR * 0.78 - _wind.x) * (1 - Math.exp(-dt * 6));
+    _wind.y += (vz * k / touchR * 0.78 - _wind.y) * (1 - Math.exp(-dt * 6));
     _hit.x += (gx - _hit.x) * (1 - Math.exp(-dt * 8)); _hit.y += (gz - _hit.y) * (1 - Math.exp(-dt * 8));
   } else {
     touchHas = false;
     _wind.multiplyScalar(Math.exp(-dt * 2.5));
   }
   const wl = _wind.length();
-  if (wl > 0.9) _wind.multiplyScalar(0.9 / wl);
+  if (wl > 1.25) _wind.multiplyScalar(1.25 / wl);   // ceiling, so a fast swipe never flattens the field
   TOUCH.value.set(_hit.x, _hit.y, _wind.x, _wind.y);
   TOUCHR.value = wl > 0.004 ? touchR : 0;   // 0 = the shaders skip it entirely
 }

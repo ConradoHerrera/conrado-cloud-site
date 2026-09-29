@@ -35,11 +35,11 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
 .s-hero .hero__meta{padding-bottom:1.1rem}
 /* the intro row is on screen from the first frame, centred in the air under the
    headline; the scroll that follows is the window travelling down to it */
-/* the intro row is on screen from the first frame: the hero box is 122vh and the
-   row's bottom sits 32vh up from its end, so the row lands at 90vh whatever the
-   copy runs to. What is left under it is the scroll the window travels to reach
-   it, which is where the row gets its moment. */
-.s-hero .hero__foot{margin-top:auto;margin-bottom:32vh}
+/* the intro row is on screen from the first frame: the hero is one screen tall
+   and the row's bottom sits 10vh up from its end, so it lands at 90vh whatever
+   the copy runs to. The scroll after it is the window travelling down to it,
+   which is where the row gets its moment. */
+.s-hero .hero__foot{margin-top:auto;margin-bottom:10vh}
 
 /* work: the list keeps to the left; the window holds the right */
 .s-work{padding-top:16vh;padding-bottom:40vh}
@@ -54,7 +54,7 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
 .s-work .index__disc{gap:.3rem .9rem;line-height:1.3}
 /* hero: the words sit inside the window, not on its edge */
 .s-hero .hero__foot{margin-inline:clamp(1.25rem,3vw,3rem)}
-.s-hero{margin-bottom:24vh;min-height:122vh} /* room for the intro row's moment before Work takes over */
+.s-hero{margin-bottom:24vh;min-height:100vh} /* one screen; what follows is the window's travel to Work */
 /* the intro row over the scene: it sits in the sky, so a crisp shadow on the letters is all it needs */
 .layer--light .s-hero .hero__foot{text-shadow:0 1px 2px rgba(0,0,0,.34),0 0 14px rgba(20,40,70,.22)}
 .layer--light .s-hero .hero__foot .dim{color:rgba(246,244,239,.92)}
@@ -122,8 +122,10 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
 @media(max-width:820px){
   .s-hero{padding-top:calc(46vh - 6rem)}
   .s-work .col,.s-tools .col{max-width:none}
-  .s-tools{padding-top:44vh}
-  .s-work{padding-top:18vh}
+  /* the run-out after the last project, and the air before Education & Tools:
+     both were sized for a wide screen and read as dead space on a phone */
+  .s-tools{padding-top:24vh}
+  .s-work{padding-top:10vh;padding-bottom:26vh}
   /* hero intro row: disciplines and contact each get the full width, so the list doesn't break word by word */
   .s-hero .hero__foot > *:nth-child(2),.s-hero .hero__foot > *:nth-child(3){grid-column:span 2}
   /* education & tools: a little inset, so the words never touch the window's edge */
@@ -133,8 +135,9 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
   .s-work .index__title{min-height:0}
   .s-hero{padding-top:16vh}
   .s-exp .tl__note{display:none}
-  .s-hero{min-height:138vh}
-  .s-hero .hero__foot{margin-bottom:48vh}
+  /* a phone screen is tall against this much copy, so the air after the intro
+     row is cut to about a third of what it is on a wide screen */
+  .s-hero{margin-bottom:8vh}
 }
 @media(max-width:1000px){
   /* experience on a phone or narrow window: one compact line per role (title · dates) with its bar under it, so all six fit the window */
@@ -148,6 +151,11 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
   .s-exp .tl__track{grid-column:1;height:.55rem;margin-top:.35rem}
   .s-exp .section__head{padding-top:14vh}
   .s-exp .tl{border-top:0}
+  /* With the role alone on its line, the static link underline and the row's
+     own border read as two stray rules under every job. The bar's track is the
+     only line a row needs: it is the one that means something. */
+  .s-exp .tl__label a{border-bottom:0;padding-bottom:0}
+  .s-exp .tl__row{border-bottom:0}
 }
 
 /* dev panel (H hides) */

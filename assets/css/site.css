@@ -577,8 +577,11 @@ body{
   padding-bottom:1px;
 }
 .tl__row:hover .tl__go,.tl__go:focus-visible{background-size:100% 1px}
+/* The arrow sits outside the link box. Inside it, its reserved width would
+   hang off the end of the underline as a tail, which reads as a stray rule
+   where the role stands on a line of its own. */
 .tl__go::after{
-  content:"\2192";display:inline-block;margin-left:.35em;
+  content:"\2192";position:absolute;left:100%;top:0;margin-left:.35em;
   opacity:0;transform:translateX(-.25em);
   transition:opacity .35s var(--ease),transform .45s var(--ease);
 }

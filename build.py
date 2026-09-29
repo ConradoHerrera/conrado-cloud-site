@@ -27,7 +27,7 @@ CANON = SITE["disciplines_canonical"]
 # Cache stamp on every stylesheet and script. The markup and the CSS change
 # together (a class rename is useless if a browser keeps yesterday's CSS), so
 # they are versioned together. Bump this whenever assets/css or assets/js change.
-ASSET_V = "202609302215"
+ASSET_V = "202609302340"
 
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []
@@ -41,6 +41,15 @@ def derive_disciplines(projects):
 
 
 def lint():
+    # The scene is compiled by hand (esbuild, see wip/hero-stage-b/README.md), so
+    # nothing here can rebuild it. If the source has been edited since the bundle
+    # was last built, the page ships new markup against an engine that does not
+    # understand it, and the change silently does nothing. Say so, loudly.
+    src = ROOT / "wip" / "hero-stage-b" / "src" / "main.js"
+    bundle = ROOT / "assets" / "js" / "meadow.js"
+    if src.exists() and bundle.exists() and src.stat().st_mtime > bundle.stat().st_mtime + 60:
+        warnings.append("assets/js/meadow.js is older than wip/hero-stage-b/src/main.js "
+                        "— rebuild it with esbuild before deploying")
     for p in PROJECTS:
         for d in p["disciplines"]:
             if d not in CANON:

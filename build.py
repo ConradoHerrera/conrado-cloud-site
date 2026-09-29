@@ -27,7 +27,7 @@ CANON = SITE["disciplines_canonical"]
 # Cache stamp on every stylesheet and script. The markup and the CSS change
 # together (a class rename is useless if a browser keeps yesterday's CSS), so
 # they are versioned together. Bump this whenever assets/css or assets/js change.
-ASSET_V = "202609301710"
+ASSET_V = "202609301805"
 
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []
@@ -470,7 +470,7 @@ def build_home(projects, preview):
        0–0.5 still frame over the field (first passage), 0.53+ golden light (second passage),
        0.84–1 glide into the Experience frame. Rewording is safe; keep phrases inside those ranges.
        The two body paragraphs come from site.json → about. -->
-  <section class="s-about" id="about" data-shot="about" data-pinned>
+  <section class="s-about" id="about" data-shot="about" data-pinned data-label="About">
     <div class="pin wrap" data-pin>
       <p class="mono dim pin__label" data-snap>About</p>
       <div class="beats">
@@ -494,7 +494,7 @@ def build_home(projects, preview):
   <!-- EXPERIENCE. Pinned (360vh); a playhead runs the axis and a whole day passes in the sky.
        Rows, bars and ticks are computed from site.json → experience and axis. The big year (.year)
        sizes itself to the room under the list (--year-size, set in meadow.js). -->
-  <section class="s-exp" data-shot="track" data-pinned>
+  <section class="s-exp" data-shot="track" data-pinned data-label="Experience" data-meta="{SITE['axis']['ticks'][0]} &mdash; Present">
     <div class="pin wrap" data-pin>
       {home_timeline(projects)}
     </div>
@@ -521,7 +521,6 @@ def build_home(projects, preview):
   <section class="s-contact" id="contact" data-shot="contact" data-pinned data-lead="0.5" data-snap-end>
     <div class="pin" data-pin>
       <div class="contact-stage">
-        <p class="mono dim contact-label" data-in="0.3">Contact</p>
         <div class="contact-center">
           <a class="contact__mail" href="mailto:{E(SITE['email'])}" data-in="0.34">{E(SITE['email'])}</a>
           <div class="links mono" data-in="0.42">{links}</div>
@@ -545,6 +544,13 @@ def build_home(projects, preview):
   <div class="nav__links"><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></div>
   <span class="nav__clock" data-clock></span>
 </nav>
+
+<!-- Where you are. Inside the window this name sits on grass or sky and
+     disappears; in the band under the window it is always ink on paper. It
+     cross-fades between sections rather than scrolling, because the window it
+     labels does not move either. The headings it stands in for are still in the
+     markup, so screen readers and the scroll snapping are unaffected. -->
+<div class="stage mono dim" data-stage aria-hidden="true"><span data-stage-name></span><span data-stage-meta></span></div>
 
 <div class="tools"><button type="button" data-theme-toggle aria-label="Switch to night"><svg class="ico ico--sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><g stroke-linecap="round"><path d="M8 .9v2M8 13.1v2M.9 8h2M13.1 8h2M3 3l1.4 1.4M11.6 11.6L13 13M13 3l-1.4 1.4M4.4 11.6L3 13"/></g></svg><svg class="ico ico--moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.4 9.8A5.8 5.8 0 0 1 6.2 2.6a5.9 5.9 0 1 0 7.2 7.2Z"/></svg></button></div>
 

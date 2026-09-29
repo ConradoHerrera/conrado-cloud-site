@@ -843,6 +843,27 @@ let sections = [], snaps = [];
 const workRows = [...scrollers[0].querySelectorAll('.s-work .index__row')];
 const workPans = workRows.map((r) => parseFloat(r.dataset.pan || 0));
 let hoverRow = -1, sel = -1;
+/* ---------- where you are: the section's name in the band under the window ---------- */
+const stageEl = document.querySelector('[data-stage]');
+const stageName = stageEl && stageEl.querySelector('[data-stage-name]');
+const stageMeta = stageEl && stageEl.querySelector('[data-stage-meta]');
+let stageKey = null, stageSwap = 0;
+function setStage(label, meta) {
+  if (!stageEl) return;
+  const key = label + '|' + meta;
+  if (key === stageKey) return;
+  stageKey = key;
+  const wasIn = stageEl.classList.contains('is-in');
+  stageEl.classList.remove('is-in');
+  clearTimeout(stageSwap);
+  const apply = () => {
+    stageName.textContent = label; stageMeta.textContent = meta;
+    if (label || meta) stageEl.classList.add('is-in');
+  };
+  // let the old name fade out before the new one takes its place
+  if (wasIn) stageSwap = setTimeout(apply, 340); else apply();
+}
+
 const heroFoot = scrollers[0].querySelector('.s-hero .hero__foot');
 const heroBox = { y: 0, h: 0 }; let heroK = 0, heroSnap = 0, heroHorizon = 0.75;
 let heroDt = 0.016;
@@ -879,7 +900,7 @@ function workStep() { return sel < 0 || workRows.length < 2 ? 0 : clamp01(sel / 
 function measure() {
   const sc = scrollers[0];
   spacer.style.height = sc.scrollHeight + 'px';
-  sections = [...sc.querySelectorAll('[data-shot]')].map((el) => ({ id: el.dataset.shot, top: el.offsetTop, h: el.offsetHeight, pinned: el.hasAttribute('data-pinned'), lead: parseFloat(el.dataset.lead || 0) }));
+  sections = [...sc.querySelectorAll('[data-shot]')].map((el) => ({ id: el.dataset.shot, top: el.offsetTop, h: el.offsetHeight, pinned: el.hasAttribute('data-pinned'), lead: parseFloat(el.dataset.lead || 0), label: el.dataset.label || '', meta: el.dataset.meta || '' }));
   // where each section looks best: pinned sections at their start, others with their heading just under the nav
   snaps = [...sc.querySelectorAll('[data-shot]')].map((el) => {
     if (el.hasAttribute('data-snap-end')) return Math.max(0, el.offsetTop + el.offsetHeight - innerHeight);
@@ -965,6 +986,7 @@ function direct(time, dt) {
     fov = lerp(sa.fov, fov, t); focus = lerp(sa.focus, focus, t); aperture = lerp(sa.aperture, aperture, t); clear = lerp(sa.clear, clear, t);
   } else camera.quaternion.copy(_qb);
   shotName = t < 1 ? `${a.id} → ${b.id} ${(t * 100) | 0}%` : b.id;
+  { const cs = t < 0.5 ? a : b; setStage(cs.label, cs.meta); }
   camera.position.copy(_pa);
   camera.fov = fov; camera.aspect = aspect;
   camera.updateProjectionMatrix();

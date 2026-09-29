@@ -119,6 +119,21 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
 /* the day/night button: right edge on the window's edge, centred in the band */
 .tools{right:var(--wpad);bottom:max(.5rem,calc((var(--band) - 2.4rem) / 2))}
 
+/* the section's name, in the band under the window: ink on paper, so it never
+   sinks into grass or sky. It holds still and cross-fades; the window it labels
+   does not move between these sections either. Right-hand meta clears the
+   day/night button the same way the footer does. */
+.stage{
+  position:fixed;left:var(--wpad);right:calc(var(--wpad) + 3.6rem);bottom:0;height:var(--band);
+  z-index:79;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  white-space:nowrap;pointer-events:none;
+  opacity:0;transition:opacity .34s var(--ease);
+}
+.stage.is-in{opacity:1}
+/* the headings it stands in for stay in the flow: one is a scroll-snap anchor,
+   the other draws the rule above the timeline. They are simply not drawn. */
+.s-about .pin__label,.s-exp .section__head > *{opacity:0}
+
 @media(max-width:820px){
   .s-hero{padding-top:calc(46vh - 6rem)}
   .s-work .col,.s-tools .col{max-width:none}

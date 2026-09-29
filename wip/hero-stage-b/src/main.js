@@ -1076,23 +1076,31 @@ const cycle = { t: 0, rising: false, w: 0 };
 const aboutLight = { warm: 0, crisp: 0 };
 const WARM_DAY = 0.27, WARM_NIGHT = 0.27;   // the same golden hour by day and by night
 const pinSec = pins.map((el) => el.closest('[data-shot]').dataset.shot);
+// data-exit="left": the stage holds its place and slides away sideways as the
+// window begins to morph, instead of scrolling off the top under its own fade
+const pinExit = pins.map((el) => el.closest('[data-shot]').dataset.exit === 'left');
 const setIf = (el, key, v) => { if (el['_' + key] !== v) { el['_' + key] = v; el.style[key] = v; } };
 function choreograph() {
   const H = innerHeight;
   pins.forEach((el, i) => {
     const sec = sections.find((q) => q.id === pinSec[i]); if (!sec) return;
     const d = cur - sec.top, span = Math.max(0, sec.h - H);
-    const y = Math.min(Math.max(d, 0), span);
-    setIf(el, 'transform', `translate3d(0, ${y.toFixed(1)}px, 0)`);
+    // the stretch over which the stage leaves, ending just before the shot changes
+    const out = smooth(span + 0.02 * H, span + 0.42 * H, d);
+    // a stage that leaves sideways keeps holding its place while it goes, so the
+    // words travel left rather than being carried up by the page
+    const y = Math.min(Math.max(d, 0), pinExit[i] ? span + 0.42 * H : span);
+    const x = pinExit[i] ? -out * 70 : 0;
+    setIf(el, 'transform', `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`);
     // a pinned stage fades in as it arrives and out as it leaves, so two stages never overlap
-    const k = Math.round(smooth(-0.5 * H, -0.08 * H, d) * (1 - smooth(span + 0.02 * H, span + 0.42 * H, d)) * 100) / 100;
+    const k = Math.round(smooth(-0.5 * H, -0.08 * H, d) * (1 - out) * 100) / 100;
     setIf(el, 'opacity', String(k));
     setIf(el, 'visibility', k <= 0 ? 'hidden' : 'visible');
     pinPresence[pinSec[i]] = k;
   });
   for (const bt of beats) {
     const u = progress(bt.id);
-    const k = Math.round((bt.a <= 0 ? 1 : smooth(bt.a, bt.a + bt.sp, u)) * (1 - smooth(bt.b, bt.b + 0.04, u)) * 200) / 200;
+    const k = Math.round((bt.a <= 0 ? 1 : smooth(bt.a, bt.a + bt.sp, u)) * (1 - smooth(bt.b, bt.b + bt.sp, u)) * 200) / 200;
     setIf(bt.el, 'visibility', k <= 0 ? 'hidden' : 'visible');
     if (k <= 0) continue;
     setIf(bt.el, 'opacity', String(k));

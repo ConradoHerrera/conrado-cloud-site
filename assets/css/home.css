@@ -103,7 +103,8 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
 /* a pinned stage: the block holds opposite the window, in the middle of the left
    column, and plays its arrival and its exit there rather than scrolling past */
 .s-tools{height:200vh}
-.s-tools .pin{display:grid;align-content:center}
+.s-tools .pin{display:grid;align-content:center;padding-bottom:12vh}  /* the padding sits the block a little above the middle, where it reads better
+     against the window than dead centre */
 .s-tools .col{max-width:min(50vw, 820px)}
 /* education & tools: one hairline, one label per block, no rules between items */
 .et{border-top:1px solid var(--rule);padding-top:clamp(1.5rem,3vw,2.5rem);display:grid;gap:clamp(2.75rem,6vh,4.5rem)}

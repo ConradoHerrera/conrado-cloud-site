@@ -1053,14 +1053,18 @@ function touch(dt) {
 // [data-pin] holds still inside its section while the section scrolls past (both text copies)
 const pins = [...document.querySelectorAll('[data-pin]')];
 // [data-in] / [data-out]: appear (and leave) at a point of the section's progress; text comes into focus as it arrives
-const beats = [...document.querySelectorAll('[data-in]')].map((el) => ({ el, id: el.closest('[data-shot]').dataset.shot,
+const beats = [...document.querySelectorAll('[data-in],[data-sync]')].map((el) => ({ el, id: el.closest('[data-shot]').dataset.shot,
   a: parseFloat(el.dataset.in), b: el.dataset.out ? parseFloat(el.dataset.out) : 9, noBlur: el.classList.contains('scrim'),
   // data-slide="left": comes in from the side instead of rising, for blocks that
   // arrive with a change of shot rather than with the reader's scroll
   x: el.dataset.slide === 'left',
   // how much scroll the arrival takes; a short plain section needs a longer
   // window than a 520vh pinned one for the same move to read as a fade
-  sp: parseFloat(el.dataset.span || 0.05) }));
+  sp: parseFloat(el.dataset.span || 0.05),
+  // data-sync="shot": ignore the section's own progress and key the fade to the
+  // two scroll positions where the window changes shape, so the words and the
+  // morph start together and there is never a window standing empty
+  sync: el.dataset.sync === 'shot' }));
 const bars = [...document.querySelectorAll('[data-bar]')].map((el) => ({ el, l: parseFloat(el.dataset.l), w: parseFloat(el.dataset.w) }));
 const rows = [...document.querySelectorAll('[data-row]')].map((el) => ({ el, l: parseFloat(el.dataset.row) }));
 const years = [...document.querySelectorAll('[data-year]')];
@@ -1079,6 +1083,9 @@ const pinSec = pins.map((el) => el.closest('[data-shot]').dataset.shot);
 // data-exit="left": the stage holds its place and slides away sideways as the
 // window begins to morph, instead of scrolling off the top under its own fade
 const pinExit = pins.map((el) => el.closest('[data-shot]').dataset.exit === 'left');
+// data-hold="both": it also holds through its fade IN, so the words never rise
+// into place; the whole arrival and exit is opacity and a sideways drift
+const pinHold = pins.map((el) => el.closest('[data-shot]').dataset.hold === 'both');
 const setIf = (el, key, v) => { if (el['_' + key] !== v) { el['_' + key] = v; el.style[key] = v; } };
 function choreograph() {
   const H = innerHeight;
@@ -1086,10 +1093,15 @@ function choreograph() {
     const sec = sections.find((q) => q.id === pinSec[i]); if (!sec) return;
     const d = cur - sec.top, span = Math.max(0, sec.h - H);
     // the stretch over which the stage leaves, ending just before the shot changes
-    const out = smooth(span + 0.02 * H, span + 0.42 * H, d);
+    // ends on span + 0.5H, which is the exact scroll position where the stage
+    // target flips to the next section: the stage is gone as the window moves
+    const out = smooth(span + 0.02 * H, span + 0.50 * H, d);
     // a stage that leaves sideways keeps holding its place while it goes, so the
-    // words travel left rather than being carried up by the page
-    const y = Math.min(Math.max(d, 0), pinExit[i] ? span + 0.42 * H : span);
+    // words travel left rather than being carried up by the page; one that holds
+    // "both" does the same on the way in. The bounds are the two scroll positions
+    // where the window changes shape, so the hold covers exactly the fades.
+    const y = Math.min(Math.max(d, pinHold[i] ? -0.5 * H : 0),
+                       (pinHold[i] || pinExit[i]) ? span + 0.5 * H : span);
     const x = pinExit[i] ? -out * 70 : 0;
     setIf(el, 'transform', `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`);
     // a pinned stage fades in as it arrives and out as it leaves, so two stages never overlap
@@ -1099,8 +1111,18 @@ function choreograph() {
     pinPresence[pinSec[i]] = k;
   });
   for (const bt of beats) {
-    const u = progress(bt.id);
-    const k = Math.round((bt.a <= 0 ? 1 : smooth(bt.a, bt.a + bt.sp, u)) * (1 - smooth(bt.b, bt.b + bt.sp, u)) * 200) / 200;
+    let k;
+    if (bt.sync) {
+      const i = sections.findIndex((q) => q.id === bt.id);
+      if (i < 0) continue;
+      const on = sections[i].top - 0.5 * H;                                   // this shot takes over
+      const off = sections[i + 1] ? sections[i + 1].top - 0.5 * H : Infinity; // the next one does
+      const run = 0.24 * H;
+      k = Math.round(smooth(on, on + run, cur) * (1 - smooth(off - run, off, cur)) * 200) / 200;
+    } else {
+      const u = progress(bt.id);
+      k = Math.round((bt.a <= 0 ? 1 : smooth(bt.a, bt.a + bt.sp, u)) * (1 - smooth(bt.b, bt.b + bt.sp, u)) * 200) / 200;
+    }
     setIf(bt.el, 'visibility', k <= 0 ? 'hidden' : 'visible');
     if (k <= 0) continue;
     setIf(bt.el, 'opacity', String(k));

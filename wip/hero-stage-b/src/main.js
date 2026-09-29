@@ -1054,7 +1054,13 @@ function touch(dt) {
 const pins = [...document.querySelectorAll('[data-pin]')];
 // [data-in] / [data-out]: appear (and leave) at a point of the section's progress; text comes into focus as it arrives
 const beats = [...document.querySelectorAll('[data-in]')].map((el) => ({ el, id: el.closest('[data-shot]').dataset.shot,
-  a: parseFloat(el.dataset.in), b: el.dataset.out ? parseFloat(el.dataset.out) : 9, noBlur: el.classList.contains('scrim') }));
+  a: parseFloat(el.dataset.in), b: el.dataset.out ? parseFloat(el.dataset.out) : 9, noBlur: el.classList.contains('scrim'),
+  // data-slide="left": comes in from the side instead of rising, for blocks that
+  // arrive with a change of shot rather than with the reader's scroll
+  x: el.dataset.slide === 'left',
+  // how much scroll the arrival takes; a short plain section needs a longer
+  // window than a 520vh pinned one for the same move to read as a fade
+  sp: parseFloat(el.dataset.span || 0.05) }));
 const bars = [...document.querySelectorAll('[data-bar]')].map((el) => ({ el, l: parseFloat(el.dataset.l), w: parseFloat(el.dataset.w) }));
 const rows = [...document.querySelectorAll('[data-row]')].map((el) => ({ el, l: parseFloat(el.dataset.row) }));
 const years = [...document.querySelectorAll('[data-year]')];
@@ -1086,12 +1092,14 @@ function choreograph() {
   });
   for (const bt of beats) {
     const u = progress(bt.id);
-    const k = Math.round((bt.a <= 0 ? 1 : smooth(bt.a, bt.a + 0.05, u)) * (1 - smooth(bt.b, bt.b + 0.04, u)) * 200) / 200;
+    const k = Math.round((bt.a <= 0 ? 1 : smooth(bt.a, bt.a + bt.sp, u)) * (1 - smooth(bt.b, bt.b + 0.04, u)) * 200) / 200;
     setIf(bt.el, 'visibility', k <= 0 ? 'hidden' : 'visible');
     if (k <= 0) continue;
     setIf(bt.el, 'opacity', String(k));
-    setIf(bt.el, 'transform', `translate3d(0, ${((1 - k) * 18).toFixed(1)}px, 0)`);
-    if (!bt.noBlur) setIf(bt.el, 'filter', k >= 1 ? 'none' : `blur(${((1 - k) * 10).toFixed(1)}px)`);
+    setIf(bt.el, 'transform', bt.x
+      ? `translate3d(${(-(1 - k) * 34).toFixed(1)}px, 0, 0)`
+      : `translate3d(0, ${((1 - k) * 18).toFixed(1)}px, 0)`);
+    if (!bt.noBlur) setIf(bt.el, 'filter', k >= 1 ? 'none' : `blur(${((1 - k) * (bt.x ? 4 : 10)).toFixed(1)}px)`);
   }
   // the timeline: a playhead runs 2018 → 2026 while the camera tracks; each bar draws as the years reach it
   const u = progress('track');
@@ -1108,10 +1116,12 @@ function choreograph() {
   aboutLight.warm = aw * smooth(0.53, 0.59, au) * (1 - smooth(0.84, 1, au));
   aboutLight.crisp = aw * smooth(0.63, 0.71, au) * 0.5;
   for (const b of bars) setIf(b.el, 'transform', `scaleX(${clamp01((ph - b.l) / b.w).toFixed(3)})`);
+  // each role arrives from the left as the playhead reaches its first year, the
+  // same direction the bars draw in, so the list reads as one movement
   for (const r of rows) {
     const k = Math.round(smooth(r.l - 0.02, r.l + 0.03, ph) * 100) / 100;
     setIf(r.el, 'opacity', String(k));
-    setIf(r.el, 'transform', `translate3d(0, ${((1 - k) * 12).toFixed(1)}px, 0)`);
+    setIf(r.el, 'transform', `translate3d(${(-(1 - k) * 26).toFixed(1)}px, 0, 0)`);
   }
   for (const h of heads) setIf(h, 'left', (ph * 100).toFixed(2) + '%');
   // a whole day plays across the timeline, starting and ending on the page's own theme:

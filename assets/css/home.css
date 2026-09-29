@@ -20,7 +20,7 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
 .layer--light{z-index:2;
   --ink:#F6F4EF;--ink-70:rgba(246,244,239,.88);--ink-45:rgba(246,244,239,.74);
   --rule:rgba(255,255,255,.34);--rule-strong:rgba(255,255,255,.5);--rule-soft:rgba(255,255,255,.18);
-  --accent:#FFC4AE;--bar-a:#FFFFFF;--bar-b:rgba(255,255,255,.55);--bar-acc-a:#FFC4AE;--bar-acc-b:#FFE3D6;
+  --accent:#FFC4AE;--bar-a:#FFFFFF;--bar-b:rgba(255,255,255,.55);/* the current role over a blue sky: a real orange, not a tint of the paper one */--bar-acc-a:#FF7A3C;--bar-acc-b:#FFB98E;
   color:var(--ink);text-shadow:0 1px 22px rgba(10,22,34,.28)}
 .clipper{position:absolute;inset:0;overflow:hidden}
 .scroller{position:absolute;inset:0 0 auto 0;will-change:transform}
@@ -81,9 +81,15 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
 
 /* experience: the timeline sits in the sky; the grass holds the bottom of the frame */
 .s-exp{height:360vh}
-.s-exp .section__head{padding-top:12vh}
-.s-exp .tl{margin-top:2vh}
-.s-exp .tl__row{will-change:opacity,transform;padding-top:.55rem;padding-bottom:.55rem}
+/* Experience's heading moved to the band, so its words come out of the flow
+   entirely and the list climbs into the sky by their height plus their padding.
+   What the head still does is draw the rule over the axis and anchor the snap. */
+.s-exp .section__head{position:relative;padding-top:10vh;padding-bottom:0;border-bottom:0}
+/* with the heading gone the head's rule and the timeline's own top border were
+   two hairlines a few pixels apart; the timeline keeps its, the head drops one */
+.s-exp .section__head > *{position:absolute;opacity:0;pointer-events:none}
+.s-exp .tl{margin-top:1vh}
+.s-exp .tl__row{will-change:opacity,transform;padding-top:.4rem;padding-bottom:.4rem}  /* tight enough that six roles clear the tree line and the grass is left to the year */
 .s-exp .tl__note{display:none}
 .s-exp .tl__bar{transform-origin:0 50%;scale:1 1;transition:none}
 .s-exp .tl__axis,.s-exp .tl__row{grid-template-columns:minmax(0,15rem) minmax(0,1fr) minmax(0,8rem)}
@@ -132,7 +138,7 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
 .stage.is-in{opacity:1}
 /* the headings it stands in for stay in the flow: one is a scroll-snap anchor,
    the other draws the rule above the timeline. They are simply not drawn. */
-.s-about .pin__label,.s-exp .section__head > *{opacity:0}
+.s-about .pin__label{opacity:0}
 
 @media(max-width:820px){
   .s-hero{padding-top:calc(46vh - 6rem)}
@@ -164,8 +170,7 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
   .s-exp .tl__role{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .s-exp .tl__dates{padding-top:0;white-space:nowrap;font-size:.625rem}
   .s-exp .tl__track{grid-column:1;height:.55rem;margin-top:.35rem}
-  .s-exp .section__head{padding-top:14vh}
-  .s-exp .tl{border-top:0}
+  .s-exp .section__head{padding-top:8vh}
   /* With the role alone on its line, the static link underline and the row's
      own border read as two stray rules under every job. The bar's track is the
      only line a row needs: it is the one that means something. */

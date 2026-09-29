@@ -27,7 +27,7 @@ CANON = SITE["disciplines_canonical"]
 # Cache stamp on every stylesheet and script. The markup and the CSS change
 # together (a class rename is useless if a browser keeps yesterday's CSS), so
 # they are versioned together. Bump this whenever assets/css or assets/js change.
-ASSET_V = "202609301930"
+ASSET_V = "202609302010"
 
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []
@@ -509,7 +509,7 @@ def build_home(projects, preview):
   <!-- EDUCATION & TOOLS. Plain section, window on the right. It ends right after its content so the
        Contact shot takes over without an empty stretch (padding-bottom in home.css). -->
   <section class="s-tools wrap" data-shot="tools">
-    <div class="col et" data-snap data-in="0.24" data-span="0.10" data-slide="left">
+    <div class="col et" data-snap data-in="0.24" data-span="0.14" data-slide="left">
       <div class="et__block">
         <p class="mono dim et__label">Education</p>
         <ul class="et__edu">{edu}</ul>

@@ -1097,7 +1097,7 @@ function choreograph() {
     if (k <= 0) continue;
     setIf(bt.el, 'opacity', String(k));
     setIf(bt.el, 'transform', bt.x
-      ? `translate3d(${(-(1 - k) * 34).toFixed(1)}px, 0, 0)`
+      ? `translate3d(${(-(1 - k) * 66).toFixed(1)}px, 0, 0)`
       : `translate3d(0, ${((1 - k) * 18).toFixed(1)}px, 0)`);
     if (!bt.noBlur) setIf(bt.el, 'filter', k >= 1 ? 'none' : `blur(${((1 - k) * (bt.x ? 4 : 10)).toFixed(1)}px)`);
   }
@@ -1119,9 +1119,11 @@ function choreograph() {
   // each role arrives from the left as the playhead reaches its first year, the
   // same direction the bars draw in, so the list reads as one movement
   for (const r of rows) {
-    const k = Math.round(smooth(r.l - 0.02, r.l + 0.03, ph) * 100) / 100;
+    // 0.08 of the playhead is roughly 150px of scroll: long enough that the
+    // travel reads as travel rather than the row appearing already in place
+    const k = Math.round(smooth(r.l - 0.03, r.l + 0.05, ph) * 100) / 100;
     setIf(r.el, 'opacity', String(k));
-    setIf(r.el, 'transform', `translate3d(${(-(1 - k) * 26).toFixed(1)}px, 0, 0)`);
+    setIf(r.el, 'transform', `translate3d(${(-(1 - k) * 48).toFixed(1)}px, 0, 0)`);
   }
   for (const h of heads) setIf(h, 'left', (ph * 100).toFixed(2) + '%');
   // a whole day plays across the timeline, starting and ending on the page's own theme:

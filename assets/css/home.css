@@ -100,7 +100,10 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
 .year{position:absolute;right:var(--inner);bottom:calc(var(--band) + clamp(1rem,2.4vw,2.25rem));font-size:var(--year-size,clamp(3rem,7vw,7rem));margin:0 !important;line-height:.9;letter-spacing:-.05em;font-weight:500;font-variant-numeric:tabular-nums;opacity:.9}
 
 /* education & tools: back to paper, window on the right */
-.s-tools{padding-top:16vh;padding-bottom:38vh} /* ends right as its content leaves, so Contact takes over without a gap */
+/* a pinned stage: the block holds opposite the window, in the middle of the left
+   column, and plays its arrival and its exit there rather than scrolling past */
+.s-tools{height:200vh}
+.s-tools .pin{display:grid;align-content:center}
 .s-tools .col{max-width:min(50vw, 820px)}
 /* education & tools: one hairline, one label per block, no rules between items */
 .et{border-top:1px solid var(--rule);padding-top:clamp(1.5rem,3vw,2.5rem);display:grid;gap:clamp(2.75rem,6vh,4.5rem)}
@@ -145,7 +148,16 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
   .s-work .col,.s-tools .col{max-width:none}
   /* the run-out after the last project, and the air before Education & Tools:
      both were sized for a wide screen and read as dead space on a phone */
-  .s-tools{padding-top:24vh}
+  /* narrow: the window takes the top third of the screen, so the block sits in
+     the paper below it rather than in the middle of the viewport, and tightens
+     up enough to fit there without touching the window's edge */
+  .s-tools{height:180vh}
+  .s-tools .pin{align-content:end;padding-bottom:9vh}
+  .s-tools .et{gap:clamp(1.5rem,3.5vh,2.4rem);padding-top:clamp(.9rem,2.5vw,1.4rem)}
+  .s-tools .et__label{margin-bottom:.7rem}
+  .s-tools .et__edu{gap:.4rem}
+  .s-tools .et__edu li{font-size:clamp(1.1rem,4.4vw,1.4rem)}
+  .s-tools .et__tools{gap:1rem 1.5rem}
   .s-work{padding-top:10vh;padding-bottom:26vh}
   /* hero intro row: disciplines and contact each get the full width, so the list doesn't break word by word */
   .s-hero .hero__foot > *:nth-child(2),.s-hero .hero__foot > *:nth-child(3){grid-column:span 2}

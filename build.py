@@ -27,7 +27,7 @@ CANON = SITE["disciplines_canonical"]
 # Cache stamp on every stylesheet and script. The markup and the CSS change
 # together (a class rename is useless if a browser keeps yesterday's CSS), so
 # they are versioned together. Bump this whenever assets/css or assets/js change.
-ASSET_V = "202609302045"
+ASSET_V = "202609302120"
 
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []
@@ -506,10 +506,12 @@ def build_home(projects, preview):
     </div>
   </section>
 
-  <!-- EDUCATION & TOOLS. Plain section, window on the right. It ends right after its content so the
-       Contact shot takes over without an empty stretch (padding-bottom in home.css). -->
-  <section class="s-tools wrap" data-shot="tools">
-    <div class="col et" data-snap data-in="0.24" data-out="0.62" data-span="0.14" data-slide="left">
+  <!-- EDUCATION & TOOLS. A pinned stage like the others: the block holds in the middle of the
+       left column, opposite the window, and arrives and leaves from the left there instead of
+       riding up the page. The shot itself is static, so the pin costs the camera nothing. -->
+  <section class="s-tools" data-shot="tools" data-pinned>
+    <div class="pin wrap" data-pin>
+    <div class="col et" data-snap data-in="0.10" data-out="0.64" data-span="0.16" data-slide="left">
       <div class="et__block">
         <p class="mono dim et__label">Education</p>
         <ul class="et__edu">{edu}</ul>
@@ -518,6 +520,7 @@ def build_home(projects, preview):
         <p class="mono dim et__label">Tools</p>
         <dl class="et__tools">{tools}</dl>
       </div>
+    </div>
     </div>
   </section>
 

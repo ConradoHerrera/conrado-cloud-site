@@ -341,7 +341,7 @@
   {
     "slug": "hernan-prada",
     "live": true,
-    "feature": false,
+    "feature": true,
     "order": 6,
     "title": "Hernan Prada Hair",
     "client": "Hernan Prada Hair",
@@ -528,7 +528,7 @@
   {
     "slug": "loch",
     "live": true,
-    "feature": false,
+    "feature": true,
     "order": 9,
     "title": "LOCH Marketing",
     "client": "LOCH Marketing",
@@ -538,7 +538,7 @@
       "3D"
     ],
     "role": "Digital Manager · motion, web, and a team of four",
-    "cover": null,
+    "cover": "loch/ana-financiamiento.jpg",
     "idea": "Started as a junior, still in college. Left running the department.",
     "summary": "Nearly seven years at a Mexican marketing agency covering Mexico, Central America and the Caribbean. LiuGong and Mahindra among the clients, a four-person digital team by the end, and a monthly score card presented to every client.",
     "sections": [

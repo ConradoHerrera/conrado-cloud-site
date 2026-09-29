@@ -1,0 +1,351 @@
+<!doctype html>
+<!--
+  conrado.cloud — homepage ("hero-stage-b").
+  READ HANDOFF.md (same folder) BEFORE EDITING. Short version:
+  · One 3D meadow (meadow.js, built from src/main.js) is drawn inside a single "window" that is pinned
+    to the screen and changes shape per section. Every <section data-shot="..."> picks the window shape
+    and camera shot for itself (see windowFor / SHOTS in src/main.js).
+  · All text lives in .layer[data-layer=ink]. A script at the bottom clones it into a "light" layer that
+    only shows inside the window (white text over the scene). Never hand-edit or target the clone;
+    edit the ink copy only. Duplicate ids in the clone are expected.
+  · Adding/removing projects: add/remove <article class="index__row"> in .s-work .index. Nothing else
+    to change: the window, snapping and the camera steps adapt to the number of rows.
+  · After changing src/main.js: npx esbuild src/main.js --bundle --minify --format=iife --target=es2020
+    --outfile=meadow.js, then bump the ?v= stamp on the meadow.js <script> tag.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WIP — Stage</title>
+<script>
+  // set the theme before anything paints (same key as the live site, so the choice carries over)
+  (function () { var t = new URLSearchParams(location.search).get('theme');
+    try { t = t || localStorage.getItem('cc-theme'); } catch (e) {}
+    document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light'); })();
+</script>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../../assets/css/site.css">
+<style>
+/* =========================================================
+   WIP "Stage": one window pinned to the screen, morphing
+   between a rectangle per section (see windowFor() in
+   src/main.js). The page scrolls over it. The content exists
+   twice: an ink copy clipped to OUTSIDE the window and a
+   light copy clipped to INSIDE it, so text changes colour
+   exactly at the window's edge, even mid-letter.
+   ========================================================= */
+html,body{background:var(--paper);transition:background-color .6s var(--ease)}
+/* paper and ink follow the sunset, a little behind the sky */
+.layer,.layer .dim,.layer .muted,.layer .rule,.layer .section__head,.layer .index__row,.layer .tl__row,.layer .tl,.layer .hero__foot{
+  transition:color .6s var(--ease),border-color .6s var(--ease)}
+:root[data-theme="dark"] .layer--light{text-shadow:0 1px 26px rgba(0,4,14,.55)}
+.tools{z-index:81}
+/* the header blur leaves with the nav */
+.veil{transition:transform .5s var(--ease)}
+.veil.is-hidden{transform:translateY(-100%)}
+#meadow{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none;clip-path:inset(100%)}
+.layer{position:fixed;inset:0;overflow:hidden;z-index:1}
+.layer--light{z-index:2;
+  --ink:#F6F4EF;--ink-70:rgba(246,244,239,.88);--ink-45:rgba(246,244,239,.74);
+  --rule:rgba(255,255,255,.34);--rule-strong:rgba(255,255,255,.5);--rule-soft:rgba(255,255,255,.18);
+  --accent:#FFC4AE;--bar-a:#FFFFFF;--bar-b:rgba(255,255,255,.55);--bar-acc-a:#FFC4AE;--bar-acc-b:#FFE3D6;
+  color:var(--ink);text-shadow:0 1px 22px rgba(10,22,34,.28)}
+.clipper{position:absolute;inset:0;overflow:hidden}
+.scroller{position:absolute;inset:0 0 auto 0;will-change:transform}
+.spacer{pointer-events:none}
+
+
+/* hero: the whole headline opens inside the window */
+.s-hero{min-height:100vh;padding-top:18vh;display:flex;flex-direction:column}
+/* text that sits inside the window keeps a margin from its edge */
+.s-hero > .hero__meta,.s-hero > .display{margin-inline:clamp(1.25rem,3vw,3rem)}
+.s-hero .display{font-size:clamp(3rem,10.4vw,10rem)}
+.s-hero .hero__meta{padding-bottom:1.1rem}
+.s-hero .hero__foot{margin-top:auto;margin-bottom:7vh}
+
+/* work: the list keeps to the left; the window holds the right */
+.s-work{padding-top:16vh;padding-bottom:40vh}
+.s-work .col{max-width:none}
+/* the selected card is the window: its copy inside is a touch shaded for the white text */
+.layer--light .s-work .index__row{background:rgba(6,14,6,.16)}
+/* work: a steady rhythm. number | title with its status under it | disciplines, every row the same height */
+.s-work .index__row{grid-template-columns:3.5rem minmax(0,1fr) minmax(0,18rem);padding-inline:clamp(1rem,2vw,1.75rem);gap:0 clamp(1rem,2vw,2rem);align-items:start;padding-block:clamp(1.5rem,2.6vw,2.25rem)}
+.s-work .index__num,.s-work .index__disc{padding-top:.55rem}
+.s-work .index__title{font-size:clamp(1.6rem,2.55vw,3rem);min-height:calc(1.02em + 2.6rem)}
+.s-work .tag-soon{display:block;width:fit-content;margin:.75rem 0 0;vertical-align:0}
+.s-work .index__disc{gap:.3rem .9rem;line-height:1.3}
+/* hero: the words sit inside the window, not on its edge */
+.s-hero .hero__foot{margin-inline:clamp(1.25rem,3vw,3rem)}
+.s-hero{margin-bottom:24vh;min-height:122vh} /* room for the intro row's moment before Work takes over */
+/* the intro row over the scene: it sits in the sky, so a crisp shadow on the letters is all it needs */
+.layer--light .s-hero .hero__foot{text-shadow:0 1px 2px rgba(0,0,0,.34),0 0 14px rgba(20,40,70,.22)}
+.layer--light .s-hero .hero__foot .dim{color:rgba(246,244,239,.92)}
+
+.s-work .index__row{cursor:default}
+
+/* pinned stages: the section scrolls, the stage holds still, the story plays */
+.pin{position:relative;height:100vh;will-change:transform;--inner:calc(var(--pad) + clamp(1.25rem,3vw,3rem))}
+.pin > .pin__label,.s-exp .pin > *{margin-inline:calc(var(--inner) - var(--pad))}
+/* a soft shade under the words, only inside the window */
+.scrim{position:absolute;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse 62% 42% at 22% 88%,rgba(6,12,4,.5) 0%,rgba(6,12,4,.22) 55%,transparent 100%),linear-gradient(to top,rgba(8,16,6,.6) 0%,rgba(8,16,6,.32) 35%,rgba(8,16,6,.08) 65%,transparent 85%)}
+/* the small text over the scene gets a soft shadow of its own */
+.layer--light .beats__body{text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.scrim--center{background:radial-gradient(ellipse 46% 34% at 50% 52%,rgba(8,16,6,.42) 0%,rgba(8,16,6,.18) 55%,transparent 100%)}
+.layer:not(.layer--light) .scrim{display:none}
+.pin__label{position:absolute;top:13vh}
+
+/* about: a panoramic window; the words arrive one phrase at a time, coming into focus */
+.s-about{height:520vh}
+.beats{position:absolute;left:var(--inner);right:var(--inner);bottom:12vh}
+.beats__big{max-width:15em;font-size:clamp(2rem,4.6vw,4.6rem);line-height:1.02}
+.beats__big > span{display:inline-block;will-change:transform,opacity,filter}
+.beats__body{max-width:40rem;margin-top:1.4rem;will-change:transform,opacity,filter}
+
+/* experience: the timeline sits in the sky; the grass holds the bottom of the frame */
+.s-exp{height:360vh}
+.s-exp .section__head{padding-top:12vh}
+.s-exp .tl{margin-top:2vh}
+.s-exp .tl__row{will-change:opacity,transform;padding-top:.55rem;padding-bottom:.55rem}
+.s-exp .tl__note{display:none}
+.s-exp .tl__bar{transform-origin:0 50%;scale:1 1;transition:none}
+.s-exp .tl__axis,.s-exp .tl__row{grid-template-columns:minmax(0,15rem) minmax(0,1fr) minmax(0,8rem)}
+.s-exp .tl__label .mono{padding-top:.15rem}
+.s-exp .tl__scale{position:relative}
+.playhead{position:absolute;top:-.3rem;bottom:-.3rem;width:1px;background:currentColor;opacity:.9}
+/* the year sits in the window's bottom-right corner, sized to the room left under the list (set in meadow.js) */
+.year{position:absolute;right:var(--inner);bottom:calc(var(--band) + clamp(1rem,2.4vw,2.25rem));font-size:var(--year-size,clamp(3rem,7vw,7rem));margin:0 !important;line-height:.9;letter-spacing:-.05em;font-weight:500;font-variant-numeric:tabular-nums;opacity:.9}
+
+/* education & tools: back to paper, window on the right */
+.s-tools{padding-top:16vh;padding-bottom:38vh} /* ends right as its content leaves, so Contact takes over without a gap */
+.s-tools .col{max-width:min(50vw, 820px)}
+/* education & tools: one hairline, one label per block, no rules between items */
+.et{border-top:1px solid var(--rule);padding-top:clamp(1.5rem,3vw,2.5rem);display:grid;gap:clamp(2.75rem,6vh,4.5rem)}
+.et__label{margin-bottom:1.1rem}
+.et__edu{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
+.et__edu li{display:grid;grid-template-columns:4.5rem 1fr;align-items:baseline;font-size:clamp(1.25rem,1.9vw,1.75rem);letter-spacing:-.025em;line-height:1.2}
+.et__tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4rem 2rem;margin:0}
+.et__tools dt{margin-bottom:.3rem}
+.et__tools dd{margin:0;font-size:1.05rem;letter-spacing:-.015em;line-height:1.35}
+@media(max-width:600px){.et__tools{grid-template-columns:1fr}}
+
+/* contact: the address sits in the sky */
+.s-contact{position:relative;height:150vh}
+.s-contact .pin{position:relative;height:100vh}
+/* the last screen: the address centred in the window, the footer in the band beneath it */
+.contact-stage{position:absolute;left:var(--wpad);right:var(--wpad);top:68px;bottom:var(--band);display:grid;place-items:center;text-align:center}
+.contact-label{position:absolute;top:clamp(1.25rem,3vw,2.25rem);left:clamp(1.25rem,3vw,2.5rem)}
+.contact-center .contact__mail{display:inline-block}
+.contact-center .links{display:flex;justify-content:center;padding-top:1.4rem}
+.m-foot{white-space:nowrap;position:absolute;left:var(--wpad);right:calc(var(--wpad) + 3.6rem);bottom:0;height:var(--band);display:flex;align-items:center;justify-content:space-between}
+@media(max-width:600px){.m-foot span:last-child{display:none}}
+/* the day/night button: right edge on the window's edge, centred in the band */
+.tools{right:var(--wpad);bottom:max(.5rem,calc((var(--band) - 2.4rem) / 2))}
+
+@media(max-width:820px){
+  .s-hero{padding-top:calc(46vh - 6rem)}
+  .s-work .col,.s-tools .col{max-width:none}
+  .s-tools{padding-top:44vh}
+  .s-work{padding-top:18vh}
+  /* hero intro row: disciplines and contact each get the full width, so the list doesn't break word by word */
+  .s-hero .hero__foot > *:nth-child(2),.s-hero .hero__foot > *:nth-child(3){grid-column:span 2}
+  /* education & tools: a little inset, so the words never touch the window's edge */
+  .s-tools .col{padding-inline:1.1rem}
+  .s-work .index__row{grid-template-columns:2.25rem minmax(0,1fr);gap:0 .75rem}
+  .s-work .index__disc{grid-column:2;padding-top:.9rem}
+  .s-work .index__title{min-height:0}
+  .s-hero{padding-top:16vh}
+  .s-exp .tl__note{display:none}
+  .s-hero{min-height:138vh}
+}
+@media(max-width:1000px){
+  /* experience on a phone or narrow window: one compact line per role (title · dates) with its bar under it, so all six fit the window */
+  .s-exp .tl__axis{display:none}
+  .s-exp .tl{margin-top:.5rem}
+  .s-exp .tl__row{grid-template-columns:minmax(0,1fr);gap:0;padding-top:.5rem;padding-bottom:.5rem}
+  .s-exp .tl__label{display:flex;justify-content:space-between;align-items:baseline;gap:.75rem}
+  .s-exp .tl__label > p.mono:not(.tl__dates){display:none}
+  .s-exp .tl__role{font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .s-exp .tl__dates{padding-top:0;white-space:nowrap;font-size:.625rem}
+  .s-exp .tl__track{grid-column:1;height:.55rem;margin-top:.35rem}
+  .s-exp .section__head{padding-top:14vh}
+  .s-exp .tl{border-top:0}
+}
+
+/* dev panel (H hides) */
+.hud{position:fixed;left:50%;transform:translateX(-50%);bottom:1rem;z-index:80;display:flex;gap:1rem;align-items:center;white-space:nowrap;
+  padding:.6rem .9rem;border-radius:999px;background:rgba(18,17,15,.72);color:#EFEDE7;font-family:var(--mono);font-size:.625rem;letter-spacing:.08em;text-transform:uppercase}
+.hud.is-hidden{display:none}
+.hud button{font:inherit;color:inherit;background:rgba(239,237,231,.12);border:0;border-radius:999px;padding:.35rem .7rem;cursor:pointer}
+</style>
+</head>
+<body>
+<canvas id="meadow" aria-hidden="true"></canvas>
+
+<div class="layer" data-layer="ink">
+  <div class="scrim" data-scrim="about" aria-hidden="true"></div>
+  <div class="scrim scrim--center" data-scrim="contact" data-scrim-in="0.34" aria-hidden="true"></div>
+  <div class="clipper"><div class="scroller" data-scroller>
+  <main id="top">
+
+  <!-- HERO. The window opens as the headline band, then (magnetic stop) closes around .hero__foot.
+       .hero__foot must keep its three children: lede · disciplines · contact. -->
+  <header class="s-hero wrap" data-shot="garden">
+    <div class="hero__meta mono"><span>Conrado Herrera &mdash; Designer — Information, Brand, Motion</span></div>
+    <h1 class="display">I make complicated things clear.</h1>
+    <div class="hero__foot">
+      <div><p class="lede">Conrado Herrera, designer, Brooklyn. Nearly seven years in digital marketing, then two designing the exhibits that go in front of federal juries.</p></div>
+      <div><p class="mono dim">Disciplines</p><p class="mono">Information Design / Data Visualisation / Litigation Graphics / Motion Design / Brand Identity / Generative AI / 3D</p></div>
+      <div><p class="mono dim">Contact</p><p class="mono"><a href="mailto:design@conrado.cloud">design@conrado.cloud</a></p></div>
+    </div>
+  </header>
+
+  <section class="s-work wrap" id="work" data-shot="view">
+    <div class="col">
+      <div class="section__head" data-snap><h2 class="mono dim">Selected work</h2><p class="mono dim">06 projects</p></div>
+      <!-- SELECTED WORK. One <article class="index__row"> per project; add/remove freely, any count.
+           The window becomes the card nearest the middle of the screen (or the hovered/tapped one); each
+           card is a magnetic stop; the camera climbs one step per card toward About's first view.
+           Keep the inner structure: .index__num · .index__title (+ optional .tag-soon inside it) · .index__disc.
+           To link a case study, put <a class="index__link" href="work/slug.html" aria-label="Title"></a>
+           inside the article (it covers the row). data-pan is legacy and unused. -->
+      <div class="index">
+        <article class="index__row" data-pan="-0.55" tabindex="0"><p class="index__num">N.01</p><h3 class="index__title">The Label That Reads You Back<span class="tag-soon">In production</span></h3><div class="index__disc"><span>Information Design</span><span>Brand Identity</span><span>Motion Design</span></div></article>
+        <article class="index__row" data-pan="-0.33" tabindex="0"><p class="index__num">N.02</p><h3 class="index__title">Brand World<span class="tag-soon">In production</span></h3><div class="index__disc"><span>Brand Identity</span><span>Motion Design</span></div></article>
+        <article class="index__row" data-pan="-0.11" tabindex="0"><p class="index__num">N.03</p><h3 class="index__title">Clarity Piece<span class="tag-soon">In production</span></h3><div class="index__disc"><span>Information Design</span><span>Data Visualisation</span></div></article>
+        <article class="index__row" data-pan="0.11" tabindex="0"><p class="index__num">N.04</p><h3 class="index__title">Motion Cut<span class="tag-soon">In production</span></h3><div class="index__disc"><span>Motion Design</span><span>Brand Identity</span></div></article>
+        <article class="index__row" data-pan="0.33" tabindex="0"><p class="index__num">N.05</p><h3 class="index__title">Litigation Graphics</h3><div class="index__disc"><span>Litigation Graphics</span><span>Information Design</span><span>Data Visualisation</span><span>Motion Design</span></div></article>
+        <article class="index__row" data-pan="0.55" tabindex="0"><p class="index__num">N.06</p><h3 class="index__title">Microbal<span class="tag-soon">In production</span></h3><div class="index__disc"><span>Brand Identity</span></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT. Pinned (520vh). Each phrase appears at data-in (0–1 progress through the section) and leaves
+       at data-out. The camera/light are keyed to the same progress (ABOUT_KEYS in src/main.js):
+       0–0.5 still frame over the field (first passage), 0.53+ golden light (second passage),
+       0.84–1 glide into the Experience frame. Rewording is safe; keep phrases inside those ranges. -->
+  <section class="s-about" id="about" data-shot="about" data-pinned>
+    <div class="pin wrap" data-pin>
+      <p class="mono dim pin__label" data-snap>About</p>
+      <div class="beats">
+        <h3 class="h-lg beats__big">
+          <span data-in="0" data-out="0.5">I'm Conrado.</span>
+          <span data-in="0.10" data-out="0.5">I design <span class="serif-it">identity</span>,</span>
+          <span data-in="0.17" data-out="0.5"><span class="serif-it">information</span></span>
+          <span data-in="0.23" data-out="0.5">and <span class="serif-it">motion</span> &mdash;</span>
+          <span data-in="0.31" data-out="0.5">usually all three at once.</span>
+        </h3>
+        <p class="body-lg beats__body" data-in="0.39" data-out="0.5">I came up in digital marketing: nearly seven years at LOCH, most of it running the department, learning in public what makes someone stop and what makes them scroll past. Then I moved into litigation graphics: the exhibits that go in front of federal juries, where the work is understood the first time or it hasn't worked at all.</p>
+      </div>
+      <div class="beats">
+        <p class="h-lg beats__big"><span data-in="0.55">Marketing taught me how to make someone <span class="serif-it">care</span>.</span>
+          <span data-in="0.64">Litigation taught me how to make someone <span class="serif-it">understand</span>.</span></p>
+        <p class="body-lg beats__body" data-in="0.8">Very little design does both, and that's the work I want. I use AI the way I use everything else: it widens what I can try in an afternoon, but it doesn't make the decisions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE. Pinned (360vh); a playhead runs the axis and a whole day passes in the sky.
+       Positions are fractions of the axis (.tl data-from/data-to, in years; ticks are hand-placed):
+         frac(year) = (year - from) / (to - from)      e.g. from 2017.5, to 2027: 2024.58 → 0.7453
+       Per row: data-row = frac(start); .tl__bar data-l = frac(start), data-w = frac(end) - frac(start),
+       and the same values as left/width % in its style. .is-current on the ongoing role's bar.
+       The big year (.year) sizes itself to the room under the list (--year-size, set in meadow.js). -->
+  <section class="s-exp" data-shot="track" data-pinned>
+    <div class="pin wrap" data-pin>
+      <div class="section__head" data-snap><h2 class="mono dim">Experience</h2><p class="mono dim">2018 — Present</p></div>
+      <p class="year" data-year aria-hidden="true" data-in="0.03" data-out="0.96">2018</p>
+      <div class="tl" data-from="2017.5" data-to="2027">
+        <div class="tl__axis mono dim"><span></span><div class="tl__scale"><span class="tl__tick" style="left:5.26%">2018</span><span class="tl__tick" style="left:26.32%">2020</span><span class="tl__tick" style="left:47.37%">2022</span><span class="tl__tick" style="left:68.42%">2024</span><span class="tl__tick" style="left:89.47%">2026</span><i class="playhead" data-playhead></i></div><span></span></div>
+        <div class="tl__row" data-row="0.9295"><div class="tl__label"><p class="tl__role"><a class="tl__go" href="#">Graphics Associate</a></p><p class="mono dim">DOAR · New York</p><p class="mono dim tl__dates">May 2026 — Present</p></div><div class="tl__track"><span class="tl__bar is-current" data-bar data-l="0.9295" data-w="0.0621" style="left:92.95%;width:6.21%"></span></div><p class="tl__note muted">Information design and demonstratives for federal litigation.</p></div>
+        <div class="tl__row" data-row="0.7453"><div class="tl__label"><p class="tl__role"><a class="tl__go" href="#">Information Designer</a></p><p class="mono dim">Dubin Research &amp; Consulting · New York</p><p class="mono dim tl__dates">Aug 2024 — Jan 2026</p></div><div class="tl__track"><span class="tl__bar" data-bar data-l="0.7453" data-w="0.1495" style="left:74.53%;width:14.95%"></span></div><p class="tl__note muted">Trial demonstratives and legal graphics for major litigation.</p></div>
+        <div class="tl__row" data-row="0.0442"><div class="tl__label"><p class="tl__role"><a class="tl__go" href="#">Digital Manager</a></p><p class="mono dim">LOCH Marketing · Mexico City (hybrid)</p><p class="mono dim tl__dates">Dec 2017 — Aug 2024</p></div><div class="tl__track"><span class="tl__bar" data-bar data-l="0.0442" data-w="0.7105" style="left:4.42%;width:71.05%"></span></div><p class="tl__note muted">Led the department. Strategy, motion and content for national and international brands.</p></div>
+        <div class="tl__row" data-row="0.2811"><div class="tl__label"><p class="tl__role"><a class="tl__go" href="#">Digital Artist</a></p><p class="mono dim">Carolina Razo · Remote</p><p class="mono dim tl__dates">Mar 2020 — Oct 2023</p></div><div class="tl__track"><span class="tl__bar" data-bar data-l="0.2811" data-w="0.3768" style="left:28.11%;width:37.68%"></span></div><p class="tl__note muted">Motion graphics and digital art across client projects.</p></div>
+        <div class="tl__row" data-row="0.4737"><div class="tl__label"><p class="tl__role"><a class="tl__go" href="#">Social Media Manager</a></p><p class="mono dim">Hernan Prada Hair · New York</p><p class="mono dim tl__dates">Jan 2022 — Jul 2023</p></div><div class="tl__track"><span class="tl__bar" data-bar data-l="0.4737" data-w="0.1579" style="left:47.37%;width:15.79%"></span></div><p class="tl__note muted">Shot the photography on location for the salon group, and built the newsletter voice.</p></div>
+        <div class="tl__row" data-row="0.14"><div class="tl__label"><p class="tl__role"><a class="tl__go" href="#">Designer</a></p><p class="mono dim">Green Mountain · Freelance</p><p class="mono dim tl__dates">Nov 2018 — Jun 2019</p></div><div class="tl__track"><span class="tl__bar" data-bar data-l="0.14" data-w="0.0621" style="left:14.00%;width:6.21%"></span></div><p class="tl__note muted">Site design and image direction for a berry and vegetable producer. My own client.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION & TOOLS. Plain section, window on the right. It ends right after its content so the
+       Contact shot takes over without an empty stretch (padding-bottom in the <style>). -->
+  <section class="s-tools wrap" data-shot="tools">
+    <div class="col et" data-snap>
+      <div class="et__block">
+        <p class="mono dim et__label">Education</p>
+        <ul class="et__edu">
+          <li><span class="mono dim">2022</span><span>B.A. Digital Arts</span></li>
+          <li><span class="mono dim">2026</span><span>Google UX Design Certificate</span></li>
+        </ul>
+      </div>
+      <div class="et__block">
+        <p class="mono dim et__label">Tools</p>
+        <dl class="et__tools">
+          <div><dt class="mono dim">Design</dt><dd>Figma, Illustrator, Photoshop, InDesign</dd></div>
+          <div><dt class="mono dim">Motion</dt><dd>After Effects, Premiere</dd></div>
+          <div><dt class="mono dim">3D</dt><dd>Blender, Unreal Engine</dd></div>
+          <div><dt class="mono dim">AI</dt><dd>Claude, generative image tools</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT. Last section. data-lead: the story starts half a screen before it pins (camera already sinking
+       into the grass); data-snap-end: the page settles on its final frame, and nav #contact goes there. -->
+  <section class="s-contact" id="contact" data-shot="contact" data-pinned data-lead="0.5" data-snap-end>
+    <div class="pin" data-pin>
+      <div class="contact-stage">
+        <p class="mono dim contact-label" data-in="0.3">Contact</p>
+        <div class="contact-center">
+          <a class="contact__mail" href="mailto:design@conrado.cloud" data-in="0.34">design@conrado.cloud</a>
+          <div class="links mono" data-in="0.42"><a href="https://linkedin.com/in/conradoherrera/" target="_blank" rel="noopener">LinkedIn</a></div>
+        </div>
+      </div>
+      <footer class="m-foot mono dim"><span>© 2026 Conrado Herrera</span><span>Brooklyn, New York</span></footer>
+    </div>
+  </section>
+
+  </main>
+  </div></div>
+</div>
+<div class="spacer" data-spacer></div>
+<div class="veil" aria-hidden="true">
+  <div class="veil__b1"></div><div class="veil__b2"></div>
+  <div class="veil__b3"></div><div class="veil__b4"></div>
+  <div class="veil__tint"></div>
+</div>
+<nav class="nav mono">
+  <a class="nav__brand" href="#top">Conrado Herrera</a>
+  <div class="nav__links"><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></div>
+  <span class="nav__clock" data-clock></span>
+</nav>
+
+
+<div class="tools"><button type="button" data-theme-toggle aria-label="Switch to night"><svg class="ico ico--sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><g stroke-linecap="round"><path d="M8 .9v2M8 13.1v2M.9 8h2M13.1 8h2M3 3l1.4 1.4M11.6 11.6L13 13M13 3l-1.4 1.4M4.4 11.6L3 13"/></g></svg><svg class="ico ico--moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.4 9.8A5.8 5.8 0 0 1 6.2 2.6a5.9 5.9 0 1 0 7.2 7.2Z"/></svg></button></div>
+
+<div class="hud is-hidden" data-hud>
+  <span>WIP · Stage</span>
+  <span data-shotname>—</span>
+  <button type="button" data-pause>Pause</button>
+  <span data-fps>— fps</span>
+  <span style="opacity:.55">H toggles</span>
+</div>
+
+<script>
+  // the light copy: identical content, white, visible only inside the window
+  (function () {
+    var ink = document.querySelector('[data-layer="ink"]');
+    var light = ink.cloneNode(true);
+    light.dataset.layer = 'light';
+    light.classList.add('layer--light');
+    light.setAttribute('aria-hidden', 'true');
+    light.querySelectorAll('[id]').forEach(function (e) { e.removeAttribute('id'); });
+    light.querySelectorAll('a,[tabindex]').forEach(function (e) { e.setAttribute('tabindex', '-1'); });
+    ink.after(light);
+  })();
+  (function tick(){var t=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/New_York'})+' NY';
+    document.querySelectorAll('[data-clock]').forEach(function(el){el.textContent=t;});setTimeout(tick,15000);})();
+</script>
+<script src="meadow.js?v=202609281815" defer></script>
+</body>
+</html>

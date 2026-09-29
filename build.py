@@ -14,7 +14,7 @@ list in data/site.json is the only vocabulary a project may tag itself with.
 
 No dependencies. Python 3.8+.
 """
-import json, shutil, html
+import json, re, shutil, html
 from pathlib import Path
 
 ROOT = Path(__file__).parent
@@ -258,6 +258,304 @@ def build_index(projects, preview):
 </main>
 {tools_bar()}
 {foot()}"""
+
+
+# ---------------------------------------------------------------- homepage
+# The homepage is the "hero-stage-b" scene: one three.js meadow drawn inside a
+# window that is pinned to the screen and changes shape per section, with the
+# page scrolling over it. The contract lives in wip/hero-stage-b/HANDOFF.md, and
+# the comments inside each section below are part of it: the shapes, camera
+# shots and magnetic stops are keyed off data-shot, so section order, ids and
+# class names matter. Everything except the chrome is generated from
+# data/site.json and data/projects.json, so adding a project is a data edit.
+#
+# After changing wip/hero-stage-b/src/main.js:
+#   npx esbuild src/main.js --bundle --minify --format=iife --target=es2020 \
+#     --outfile=meadow.js
+# then copy meadow.js to assets/js/ and bump ASSET_V below.
+
+ASSET_V = "202609291200"   # cache stamp for home.css and meadow.js
+
+
+def home_rows(projects):
+    """Selected Work: one .index__row per featured project, in order.
+
+    Keep the inner structure (.index__num, .index__title with an optional
+    .tag-soon, .index__disc): meadow.js measures these. The row count is free;
+    the window, the snapping and the camera steps adapt to it.
+    """
+    shown = [p for p in projects if p.get("feature")]
+    out = []
+    for i, p in enumerate(shown, 1):
+        tag = "" if p["live"] else '<span class="tag-soon">In production</span>'
+        # A finished piece gets a full-row link to its case study; an
+        # unfinished one has nothing to link to yet.
+        link = (f'<a class="index__link" href="work/{E(p["slug"])}.html"'
+                f' aria-label="{E(p["title"])}"></a>') if p["live"] else ""
+        disc = "".join(f"<span>{E(d)}</span>" for d in p["disciplines"])
+        out.append(f'<article class="index__row" tabindex="0">{link}'
+                   f'<p class="index__num">N.{i:02d}</p>'
+                   f'<h3 class="index__title">{E(p["title"])}{tag}</h3>'
+                   f'<div class="index__disc">{disc}</div></article>')
+    return len(shown), "\n        ".join(out)
+
+
+def home_timeline(projects):
+    """Experience: positions are fractions of the axis, as HANDOFF.md defines.
+
+        frac(year) = (year - from) / (to - from)
+
+    Each row carries data-row; each bar carries data-l and data-w plus the same
+    values as left/width percentages, because meadow.js animates from the
+    attributes and the CSS has to be right before it runs.
+    """
+    ax = SITE["axis"]
+    span = ax["to"] - ax["from"]
+    frac = lambda v: (v - ax["from"]) / span
+    page_slugs = {p["slug"] for p in projects}
+    ticks = "".join(f'<span class="tl__tick" style="left:{frac(t)*100:.2f}%">{t}</span>'
+                    for t in ax["ticks"])
+    rows = []
+    for r in SITE["experience"]:
+        l, w = frac(r["start"]), frac(r["end"]) - frac(r["start"])
+        cur = " is-current" if r.get("current") else ""
+        role = E(r["role"])
+        if r.get("project") in page_slugs:
+            role = f'<a class="tl__go" href="work/{E(r["project"])}.html">{role}</a>'
+        place = " · ".join(x for x in (r["org"], r.get("place")) if x)
+        rows.append(
+            f'<div class="tl__row" data-row="{l:.4f}">'
+            f'<div class="tl__label"><p class="tl__role">{role}</p>'
+            f'<p class="mono dim">{E(place)}</p>'
+            f'<p class="mono dim tl__dates">{E(r["from"])} — {E(r["to"])}</p></div>'
+            f'<div class="tl__track"><span class="tl__bar{cur}" data-bar '
+            f'data-l="{l:.4f}" data-w="{w:.4f}" '
+            f'style="left:{l*100:.2f}%;width:{w*100:.2f}%"></span></div>'
+            f'<p class="tl__note muted">{E(r.get("note", ""))}</p></div>')
+    first = ax["ticks"][0]
+    return (
+        f'<div class="section__head" data-snap><h2 class="mono dim">Experience</h2>'
+        f'<p class="mono dim">{first} — Present</p></div>\n'
+        f'      <p class="year" data-year aria-hidden="true" data-in="0.03" data-out="0.96">{first}</p>\n'
+        f'      <div class="tl" data-from="{ax["from"]}" data-to="{ax["to"]}">\n'
+        f'        <div class="tl__axis mono dim"><span></span>'
+        f'<div class="tl__scale">{ticks}<i class="playhead" data-playhead></i></div>'
+        f'<span></span></div>\n        '
+        + "\n        ".join(rows) + "\n      </div>")
+
+
+def build_home(projects, preview):
+    n, rows = home_rows(projects)
+    disciplines = " / ".join(derive_disciplines(projects))
+    edu = "".join(f'<li><span class="mono dim">{E(r["year"])}</span>'
+                  f'<span>{E(r["what"])}</span></li>' for r in SITE["education"])
+    tools = "".join(f'<div><dt class="mono dim">{E(g["group"])}</dt>'
+                    f'<dd>{E(", ".join(g["items"]))}</dd></div>' for g in SITE["tools"])
+    links = "".join(
+        f'<a href="{E(l["url"])}"{" target=_blank rel=noopener" if l["url"].startswith("http") else ""}>{E(l["label"])}</a>'
+        for l in SITE["links"])
+    about = SITE["about"]
+    # The big line in About's second beat is the first two sentences of
+    # about[1], set in type with the serif italics, so it stays in the markup.
+    # The paragraph under it is whatever is left of about[1], plus about[2].
+    rest = re.split(r"(?<=\.)\s+", about[1])[2:]
+    beat2 = " ".join(rest + [about[2]]).strip()
+    base = "https://" + SITE["domain"]
+    title = SITE["name"] + " — " + SITE["identity"]
+    robots = '\n<meta name="robots" content="noindex">' if preview else ""
+
+    return f"""<!doctype html>
+<!--
+  conrado.cloud — homepage ("hero-stage-b"). GENERATED by build.py: edit
+  data/site.json, data/projects.json, assets/css/home.css or the scene source in
+  wip/hero-stage-b/, never this file. READ wip/hero-stage-b/HANDOFF.md before
+  changing any of them. Short version:
+  · One 3D meadow (assets/js/meadow.js, built from wip/hero-stage-b/src/main.js) is drawn inside a
+    single "window" that is pinned to the screen and changes shape per section. Every
+    <section data-shot="..."> picks the window shape and camera shot for itself (windowFor / SHOTS).
+  · All text lives in .layer[data-layer=ink]. A script at the bottom clones it into a "light" layer
+    that only shows inside the window (white text over the scene). Duplicate ids in the clone are
+    expected; never target the clone.
+  · Adding/removing projects: edit data/projects.json. The window, snapping and camera steps adapt
+    to the number of rows.
+  · Browsers without WebGL are sent to index-static.html, the same content laid out as a plain page.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{E(title)}</title>
+<meta name="description" content="{E(SITE['lede'])}">{robots}
+<script>
+  // set the theme before anything paints (same key as the rest of the site, so the choice carries over)
+  (function () {{ var t = new URLSearchParams(location.search).get('theme');
+    try {{ t = t || localStorage.getItem('cc-theme'); }} catch (e) {{}}
+    document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light'); }})();
+  // This page scrolls by script: the scene moves the content, so with no WebGL there is nothing to
+  // fall back to in place. Those visitors get the plain build of the same homepage instead.
+  (function () {{
+    var ok = false;
+    try {{
+      var c = document.createElement('canvas');
+      ok = !!(window.WebGLRenderingContext &&
+              (c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl')));
+    }} catch (e) {{ ok = false; }}
+    if (!ok) location.replace('index-static.html' + location.hash);
+  }})();
+</script>
+<noscript><meta http-equiv="refresh" content="0;url=index-static.html"></noscript>
+<meta name="theme-color" content="#EFEDE7">
+<meta name="theme-color" media="(prefers-color-scheme:dark)" content="#14171A">
+<link rel="canonical" href="{base}/">
+<meta property="og:title" content="{E(title)}">
+<meta property="og:description" content="{E(SITE['lede'])}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{base}/">
+<meta property="og:image" content="{base}/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/inter-tight-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/home.css?v={ASSET_V}">
+</head>
+<body>
+<canvas id="meadow" aria-hidden="true"></canvas>
+
+<div class="layer" data-layer="ink">
+  <div class="scrim" data-scrim="about" aria-hidden="true"></div>
+  <div class="scrim scrim--center" data-scrim="contact" data-scrim-in="0.34" aria-hidden="true"></div>
+  <div class="clipper"><div class="scroller" data-scroller>
+  <main id="top">
+
+  <!-- HERO. The window opens as the headline band, then (magnetic stop) closes around .hero__foot.
+       .hero__foot must keep its three children: lede · disciplines · contact. -->
+  <header class="s-hero wrap" data-shot="garden">
+    <div class="hero__meta mono"><span>{E(SITE['name'])} &mdash; {E(SITE['identity'])}</span></div>
+    <h1 class="display">{E(SITE['headline'])}</h1>
+    <div class="hero__foot">
+      <div><p class="lede">{E(SITE['lede'])}</p></div>
+      <div><p class="mono dim">Disciplines</p><p class="mono">{E(disciplines)}</p></div>
+      <div><p class="mono dim">Contact</p><p class="mono"><a href="mailto:{E(SITE['email'])}">{E(SITE['email'])}</a></p></div>
+    </div>
+  </header>
+
+  <!-- SELECTED WORK. One <article class="index__row"> per featured project, generated from
+       data/projects.json. The window becomes the card nearest the middle of the screen (or the
+       hovered/tapped one); each card is a magnetic stop; the camera climbs one step per card
+       toward About's first view. -->
+  <section class="s-work wrap" id="work" data-shot="view">
+    <div class="col">
+      <div class="section__head" data-snap><h2 class="mono dim">Selected work</h2><p class="mono dim">{n:02d} project{'' if n == 1 else 's'}</p></div>
+      <div class="index">
+        {rows}
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT. Pinned (520vh). Each phrase appears at data-in (0–1 progress through the section) and
+       leaves at data-out. The camera and light are keyed to the same progress (ABOUT_KEYS):
+       0–0.5 still frame over the field (first passage), 0.53+ golden light (second passage),
+       0.84–1 glide into the Experience frame. Rewording is safe; keep phrases inside those ranges.
+       The two body paragraphs come from site.json → about. -->
+  <section class="s-about" id="about" data-shot="about" data-pinned>
+    <div class="pin wrap" data-pin>
+      <p class="mono dim pin__label" data-snap>About</p>
+      <div class="beats">
+        <h3 class="h-lg beats__big">
+          <span data-in="0" data-out="0.5">I'm Conrado.</span>
+          <span data-in="0.10" data-out="0.5">I design <span class="serif-it">identity</span>,</span>
+          <span data-in="0.17" data-out="0.5"><span class="serif-it">information</span></span>
+          <span data-in="0.23" data-out="0.5">and <span class="serif-it">motion</span> &mdash;</span>
+          <span data-in="0.31" data-out="0.5">usually all three at once.</span>
+        </h3>
+        <p class="body-lg beats__body" data-in="0.39" data-out="0.5">{E(about[0])}</p>
+      </div>
+      <div class="beats">
+        <p class="h-lg beats__big"><span data-in="0.55">Marketing taught me how to make someone <span class="serif-it">care</span>.</span>
+          <span data-in="0.64">Litigation taught me how to make someone <span class="serif-it">understand</span>.</span></p>
+        <p class="body-lg beats__body" data-in="0.8">{E(beat2)}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE. Pinned (360vh); a playhead runs the axis and a whole day passes in the sky.
+       Rows, bars and ticks are computed from site.json → experience and axis. The big year (.year)
+       sizes itself to the room under the list (--year-size, set in meadow.js). -->
+  <section class="s-exp" data-shot="track" data-pinned>
+    <div class="pin wrap" data-pin>
+      {home_timeline(projects)}
+    </div>
+  </section>
+
+  <!-- EDUCATION & TOOLS. Plain section, window on the right. It ends right after its content so the
+       Contact shot takes over without an empty stretch (padding-bottom in home.css). -->
+  <section class="s-tools wrap" data-shot="tools">
+    <div class="col et" data-snap>
+      <div class="et__block">
+        <p class="mono dim et__label">Education</p>
+        <ul class="et__edu">{edu}</ul>
+      </div>
+      <div class="et__block">
+        <p class="mono dim et__label">Tools</p>
+        <dl class="et__tools">{tools}</dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT. Last section. data-lead: the story starts half a screen before it pins (camera already
+       sinking into the grass); data-snap-end: the page settles on its final frame, and nav #contact
+       goes there. -->
+  <section class="s-contact" id="contact" data-shot="contact" data-pinned data-lead="0.5" data-snap-end>
+    <div class="pin" data-pin>
+      <div class="contact-stage">
+        <p class="mono dim contact-label" data-in="0.3">Contact</p>
+        <div class="contact-center">
+          <a class="contact__mail" href="mailto:{E(SITE['email'])}" data-in="0.34">{E(SITE['email'])}</a>
+          <div class="links mono" data-in="0.42">{links}</div>
+        </div>
+      </div>
+      <footer class="m-foot mono dim"><span>&copy; 2026 {E(SITE['name'])}</span><span>{E(SITE['location'])}</span></footer>
+    </div>
+  </section>
+
+  </main>
+  </div></div>
+</div>
+<div class="spacer" data-spacer></div>
+<div class="veil" aria-hidden="true">
+  <div class="veil__b1"></div><div class="veil__b2"></div>
+  <div class="veil__b3"></div><div class="veil__b4"></div>
+  <div class="veil__tint"></div>
+</div>
+<nav class="nav mono">
+  <a class="nav__brand" href="#top">{E(SITE['name'])}</a>
+  <div class="nav__links"><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></div>
+  <span class="nav__clock" data-clock></span>
+</nav>
+
+<div class="tools"><button type="button" data-theme-toggle aria-label="Switch to night"><svg class="ico ico--sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><g stroke-linecap="round"><path d="M8 .9v2M8 13.1v2M.9 8h2M13.1 8h2M3 3l1.4 1.4M11.6 11.6L13 13M13 3l-1.4 1.4M4.4 11.6L3 13"/></g></svg><svg class="ico ico--moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.4 9.8A5.8 5.8 0 0 1 6.2 2.6a5.9 5.9 0 1 0 7.2 7.2Z"/></svg></button></div>
+
+<script>
+  // the light copy: identical content, white, visible only inside the window
+  (function () {{
+    var ink = document.querySelector('[data-layer="ink"]');
+    var light = ink.cloneNode(true);
+    light.dataset.layer = 'light';
+    light.classList.add('layer--light');
+    light.setAttribute('aria-hidden', 'true');
+    light.querySelectorAll('[id]').forEach(function (e) {{ e.removeAttribute('id'); }});
+    light.querySelectorAll('a,[tabindex]').forEach(function (e) {{ e.setAttribute('tabindex', '-1'); }});
+    ink.after(light);
+  }})();
+  (function tick(){{var t=new Date().toLocaleTimeString('en-US',{{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/New_York'}})+' NY';
+    document.querySelectorAll('[data-clock]').forEach(function(el){{el.textContent=t;}});setTimeout(tick,15000);}})();
+</script>
+<script src="assets/js/meadow.js?v={ASSET_V}" defer></script>
+</body>
+</html>"""
 
 
 # ---------------------------------------------------------------- case study
@@ -526,7 +824,15 @@ def emit(outdir, projects, preview):
         dstf.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(srcf, dstf)
         copied += 1
-    (out / "index.html").write_text(build_index(projects, preview), encoding="utf-8")
+    # index.html is the scene. index-static.html is the same site as a plain
+    # page: it is what a browser without WebGL (or without JavaScript) is sent
+    # to, since the scene's script is what scrolls the real homepage. Its nav
+    # points at itself so that visitor is not bounced back and forth.
+    (out / "index.html").write_text(build_home(projects, preview), encoding="utf-8")
+    static = (build_index(projects, preview)
+              .replace('href="index.html#', 'href="#')
+              .replace('href="index.html"', 'href="index-static.html"'))
+    (out / "index-static.html").write_text(static, encoding="utf-8")
     base = "https://" + SITE["domain"]
     if preview:
         (out / "robots.txt").write_text("User-agent: *\nDisallow: /\n", encoding="utf-8")

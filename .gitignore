@@ -16,3 +16,12 @@ _upload.sh
 deploy.sh
 setup-ftp.sh
 .gitmsg
+__pycache__/
+
+# scene experiments: only the one the homepage is built from is tracked
+wip/*
+!wip/hero-stage-b/
+wip/hero-stage-b/*.png
+
+# files the sandbox could not delete; safe to remove by hand
+_to_delete/

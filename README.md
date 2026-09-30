@@ -36,10 +36,13 @@ showcase instead of a work history.
 
 ## The vocabulary rule
 
-`data/site.json` holds `disciplines_canonical` — seven words:
+`data/site.json` holds `disciplines_canonical` — six words:
 
-> Information Design · Data Visualisation · Litigation Graphics · Motion Design ·
+> Information Design · Litigation Graphics · Motion ·
 > Brand Identity · Generative AI · 3D
+
+Data Visualisation was retired into Information Design, which already covers it,
+and Motion Design became Motion so that "design" does not repeat down the line.
 
 **A project may only tag itself with words from that list.** The build refuses to
 stay quiet about violations. And the words shown on the site — the header list and

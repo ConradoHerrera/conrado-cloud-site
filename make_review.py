@@ -15,6 +15,35 @@ MAXW, QUALITY = 1100, 55
 def b64(data, mime):
     return f"data:{mime};base64," + base64.b64encode(data).decode()
 
+
+# The homepage is a pinned WebGL scene: script moves the content, sections are 200-500vh
+# tall, and phrases fade in by scroll progress. None of that runs (or helps) in a review
+# frame, so for review the same markup is laid out as one flat, fully visible document.
+HOME_REVIEW = """
+/* review overrides: homepage */
+#meadow,.scrim,.stage,.spacer,.year,.playhead{display:none!important}
+.layer,.clipper,.scroller{position:static!important;inset:auto!important;overflow:visible!important;transform:none!important}
+.pin{position:static!important;height:auto!important;transform:none!important;padding-block:2.5rem}
+.s-about,.s-exp,.s-tools,.s-contact{height:auto!important}
+.s-hero{min-height:0!important;margin-bottom:3rem!important;padding-top:3rem!important}
+.s-hero .hero__foot{margin-bottom:0!important}
+.s-work{padding-top:2rem!important;padding-bottom:3rem!important}
+.pin__label,.s-about .pin__label{position:static!important;opacity:1!important;margin-bottom:1.5rem}
+.beats{position:static!important;margin-block:0 3.5rem}
+.beats__big,.beats__big>span,.beats__body,[data-in],[data-out]{opacity:1!important;transform:none!important;filter:none!important}
+.beats__big>span{display:inline!important}
+.s-exp .section__head>*{position:static!important;opacity:1!important;pointer-events:auto}
+.s-exp .section__head{padding-top:0!important}
+.tl__row,.tl__bar{opacity:1!important;transform:none!important;scale:1 1!important}
+.s-tools .pin{display:block!important;padding-bottom:2rem}
+.contact-stage{position:static!important;display:block!important;text-align:left!important;padding-block:2rem}
+.contact-center .links{justify-content:flex-start!important}
+.m-foot{position:static!important;height:auto!important;white-space:normal!important;padding-top:2rem}
+.nav{position:static!important;order:-1;padding:1rem var(--pad,1.5rem)!important}
+body{display:flex!important;flex-direction:column}
+.m-foot{padding-inline:var(--pad,1.5rem)}
+"""
+
 _img_cache = {}
 def img_uri(rel):
     if rel in _img_cache:
@@ -33,8 +62,10 @@ def img_uri(rel):
     _img_cache[rel] = b64(buf.getvalue(), "image/jpeg")
     return _img_cache[rel]
 
-def css_inlined():
+def css_inlined(home=False):
     css = (DIST / "assets" / "css" / "site.css").read_text(encoding="utf-8")
+    if home:
+        css += "\n" + (DIST / "assets" / "css" / "home.css").read_text(encoding="utf-8")
     def font(m):
         f = DIST / "assets" / "fonts" / m.group(1)
         return f'url("{b64(f.read_bytes(), "font/woff2")}")' if f.exists() else m.group(0)
@@ -49,6 +80,8 @@ html{scroll-behavior:auto!important}
 .reveal-words .w>span{transform:none!important;opacity:1!important}
 .clip__ui{display:none!important}
 """
+    if home:
+        css += HOME_REVIEW
     return css
 
 def build(path):
@@ -74,6 +107,15 @@ def build(path):
         "title": (title.group(1) if title else path.stem).split(" \u2014 ")[0],
         "body": body,
     }
+
+import sys
+if "--index-only" in sys.argv:
+    page = build(DIST / "index.html")
+    page["css"] = css_inlined(home=True)   # self-contained: the homepage needs home.css too
+    out = ROOT / "review-index.json"
+    out.write_text(json.dumps({"index": page}, ensure_ascii=False), encoding="utf-8")
+    print(f"index -> {out} ({out.stat().st_size/1e6:.2f} MB)")
+    sys.exit(0)
 
 CSS = css_inlined()
 pages = {}

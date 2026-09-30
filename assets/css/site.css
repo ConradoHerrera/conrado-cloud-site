@@ -520,35 +520,23 @@ body{
 .clip__btn:hover .clip__ic .ic--a{opacity:0}
 .clip__btn:hover .clip__ic .ic--b{opacity:1}
 
-.clip__info{position:relative;display:inline-flex}
-.clip__panel{
-  position:absolute;right:0;bottom:calc(100% + .6rem);z-index:4;
-  width:max(260px,min(30rem,42vw));
-  padding:.95rem 1.1rem;border-radius:16px;
-  font-size:.95rem;line-height:1.5;letter-spacing:-.008em;
-  color:#F3F1EC;text-align:left;text-transform:none;
-  border:1px solid rgb(255 255 255 / .2);
-  background:linear-gradient(150deg,rgb(16 18 21 / .78) 0%,rgb(16 18 21 / .62) 100%);
-  -webkit-backdrop-filter:blur(22px) saturate(1.5);
-  backdrop-filter:blur(22px) saturate(1.5);
-  box-shadow:inset 0 1px 0 rgb(255 255 255 / .16), 0 18px 40px -22px rgb(0 0 0 / .8);
-  opacity:0;visibility:hidden;transform:translateY(.4rem);
-  transition:opacity .3s var(--ease),transform .38s var(--ease),visibility .3s;
-}
-.clip__info:hover .clip__panel,.clip__info:focus-within .clip__panel{
-  opacity:1;visibility:visible;transform:none;
-}
-@media(max-width:620px){.clip__panel{width:min(20rem,78vw)}}
 @supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
   .clip__btn{background:rgb(14 16 19 / .86)}
-  .clip__panel{background:rgb(16 18 21 / .92)}
 }
 
 /* Media grids: tiles and film clips. The gap is what keeps two clips from
    touching, and it matches the pair layout above so a two-up figure and a
    two-up grid sit on the same rhythm. A one-column section is a full-width
    film and stays one column at every width. */
-.cs__grid{display:grid;gap:clamp(.75rem,2vw,1.5rem)}
+.cs__grid{display:grid;gap:clamp(1.25rem,2.6vw,2.25rem);align-items:start}
+/* a cell is one piece: the clip, and under it what the piece had to do */
+.cs__cell{display:grid;align-content:start}
+.clip__note{padding-top:.9rem;max-width:62ch;color:var(--ink-70);
+  font-size:clamp(.95rem,1.05vw,1.0625rem);line-height:1.5;letter-spacing:-.011em}
+/* a figure held to a readable column, for art too tall to run full width */
+.cs__figure--narrow .frame{max-width:min(26rem,62vw)}
+.frame--ratio{aspect-ratio:var(--ar) !important}
+.cs__figure .frame--ratio img{object-fit:contain}
 /* Media corners match the window on the homepage, so a still, a film and the
    scene are all cut to the same radius. */
 .cs__figure .frame,.cs__clip{border-radius:var(--radius-card)}

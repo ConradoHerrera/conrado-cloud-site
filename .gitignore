@@ -8,6 +8,8 @@ retire.log
 # review-tool scratch
 _rv*/
 review-pages.json
+review-index.json
+*.bak
 _frames/
 _ops/
 

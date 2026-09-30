@@ -12,12 +12,11 @@
       "url": "https://linkedin.com/in/conradoherrera/"
     }
   ],
-  "_disciplines_note": "Canonical vocabulary. These seven words are the ONLY discipline tags allowed on a project. The marquee and the header list are generated from the projects that are actually live, so a word does not appear on the site until a piece proves it.",
+  "_disciplines_note": "Canonical vocabulary. These six words are the ONLY discipline tags allowed on a project. The marquee and the header list are generated from the projects that are actually live, so a word does not appear on the site until a piece proves it. Data Visualisation was retired into Information Design, which already covers it; Motion Design became Motion so the word design does not repeat down the line.",
   "disciplines_canonical": [
     "Information Design",
-    "Data Visualisation",
     "Litigation Graphics",
-    "Motion Design",
+    "Motion",
     "Brand Identity",
     "Generative AI",
     "3D"
@@ -25,7 +24,7 @@
   "about": [
     "I came up in digital marketing: nearly seven years at LOCH, most of it running the department, learning in public what makes someone stop and what makes them scroll past. Then I moved into litigation graphics: the exhibits that go in front of federal juries, where the work is understood the first time or it hasn't worked at all.",
     "Marketing taught me how to make someone care. Litigation taught me how to make someone understand. Very little design does both, and that's the work I want.",
-    "I use AI the way I use everything else: it widens what I can try in an afternoon, but it doesn't make the decisions."
+    "AI is a tool like the rest of them: it gets me further in a day, and it makes none of the decisions."
   ],
   "experience": [
     {

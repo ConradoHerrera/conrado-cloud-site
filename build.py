@@ -27,7 +27,7 @@ CANON = SITE["disciplines_canonical"]
 # Cache stamp on every stylesheet and script. The markup and the CSS change
 # together (a class rename is useless if a browser keeps yesterday's CSS), so
 # they are versioned together. Bump this whenever assets/css or assets/js change.
-ASSET_V = "202609302340"
+ASSET_V = "202609301015"
 
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []
@@ -313,7 +313,10 @@ def home_rows(projects):
         # unfinished one has nothing to link to yet.
         link = (f'<a class="index__link" href="work/{E(p["slug"])}.html"'
                 f' aria-label="{E(p["title"])}"></a>') if p["live"] else ""
-        disc = "".join(f"<span>{E(d)}</span>" for d in p["disciplines"])
+        # A row titled "Litigation Graphics" does not need "Litigation Graphics"
+        # again as its first tag; the other words are the ones doing work there.
+        disc = "".join(f"<span>{E(d)}</span>" for d in p["disciplines"]
+                       if d.lower() != p["title"].lower())
         out.append(f'<article class="index__row" tabindex="0">{link}'
                    f'<p class="index__num">N.{i:02d}</p>'
                    f'<h3 class="index__title">{E(p["title"])}{tag}</h3>'
@@ -646,9 +649,15 @@ def build_case(p, projects, i, preview):
       </div>
     </div>""")
         elif k == "figure":
-            fcls = "frame" + (" frame--tall" if s.get("tall") else "")
+            # ratio: show the art at its own proportions instead of cropping it into
+            # one of the standard frames. narrow: hold it to a readable column.
+            fcls = ("frame" + (" frame--tall" if s.get("tall") else "")
+                    + (" frame--ratio" if s.get("ratio") else ""))
             fatt = f' data-fit="{E(s["fit"])}"' if s.get("fit") else ""
-            blocks.append(f"""<figure class="cs__figure" data-anim>
+            if s.get("ratio"):
+                fatt += f' style="--ar:{E(s["ratio"])}"'
+            figcls = "cs__figure" + (" cs__figure--narrow" if s.get("narrow") else "")
+            blocks.append(f"""<figure class="{figcls}" data-anim>
       <div class="{fcls}"{fatt}>{media(s.get('src'), s.get('caption', p['title']), 1, preview, p['slug'])}</div>
       <figcaption class="mono dim"><span>{E(s.get('caption',''))}</span></figcaption>
     </figure>""")
@@ -732,31 +741,27 @@ def build_case(p, projects, i, preview):
                         + SVG.format(vb="0 0 17.2435 20.9826", cls="ic--a", d=P_REPLAY)
                         + '</span>')
 
-            def clip_ui(idx, text):
-                """Glass controls over the clip: its description on hover, and replay."""
-                if not s.get("playonce"):
-                    return ""
-                pid = f"{p['slug']}-clip-{idx}"
-                info = ""
-                if text:
-                    info = ('<span class="clip__info">'
-                            f'<button class="clip__btn" type="button" aria-describedby="{pid}"'
-                            f' aria-label="About this piece">{I_INFO}</button>'
-                            f'<span class="clip__panel" id="{pid}" role="tooltip">{E(text)}</span>'
-                            '</span>')
-                return ('<div class="clip__ui">' + info +
+            def clip_ui():
+                """Replay, over the clip. The description is no longer hidden behind a
+                hover: it sits under the piece, where it can be read at a glance."""
+                return ('<div class="clip__ui">'
                         '<button class="clip__btn clip__btn--replay" type="button" '
-                        f'aria-label="Play again">{I_REPLAY}</button></div>')
+                        f'aria-label="Play again">{I_REPLAY}</button></div>'
+                        ) if s.get("playonce") else ""
 
             notes = s.get("notes") if isinstance(s.get("notes"), list) else [s.get("notes")]
             notes += [None] * (len(srcs) - len(notes))
             clips = "".join(
+                '<div class="cs__cell">'
                 f'<div class="cs__clip" style="--ar:{E(ar)}">'
                 f'<video src="{up}assets/img/{E(v)}"'
                 + (f' poster="{up}assets/img/{E(po)}"' if po else "")
-                + mode + '></video>' + clip_ui(n, tx) + '</div>'
-                for n, (v, po, tx) in enumerate(zip(srcs, posters, notes), 1))
-            blocks.append(f"""<figure class="cs__figure" data-anim>
+                + mode + '></video>' + clip_ui() + '</div>'
+                + (f'<p class="clip__note">{E(tx)}</p>' if tx else '')
+                + '</div>'
+                for v, po, tx in zip(srcs, posters, notes))
+            vcls = "cs__figure" + (" cs__figure--narrow" if s.get("narrow") else "")
+            blocks.append(f"""<figure class="{vcls}" data-anim>
       <div class="{grid_cls(s.get('cols', len([v for v in srcs if v]) or 1))}">{clips}</div>
       <figcaption class="mono dim"><span>{E(s.get('caption',''))}</span></figcaption>
     </figure>""")

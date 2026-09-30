@@ -9,7 +9,7 @@
     "disciplines": [
       "Information Design",
       "Brand Identity",
-      "Motion Design"
+      "Motion"
     ],
     "role": "Concept, design, direction",
     "cover": "placeholders/brand-act-cover.jpg",
@@ -75,7 +75,7 @@
     "year": "2026",
     "disciplines": [
       "Brand Identity",
-      "Motion Design"
+      "Motion"
     ],
     "role": "Identity and design system",
     "cover": "placeholders/brand-world-cover.jpg",
@@ -131,8 +131,7 @@
     "client": "Self-initiated",
     "year": "2026",
     "disciplines": [
-      "Information Design",
-      "Data Visualisation"
+      "Information Design"
     ],
     "role": "Research, design",
     "cover": "placeholders/clarity-cover.jpg",
@@ -181,7 +180,7 @@
     "client": "Self-initiated",
     "year": "2026",
     "disciplines": [
-      "Motion Design",
+      "Motion",
       "Brand Identity"
     ],
     "role": "Direction, design, animation",
@@ -220,8 +219,7 @@
     "disciplines": [
       "Litigation Graphics",
       "Information Design",
-      "Data Visualisation",
-      "Motion Design"
+      "Motion"
     ],
     "role": [
       "Graphics Associate, DOAR",
@@ -244,8 +242,13 @@
       },
       {
         "kind": "text",
-        "head": "How they are used",
-        "body": "These are built in stages and advanced on a click, so the attorney decides when each piece lands and can stay on any of them for as long as the argument needs. That changes how you design them. Everything can sit on the board at once, because nothing is shown until it is being talked about. The structure gets worked out with the attorneys before anything is drawn, so the picture says the thing they need said and nothing wider."
+        "head": "The work",
+        "body": "At DRC and now at DOAR, the same discipline in both. This is federal litigation at the top end, where the parties are global technology companies, federal agencies and national retailers. That is where the standard comes from. There is no margin for error on an exhibit, because anything you put up can be challenged, and on a matter that size nobody wants to be the reason a room stops trusting the graphics. I also learned to work a war room: the week before trial, everyone in one place, graphics changing as the testimony does."
+      },
+      {
+        "kind": "text",
+        "head": "What the work is made of",
+        "body": "Most of it is information design in the plain sense. Deciding what a picture has to prove, what goes where, what earns emphasis, and what gets cut so the rest can be read. Then illustration, mostly isometric, because a whole system fits into one frame that way without being flattened. And then the formats litigation runs on: infographics, timelines, process boards. I have built enough of those now to lay one out quickly and know what will hold at a distance."
       },
       {
         "kind": "video",
@@ -273,21 +276,16 @@
           "We wanted a visual way to explain what a contract was for, simply and with something to look at. My idea was to draw it as an isometric document with the things being exchanged sitting on top, so you see the deal instead of reading clauses. Everything in the frame was built for this one, apart from the money.",
           "A software system drawn as a restaurant: the counter the customer sees, the kitchen behind it, the suppliers feeding both. Isometric lets every stage sit in one picture, so the attorney can walk through it a piece at a time and nobody has to hold a diagram in their head.",
           "Three parties in a produce chain and what each one gained. The part that does not survive a screenshot: every icon along the bottom animates on its own beat, as the argument reaches it. Built with a colleague.",
-          "Two years of releases on a single axis. Twenty labelled moments, revealed one at a time, so the density never arrives all at once.",
+          "Two years of releases on a single axis. Twenty labelled moments, revealed one at a time, so the density never arrives all at once. The deck it belonged to ran neon on dark, a deliberately technical look for a software matter, and that is where the boldness comes from.",
           "A development process, stage by stage. The same move as the roadmap: everything already placed, nothing shown until it is being spoken about.",
           "Direct evidence is seeing the man out in the rain. Circumstantial is seeing him come through a door with a wet umbrella and working out the rest. I drew both scenes, and the harder part was the tone: no cartooning, a narrow palette, figures kept straight, so it still reads as a courtroom."
         ],
-        "caption": "Six exhibits. Hover any of them for what it was doing."
+        "caption": "Six demonstratives, one argument each."
       },
       {
         "kind": "text",
-        "head": "The work",
-        "body": "At DRC and now at DOAR, the same discipline in both. This is federal litigation at the top end, where the parties are global technology companies, federal agencies and national retailers. That is where the standard comes from. There is no margin for error on an exhibit, because anything you put up can be challenged, and on a matter that size nobody wants to be the reason a room stops trusting the graphics. I also learned to work a war room: the week before trial, everyone in one place, graphics changing as the testimony does."
-      },
-      {
-        "kind": "text",
-        "head": "What the work is made of",
-        "body": "Most of it is information design in the plain sense. Deciding what a picture has to prove, what goes where, what earns emphasis, and what gets cut so the rest can be read. Then illustration, mostly isometric, because a whole system fits into one frame that way without being flattened. And then the formats litigation runs on: infographics, timelines, process boards. I have built enough of those now to lay one out quickly and know what will hold at a distance."
+        "head": "How they are used",
+        "body": "These are built in stages and advanced on a click, so the attorney decides when each piece lands and can stay on any of them for as long as the argument needs. That changes how you design them. Everything can sit on the board at once, because nothing is shown until it is being talked about. The structure gets worked out with the attorneys before anything is drawn, so the picture says the thing they need said and nothing wider."
       },
       {
         "kind": "text",
@@ -416,11 +414,11 @@
       },
       {
         "kind": "points",
-        "head": "Where it ran",
+        "head": "Where the generated images ran",
         "items": [
           {
             "label": "The newsletter",
-            "body": "I set the voice first, how the brand sounds and what it never says, then drafted against it and edited every line by hand. The generated imagery carried the header of each send."
+            "body": "I set the voice first, how the brand sounds and what it never says, then drafted against it and edited every line by hand. A generated image headed a send when there was no fresh photography to use, which was most weeks between shoots."
           },
           {
             "label": "Social, between shoots",
@@ -458,7 +456,7 @@
     "year": "2020–23",
     "disciplines": [
       "Brand Identity",
-      "Motion Design"
+      "Motion"
     ],
     "role": "Digital Artist · the whole digital function",
     "cover": "placeholders/carolina-cover.jpg",
@@ -499,28 +497,18 @@
         ]
       },
       {
-        "kind": "video",
-        "cols": 2,
-        "aspect": "9/16",
-        "caption": "Storytime webinar promo.",
-        "src": [
-          "carolina/webinar.mp4"
-        ],
-        "poster": [
-          "carolina/webinar-poster.jpg"
-        ]
-      },
-      {
         "kind": "figure",
         "src": "carolina/caro-blog.png",
-        "caption": "The blog."
+        "caption": "The blog.",
+        "ratio": "1080/864"
       },
       {
         "kind": "figure",
         "src": "carolina/caro-visionboard.jpg",
-        "tall": true,
         "fit": "top",
-        "caption": "The Vision Board workbook."
+        "caption": "The Vision Board workbook.",
+        "ratio": "883/2560",
+        "narrow": true
       }
     ],
     "feature": false
@@ -534,7 +522,7 @@
     "client": "LOCH Marketing",
     "year": "2017–24",
     "disciplines": [
-      "Motion Design",
+      "Motion",
       "3D"
     ],
     "role": "Digital Manager · motion, web, and a team of four",
@@ -668,7 +656,7 @@
       {
         "kind": "text",
         "head": "The brief",
-        "body": "Freelance, taken on in late 2018, when I was still in Mexico. The only client on this site I won and delivered under my own name. A Mexican producer of berries and vegetables, selling to buyers rather than shoppers. The work had to carry two things at once: the scale a commercial buyer needs to see, meaning hectares, greenhouses and volume, and the care that justifies the premium, which lives in hands and rows and the look of the fruit itself."
+        "body": "Freelance, taken on in late 2018, when I was still in Mexico. A Mexican producer of berries and vegetables, selling to buyers rather than shoppers. The work had to carry two things at once: the scale a commercial buyer needs to see, meaning hectares, greenhouses and volume, and the care that justifies the premium, which lives in hands and rows and the look of the fruit itself."
       },
       {
         "kind": "figure",
@@ -687,7 +675,7 @@
       {
         "kind": "text",
         "head": "Their own pictures",
-        "body": "Everything on the site is their land and their people: the aerial of the fields, the greenhouse rows, a picker working a blueberry line. On an agricultural site that isn't a stylistic preference: stock photography of generic farms is exactly what a buyer discounts, because every competitor has it."
+        "body": "Everything on the site is their land and their people: the aerial of the fields, the greenhouse rows, a picker working a blueberry line. A buyer has already seen the same stock farm on every competitor's site, so it counts for nothing. Their own fields were the one thing none of those competitors could show."
       }
     ]
   }

@@ -7,6 +7,13 @@
    exactly at the window's edge, even mid-letter.
    ========================================================= */
 html,body{background:var(--paper);transition:background-color .6s var(--ease)}
+/* The scene owns the scrolling here and eases it itself, a frame at a time. With
+   the site's CSS smooth scrolling still on, every one of those steps became an
+   animation the next step interrupted: the page crawled and the menu fought the
+   magnet. Off on this page only; the case studies keep it. */
+html{scroll-behavior:auto}
+/* the light copy is a duplicate for the eye only: clicks belong to the real one */
+.layer--light{pointer-events:none}
 /* paper and ink follow the sunset, a little behind the sky */
 .layer,.layer .dim,.layer .muted,.layer .rule,.layer .section__head,.layer .index__row,.layer .tl__row,.layer .tl,.layer .hero__foot{
   transition:color .6s var(--ease),border-color .6s var(--ease)}

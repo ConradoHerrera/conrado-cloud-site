@@ -839,6 +839,10 @@ const spacer = document.querySelector('[data-spacer]');
 const inkLayer = layers.find((l) => l.dataset.layer === 'ink');
 const lightLayer = layers.find((l) => l.dataset.layer === 'light');
 let sections = [], snaps = [];
+// A hash we arrived with has to survive the layout still settling (fonts land
+// late and move everything), so it is re-applied on each measure until the
+// reader takes over or a couple of seconds have passed.
+let pendingHash = false;
 /* ---------- work: the window becomes the selected project's card ---------- */
 const workRows = [...scrollers[0].querySelectorAll('.s-work .index__row')];
 const workPans = workRows.map((r) => parseFloat(r.dataset.pan || 0));
@@ -897,16 +901,26 @@ function workRect() {
   return morph(a, b, f);
 }
 function workStep() { return sel < 0 || workRows.length < 2 ? 0 : clamp01(sel / (workRows.length - 1)); }
+// How far an element sits down the scroller. offsetTop alone is measured from the
+// nearest positioned ancestor, which is the scroller for a plain section but the
+// pin for anything inside a pinned stage, so the two cannot be added blind.
+function offsetIn(el, root) { let y = 0, n = el; while (n && n !== root) { y += n.offsetTop; n = n.offsetParent; } return y; }
+// Where a section comes to rest: the same place the magnet settles it.
+function restFor(el) {
+  if (!el) return null;
+  const sc = scrollers[0];
+  const sec = el.closest('[data-shot]') || el;
+  if (sec === sc || sec.id === 'top') return 0;
+  if (sec.hasAttribute('data-snap-end')) return Math.max(0, offsetIn(sec, sc) + sec.offsetHeight - innerHeight);
+  const a = sec.querySelector('[data-snap]');
+  return Math.max(0, a ? offsetIn(a, sc) - 92 : offsetIn(sec, sc));
+}
 function measure() {
   const sc = scrollers[0];
   spacer.style.height = sc.scrollHeight + 'px';
   sections = [...sc.querySelectorAll('[data-shot]')].map((el) => ({ id: el.dataset.shot, top: el.offsetTop, h: el.offsetHeight, pinned: el.hasAttribute('data-pinned'), lead: parseFloat(el.dataset.lead || 0), label: el.dataset.label || '', meta: el.dataset.meta || '' }));
   // where each section looks best: pinned sections at their start, others with their heading just under the nav
-  snaps = [...sc.querySelectorAll('[data-shot]')].map((el) => {
-    if (el.hasAttribute('data-snap-end')) return Math.max(0, el.offsetTop + el.offsetHeight - innerHeight);
-    const a = el.querySelector('[data-snap]');
-    return Math.max(0, a ? el.offsetTop + a.offsetTop - 92 : el.offsetTop);
-  });
+  snaps = [...sc.querySelectorAll('[data-shot]')].map(restFor);
   // the year: as big as the room between the list and the window's bottom edge allows
   const tl = sc.querySelector('.s-exp .tl'), pinEl = sc.querySelector('.s-exp [data-pin]'), yr = sc.querySelector('.s-exp .year');
   if (tl && pinEl && yr) {
@@ -920,6 +934,7 @@ function measure() {
   // each project card is a stop of its own: its middle on the middle of the screen
   for (const r of workRows) { const b = r.getBoundingClientRect(); snaps.push(Math.max(0, b.top + cur + b.height / 2 - innerHeight * 0.5)); }
   snaps.sort((a, b) => a - b);
+  if (pendingHash) openHash(false);
 }
 new ResizeObserver(measure).observe(scrollers[0]);
 document.fonts?.ready.then(measure);
@@ -935,11 +950,42 @@ function updateScroll(dt) {
   lastTf = tf;
   for (const s of scrollers) s.style.transform = tf;
 }
+/* ---------- the menu ----------
+   This page scrolls by script and its sections live in a fixed layer, so a browser's
+   own anchor jump lands nowhere useful. Every in-page hash is translated here, and
+   the move is handed to the magnet's animator so only one thing is ever scrolling. */
+function hashTarget(hash) {
+  if (!hash || hash === '#' || hash === '#top') return 0;
+  let el = null;
+  try { el = scrollers[0].querySelector(hash); } catch (err) { return null; }
+  return el ? restFor(el) : null;
+}
+function goTo(y, animate) {
+  y = Math.max(0, Math.min(y, maxScroll()));
+  if (!animate || reduceMotion || still) { snapAnim = null; scrollTo(0, y); cur = y; lastY = y; settled = true; return; }
+  snapAnim = { from: scrollY, to: y, t0: performance.now(),
+               dur: Math.min(1100, Math.max(420, Math.abs(y - scrollY) / innerHeight * 700)) };
+  settled = true;          // the magnet keeps its hands off while this runs
+}
 document.addEventListener('click', (e) => {
-  const a = e.target.closest('a[href^="#"]'); if (!a) return;
-  const el = scrollers[0].querySelector(a.getAttribute('href')); if (!el) return;
-  e.preventDefault(); scrollTo({ top: el.hasAttribute('data-snap-end') ? el.offsetTop + el.offsetHeight - innerHeight : el.offsetTop, behavior: reduceMotion ? 'auto' : 'smooth' });
+  const t = e.target instanceof Element ? e.target : e.target.parentElement;
+  const a = t && t.closest('a[href]'); if (!a) return;
+  let u; try { u = new URL(a.getAttribute('href'), location.href); } catch (err) { return; }
+  // a link to another page is the browser's business, not ours
+  if (u.origin !== location.origin || u.pathname !== location.pathname || !u.hash) return;
+  const y = hashTarget(u.hash); if (y === null) return;
+  e.preventDefault();
+  history.replaceState(null, '', u.hash);
+  goTo(y, true);
 });
+// Arriving with a hash, typically from a case study's menu: whatever the browser did
+// with it on load was meaningless, so put the page where the hash actually points.
+function openHash(animate) {
+  if (!location.hash) return;            // a plain load, or a reload part-way down: leave it alone
+  const y = hashTarget(location.hash);
+  if (y !== null) goTo(y, animate);
+}
+addEventListener('hashchange', () => openHash(true));
 document.querySelectorAll('.s-work .index__row').forEach((row) => {
   const i = [...row.parentNode.children].indexOf(row);
   const on = () => { hoverRow = i; }, off = () => { if (hoverRow === i) hoverRow = -1; };
@@ -1180,7 +1226,7 @@ addEventListener('scroll', () => {
   if (scrollY !== lastY) dir = Math.sign(scrollY - lastY) || dir;
   lastY = scrollY; lastInput = performance.now(); settled = false;
 }, { passive: true });
-for (const ev of ['wheel', 'keydown', 'pointerdown']) addEventListener(ev, () => { snapAnim = null; lastInput = performance.now(); settled = false; }, { passive: true });
+for (const ev of ['wheel', 'keydown', 'pointerdown']) addEventListener(ev, () => { snapAnim = null; pendingHash = false; lastInput = performance.now(); settled = false; }, { passive: true });
 addEventListener('touchstart', () => { touching = true; snapAnim = null; }, { passive: true });
 addEventListener('touchend', () => { touching = false; lastInput = performance.now(); settled = false; }, { passive: true });
 const navEl = document.querySelector('.nav'), veilEl = document.querySelector('.veil');
@@ -1334,6 +1380,19 @@ function frame() {
 renderer.info.autoReset = false;
 window.__stats = () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, dpr: renderer.getPixelRatio() });
 requestAnimationFrame(() => { document.documentElement.classList.add('is-ready'); frame(); });
+// A hash we arrived with, once the page has been measured. Fonts land later and
+// move things, so the positions are taken again when they do.
+if (location.hash) {
+  // Arriving with a hash. Where it points moves while the page finishes laying out
+  // (fonts, images, the scroller's own height), so it is applied now and again as
+  // the layout settles, until the reader takes over or two and a half seconds pass.
+  pendingHash = true;
+  openHash(false);
+  addEventListener('load', () => { if (pendingHash) openHash(false); }, { once: true });
+  for (const t of [120, 400, 900, 1600]) setTimeout(() => { if (pendingHash) openHash(false); }, t);
+  setTimeout(() => { pendingHash = false; }, 2500);
+}
+document.fonts?.ready.then(() => { measure(); openHash(false); });
 
 /* ---------- helpers ---------- */
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }

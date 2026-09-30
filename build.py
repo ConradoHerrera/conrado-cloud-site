@@ -27,7 +27,7 @@ CANON = SITE["disciplines_canonical"]
 # Cache stamp on every stylesheet and script. The markup and the CSS change
 # together (a class rename is useless if a browser keeps yesterday's CSS), so
 # they are versioned together. Bump this whenever assets/css or assets/js change.
-ASSET_V = "202609301015"
+ASSET_V = "202609300305"
 
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []
@@ -100,7 +100,7 @@ def nav(depth=0):
   <div class="nav__links">
     <a href="{up}index.html#work">Work</a>
     <a href="{up}index.html#about">About</a>
-    <a href="mailto:{E(SITE['email'])}">Contact</a>
+    <a href="{up}index.html#contact">Contact</a>
   </div>
   <span class="nav__clock" data-clock></span>
 </nav>"""

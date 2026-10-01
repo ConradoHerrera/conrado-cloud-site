@@ -838,6 +838,22 @@ const scrollers = layers.map((l) => l.querySelector('[data-scroller]'));
 const spacer = document.querySelector('[data-spacer]');
 const inkLayer = layers.find((l) => l.dataset.layer === 'ink');
 const lightLayer = layers.find((l) => l.dataset.layer === 'light');
+// On a phone the browser's chrome slides in and out when you change scroll
+// direction, which moves innerHeight by a hundred pixels or so while the page
+// itself has not changed. Laying the scene out again on that is what makes the
+// window jump and leaves things like the year stranded outside it, so the
+// layout works from a height that only a real change moves.
+let stableW = innerWidth, stableH = innerHeight;
+const vh = () => stableH;
+const chromeSlides = matchMedia('(pointer: coarse)').matches;   // a phone, where the bar moves
+function viewportChanged() {
+  const w = innerWidth, h = innerHeight;
+  if (w === stableW && h === stableH) return false;
+  // Only a phone's height is ignored, and only for small changes: on a desktop
+  // every resize is a real one and the scene has to follow it.
+  if (chromeSlides && w === stableW && Math.abs(h - stableH) <= stableH * 0.22) return false;
+  stableW = w; stableH = h; return true;
+}
 let sections = [], snaps = [];
 // A hash we arrived with has to survive the layout still settling (fonts land
 // late and move everything), so it is re-applied on each measure until the
@@ -872,7 +888,7 @@ const heroFoot = scrollers[0].querySelector('.s-hero .hero__foot');
 const heroBox = { y: 0, h: 0 }; let heroK = 0, heroSnap = 0, heroHorizon = 0.75;
 let heroDt = 0.016;
 function stepHero() {
-  if (!heroFoot || cur > innerHeight * 2.2) return;
+  if (!heroFoot || cur > vh() * 2.2) return;
   const b = heroFoot.getBoundingClientRect(); heroBox.y = b.top; heroBox.h = b.height;
   // scroll sets where it's heading; the window follows with a little weight of its own
   const k = heroSnap > 0 ? clamp01((cur - heroSnap * 0.15) / (heroSnap * 0.85)) : 0;
@@ -881,7 +897,7 @@ function stepHero() {
 const workBoxes = workRows.map(() => ({ x: 0, y: 0, w: 0, h: 0 }));
 function stepWork(dt) {
   if (!workRows.length) return;
-  const H = innerHeight, vs = sections.find((q) => q.id === 'view');
+  const H = vh(), vs = sections.find((q) => q.id === 'view');
   if (vs && (cur < vs.top - 1.5 * H || cur > vs.top + vs.h + 0.5 * H) && sel >= 0) return;   // off stage: no layout reads
   let best = 0, bd = 1e9;
   workRows.forEach((r, i) => {
@@ -906,12 +922,18 @@ function workStep() { return sel < 0 || workRows.length < 2 ? 0 : clamp01(sel / 
 // pin for anything inside a pinned stage, so the two cannot be added blind.
 function offsetIn(el, root) { let y = 0, n = el; while (n && n !== root) { y += n.offsetTop; n = n.offsetParent; } return y; }
 // Where a section comes to rest: the same place the magnet settles it.
-function restFor(el) {
+function restFor(el, forMenu) {
   if (!el) return null;
   const sc = scrollers[0];
   const sec = el.closest('[data-shot]') || el;
   if (sec === sc || sec.id === 'top') return 0;
-  if (sec.hasAttribute('data-snap-end')) return Math.max(0, offsetIn(sec, sc) + sec.offsetHeight - innerHeight);
+  // data-menu-at: where the menu should land inside a pinned section, as a
+  // fraction of its own progress. About holds its words across five screens, so
+  // its start is just "I'm Conrado." and the menu aims past that instead.
+  const at = parseFloat(sec.dataset.menuAt);
+  if (forMenu && at > 0 && sec.hasAttribute('data-pinned'))
+    return Math.max(0, offsetIn(sec, sc) + at * Math.max(0, sec.offsetHeight - vh()));
+  if (sec.hasAttribute('data-snap-end')) return Math.max(0, offsetIn(sec, sc) + sec.offsetHeight - vh());
   const a = sec.querySelector('[data-snap]');
   return Math.max(0, a ? offsetIn(a, sc) - 92 : offsetIn(sec, sc));
 }
@@ -924,15 +946,15 @@ function measure() {
   // the year: as big as the room between the list and the window's bottom edge allows
   const tl = sc.querySelector('.s-exp .tl'), pinEl = sc.querySelector('.s-exp [data-pin]'), yr = sc.querySelector('.s-exp .year');
   if (tl && pinEl && yr) {
-    const H = innerHeight, band = innerWidth < 820 ? 64 : 76;
+    const H = vh(), band = stableW < 820 ? 64 : 76;
     const gap = parseFloat(getComputedStyle(yr).bottom) || band + 24;
     const room = H - gap - (tl.getBoundingClientRect().bottom - pinEl.getBoundingClientRect().top) - 18;
     root.style.setProperty('--year-size', Math.round(Math.min(136, Math.max(40, room / 0.9), innerWidth * 0.1)) + 'px');
   }
   // the intro row is a stop: its middle on the middle of the screen
-  if (heroFoot) { const b = heroFoot.getBoundingClientRect(); heroSnap = Math.max(0, b.top + cur + b.height / 2 - innerHeight * 0.5); snaps.push(heroSnap); }
+  if (heroFoot) { const b = heroFoot.getBoundingClientRect(); heroSnap = Math.max(0, b.top + cur + b.height / 2 - vh() * 0.5); snaps.push(heroSnap); }
   // each project card is a stop of its own: its middle on the middle of the screen
-  for (const r of workRows) { const b = r.getBoundingClientRect(); snaps.push(Math.max(0, b.top + cur + b.height / 2 - innerHeight * 0.5)); }
+  for (const r of workRows) { const b = r.getBoundingClientRect(); snaps.push(Math.max(0, b.top + cur + b.height / 2 - vh() * 0.5)); }
   snaps.sort((a, b) => a - b);
   if (pendingHash) openHash(false);
 }
@@ -940,7 +962,7 @@ new ResizeObserver(measure).observe(scrollers[0]);
 document.fonts?.ready.then(measure);
 measure();
 let cur = 0, lastTf = '';
-const maxScroll = () => Math.max(1, scrollers[0].scrollHeight - innerHeight);
+const maxScroll = () => Math.max(1, scrollers[0].scrollHeight - vh());
 function updateScroll(dt) {
   const goal = still && qs.has('y') ? Math.min(parseFloat(qs.get('y')), maxScroll()) : scrollY;
   cur += (goal - cur) * (still || reduceMotion ? 1 : 1 - Math.exp(-dt * 9));
@@ -958,13 +980,13 @@ function hashTarget(hash) {
   if (!hash || hash === '#' || hash === '#top') return 0;
   let el = null;
   try { el = scrollers[0].querySelector(hash); } catch (err) { return null; }
-  return el ? restFor(el) : null;
+  return el ? restFor(el, true) : null;
 }
 function goTo(y, animate) {
   y = Math.max(0, Math.min(y, maxScroll()));
   if (!animate || reduceMotion || still) { snapAnim = null; scrollTo(0, y); cur = y; lastY = y; settled = true; return; }
   snapAnim = { from: scrollY, to: y, t0: performance.now(),
-               dur: Math.min(1100, Math.max(420, Math.abs(y - scrollY) / innerHeight * 700)) };
+               dur: Math.min(1100, Math.max(420, Math.abs(y - scrollY) / vh() * 700)) };
   settled = true;          // the magnet keeps its hands off while this runs
 }
 document.addEventListener('click', (e) => {
@@ -1112,7 +1134,14 @@ const beats = [...document.querySelectorAll('[data-in],[data-sync]')].map((el) =
   // morph start together and there is never a window standing empty
   sync: el.dataset.sync === 'shot' }));
 const bars = [...document.querySelectorAll('[data-bar]')].map((el) => ({ el, l: parseFloat(el.dataset.l), w: parseFloat(el.dataset.w) }));
-const rows = [...document.querySelectorAll('[data-row]')].map((el) => ({ el, l: parseFloat(el.dataset.row) }));
+// The bars draw as the playhead reaches each year, which is the point of the
+// section. The labels used to as well, so they appeared in the order the jobs
+// started, scattered up and down the list. They arrive in reading order now,
+// top to bottom, while the bars keep their own time.
+const rows = [...document.querySelectorAll('[data-row]')].map((el, i, all) => ({
+  el, l: parseFloat(el.dataset.row),
+  at: all.length < 2 ? 0 : 0.04 + (i / (all.length - 1)) * 0.52,   // first at 4%, last at 56%
+}));
 const years = [...document.querySelectorAll('[data-year]')];
 const heads = [...document.querySelectorAll('[data-playhead]')];
 let lastYear = '';
@@ -1134,7 +1163,7 @@ const pinExit = pins.map((el) => el.closest('[data-shot]').dataset.exit === 'lef
 const pinHold = pins.map((el) => el.closest('[data-shot]').dataset.hold === 'both');
 const setIf = (el, key, v) => { if (el['_' + key] !== v) { el['_' + key] = v; el.style[key] = v; } };
 function choreograph() {
-  const H = innerHeight;
+  const H = vh();
   pins.forEach((el, i) => {
     const sec = sections.find((q) => q.id === pinSec[i]); if (!sec) return;
     const d = cur - sec.top, span = Math.max(0, sec.h - H);
@@ -1197,7 +1226,7 @@ function choreograph() {
   for (const r of rows) {
     // 0.08 of the playhead is roughly 150px of scroll: long enough that the
     // travel reads as travel rather than the row appearing already in place
-    const k = Math.round(smooth(r.l - 0.03, r.l + 0.05, ph) * 100) / 100;
+    const k = Math.round(smooth(r.at, r.at + 0.08, ph) * 100) / 100;
     setIf(r.el, 'opacity', String(k));
     setIf(r.el, 'transform', `translate3d(${(-(1 - k) * 48).toFixed(1)}px, 0, 0)`);
   }
@@ -1251,7 +1280,7 @@ function magnet(now) {
   }
   if (settled || touching || reduceMotion || still || now - lastInput < 170) return;
   settled = true;
-  const H = innerHeight, y = scrollY, reach = H * 0.5, slack = H * 0.08;
+  const H = vh(), y = scrollY, reach = H * 0.5, slack = H * 0.08;
   let to = null;
   if (dir > 0) { for (const p of snaps) if (p >= y - slack && p - y < reach) { to = p; break; } }
   else { for (let i = snaps.length - 1; i >= 0; i--) { const p = snaps[i]; if (p <= y + slack && y - p < reach) { to = p; break; } } }
@@ -1272,7 +1301,7 @@ function resize() {
 }
 function setDpr(r) { renderer.setPixelRatio(r); resize(); }
 const DPR_MAX = Math.min(devicePixelRatio, Q.dpr);
-addEventListener('resize', resize);
+addEventListener('resize', () => { if (viewportChanged()) { resize(); measure(); } });
 resize();
 
 /* ---------- dev panel ---------- */

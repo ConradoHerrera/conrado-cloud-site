@@ -27,7 +27,7 @@ CANON = SITE["disciplines_canonical"]
 # Cache stamp on every stylesheet and script. The markup and the CSS change
 # together (a class rename is useless if a browser keeps yesterday's CSS), so
 # they are versioned together. Bump this whenever assets/css or assets/js change.
-ASSET_V = "202609300305"
+ASSET_V = "202610010310"
 
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []
@@ -488,7 +488,7 @@ def build_home(projects, preview):
        0–0.5 still frame over the field (first passage), 0.53+ golden light (second passage),
        0.84–1 glide into the Experience frame. Rewording is safe; keep phrases inside those ranges.
        The two body paragraphs come from site.json → about. -->
-  <section class="s-about" id="about" data-shot="about" data-pinned data-label="About">
+  <section class="s-about" id="about" data-shot="about" data-pinned data-menu-at="0.44" data-label="About">
     <div class="pin wrap" data-pin>
       <p class="mono dim pin__label" data-snap>About</p>
       <div class="beats">

@@ -95,7 +95,9 @@ html{scroll-behavior:auto}
 /* with the heading gone the head's rule and the timeline's own top border were
    two hairlines a few pixels apart; the timeline keeps its, the head drops one */
 .s-exp .section__head > *{position:absolute;opacity:0;pointer-events:none}
-.s-exp .tl{margin-top:1vh}
+/* and none over the timeline: on a narrow screen it landed on the window's own
+   top edge, two lines in the same place */
+.s-exp .tl{margin-top:1vh;border-top:0}
 .s-exp .tl__row{will-change:opacity,transform;padding-top:.4rem;padding-bottom:.4rem}  /* tight enough that six roles clear the tree line and the grass is left to the year */
 .s-exp .tl__note{display:none}
 .s-exp .tl__bar{transform-origin:0 50%;scale:1 1;transition:none}
@@ -114,7 +116,8 @@ html{scroll-behavior:auto}
      against the window than dead centre */
 .s-tools .col{max-width:min(50vw, 820px)}
 /* education & tools: one hairline, one label per block, no rules between items */
-.et{border-top:1px solid var(--rule);padding-top:clamp(1.5rem,3vw,2.5rem);display:grid;gap:clamp(2.75rem,6vh,4.5rem)}
+/* no rule over Education: there is nothing above it for a rule to divide */
+.et{padding-top:clamp(1.5rem,3vw,2.5rem);display:grid;gap:clamp(2.75rem,6vh,4.5rem)}
 .et__label{margin-bottom:1.1rem}
 .et__edu{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
 .et__edu li{display:grid;grid-template-columns:4.5rem 1fr;align-items:baseline;font-size:clamp(1.25rem,1.9vw,1.75rem);letter-spacing:-.025em;line-height:1.2}

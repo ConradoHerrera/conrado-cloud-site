@@ -1247,15 +1247,20 @@ for (const ev of ['wheel', 'keydown', 'pointerdown']) addEventListener(ev, () =>
 addEventListener('touchstart', () => { touching = true; snapAnim = null; }, { passive: true });
 addEventListener('touchend', () => { touching = false; lastInput = performance.now(); settled = false; }, { passive: true });
 const navEl = document.querySelector('.nav'), veilEl = document.querySelector('.veil');
-let navLast = 0;
+let navLast = 0, navAway = false, navReach = false;
+// Reaching for the menu should be enough to bring it back. Scrolling down still
+// takes it away, but the pointer entering the strip it lives in returns it
+// without having to scroll up first to ask.
+addEventListener('pointermove', (e) => { navReach = e.clientY <= 92; }, { passive: true });
+addEventListener('pointerleave', () => { navReach = false; }, { passive: true });
 function navHide() {
   if (!navEl) return;
   const y = scrollY;
-  if (Math.abs(y - navLast) < 6) return;
-  const hide = y > 200 && y > navLast;
+  if (Math.abs(y - navLast) >= 6) { navAway = y > 200 && y > navLast; navLast = y; }
+  const hide = navAway && !navReach;
+  if (hide === navEl.classList.contains('is-hidden')) return;
   navEl.classList.toggle('is-hidden', hide);
   veilEl?.classList.toggle('is-hidden', hide);
-  navLast = y;
 }
 function magnet(now) {
   if (snapAnim) {

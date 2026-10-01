@@ -98,7 +98,7 @@ html{scroll-behavior:auto}
 /* and none over the timeline: on a narrow screen it landed on the window's own
    top edge, two lines in the same place */
 .s-exp .tl{margin-top:1vh;border-top:0}
-.s-exp .tl__row{will-change:opacity,transform;padding-top:.4rem;padding-bottom:.4rem}  /* tight enough that six roles clear the tree line and the grass is left to the year */
+.s-exp .tl__row{padding-top:.4rem;padding-bottom:.4rem}  /* tight enough that six roles clear the tree line and the grass is left to the year */
 .s-exp .tl__note{display:none}
 .s-exp .tl__bar{transform-origin:0 50%;scale:1 1;transition:none}
 .s-exp .tl__axis,.s-exp .tl__row{grid-template-columns:minmax(0,15rem) minmax(0,1fr) minmax(0,8rem)}

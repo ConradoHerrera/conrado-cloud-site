@@ -1134,14 +1134,11 @@ const beats = [...document.querySelectorAll('[data-in],[data-sync]')].map((el) =
   // morph start together and there is never a window standing empty
   sync: el.dataset.sync === 'shot' }));
 const bars = [...document.querySelectorAll('[data-bar]')].map((el) => ({ el, l: parseFloat(el.dataset.l), w: parseFloat(el.dataset.w) }));
-// The bars draw as the playhead reaches each year, which is the point of the
-// section. The labels used to as well, so they appeared in the order the jobs
-// started, scattered up and down the list. They arrive in reading order now,
-// top to bottom, while the bars keep their own time.
-const rows = [...document.querySelectorAll('[data-row]')].map((el, i, all) => ({
-  el, l: parseFloat(el.dataset.row),
-  at: all.length < 2 ? 0 : 0.04 + (i / (all.length - 1)) * 0.52,   // first at 4%, last at 56%
-}));
+// The roles are all there from the moment the stage arrives: a list that writes
+// itself in while you scroll leaves the window looking empty or broken, whatever
+// order it writes in. Only the bars are timed, and they are the ones carrying
+// the years. (Nothing reads [data-row] any more; it stays in the markup because
+// the bars' own data-l is generated beside it.)
 const years = [...document.querySelectorAll('[data-year]')];
 const heads = [...document.querySelectorAll('[data-playhead]')];
 let lastYear = '';
@@ -1221,15 +1218,6 @@ function choreograph() {
   aboutLight.warm = aw * smooth(0.53, 0.59, au) * (1 - smooth(0.84, 1, au));
   aboutLight.crisp = aw * smooth(0.63, 0.71, au) * 0.5;
   for (const b of bars) setIf(b.el, 'transform', `scaleX(${clamp01((ph - b.l) / b.w).toFixed(3)})`);
-  // each role arrives from the left as the playhead reaches its first year, the
-  // same direction the bars draw in, so the list reads as one movement
-  for (const r of rows) {
-    // 0.08 of the playhead is roughly 150px of scroll: long enough that the
-    // travel reads as travel rather than the row appearing already in place
-    const k = Math.round(smooth(r.at, r.at + 0.08, ph) * 100) / 100;
-    setIf(r.el, 'opacity', String(k));
-    setIf(r.el, 'transform', `translate3d(${(-(1 - k) * 48).toFixed(1)}px, 0, 0)`);
-  }
   for (const h of heads) setIf(h, 'left', (ph * 100).toFixed(2) + '%');
   // a whole day plays across the timeline, starting and ending on the page's own theme:
   // day → sunset → night → sunrise → day (or the reverse at night), midnight around 2022

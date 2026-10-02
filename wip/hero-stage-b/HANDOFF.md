@@ -148,6 +148,23 @@ section's (the `jump` blend in `direct()`), with the words fading back as it lan
 the eased values (stage, hero, work card) so nothing in between is ever drawn. Tabbing to a link
 that is off screen goes through the same jump.
 
+## Step groups (About's two passages, the timeline's rows)
+
+`[data-step-group]` + `data-step-at="shot"` (or a progress) + optional `data-step-out`: when the
+moment comes, its `[data-step]` children fade in one after another on a clock (STEP in main.js),
+in place, so a passage arrives on one scroll step; their pins are `data-hold="both"`, so nothing
+scrolls up into place. Bars, the playhead and the year stay on the scroll.
+
+## The menu and the visible height
+
+The homepage menu never hides: the window is laid out under it, so hiding it only left an empty
+strip. The pins are `var(--sh)` tall, set every frame from the real visible height in `direct()`,
+so on a phone the year, About's words, the rail and the band move with the window's bottom edge
+when the address bar comes and goes. Scroll maths (snaps, pacing) still use the stable `vh()`.
+
+On a phone the section rail is a row in the window's bottom-right corner; the year and About's
+words sit above it.
+
 ## The far distance
 
 `?bg=open|hills|trees`. Default `open` (the meadow runs to a hazy horizon). `hills` = three ridges

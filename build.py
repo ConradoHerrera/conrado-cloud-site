@@ -27,7 +27,7 @@ CANON = SITE["disciplines_canonical"]
 # Cache stamp on every stylesheet and script. The markup and the CSS change
 # together (a class rename is useless if a browser keeps yesterday's CSS), so
 # they are versioned together. Bump this whenever assets/css or assets/js change.
-ASSET_V = "202610020100"
+ASSET_V = "202610020300"
 
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []
@@ -131,6 +131,18 @@ def nav(depth=0):
 SUN = '<svg class="ico ico--sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><g stroke-linecap="round"><path d="M8 .9v2M8 13.1v2M.9 8h2M13.1 8h2M3 3l1.4 1.4M11.6 11.6L13 13M13 3l-1.4 1.4M4.4 11.6L3 13"/></g></svg>'
 MOON = '<svg class="ico ico--moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.4 9.8A5.8 5.8 0 0 1 6.2 2.6a5.9 5.9 0 1 0 7.2 7.2Z"/></svg>'
 
+
+# Section-rail icons: SF Symbols supplied by Conrado (person, suitcase, graduationcap), each as an
+# outline and a filled version. The filled one marks the section you are in.
+def _sf(vb, d, cls):
+    return (f'<svg class="ico ico--sf {cls}" viewBox="{vb}" fill="currentColor" aria-hidden="true">'
+            f'<path d="{d}"/></svg>')
+RAIL_ABOUT = (_sf("0 0 17.0547 18.0907", "M2.39181 18.0803L14.6608 18.0803C16.2872 18.0803 17.0547 17.5926 17.0547 16.5218C17.0547 13.9633 13.8296 10.2569 8.5263 10.2569C3.23542 10.2569 0 13.9633 0 16.5218C0 17.5926 0.775797 18.0803 2.39181 18.0803ZM1.92813 16.6028C1.675 16.6028 1.57069 16.5401 1.57069 16.3355C1.57069 14.7277 4.0476 11.7344 8.5263 11.7344C13.0071 11.7344 15.484 14.7277 15.484 16.3355C15.484 16.5401 15.3797 16.6028 15.1245 16.6028ZM8.53052 9.04082C10.8582 9.04082 12.7474 6.97501 12.7474 4.46021C12.7474 1.96863 10.8684 0 8.53052 0C6.21339 0 4.3157 2.00179 4.3157 4.48092C4.3157 6.98536 6.2153 9.04082 8.53052 9.04082ZM8.53052 7.57363C7.10837 7.57363 5.8864 6.20615 5.8864 4.48092C5.8864 2.78101 7.08365 1.47754 8.53052 1.47754C9.98563 1.47754 11.1768 2.75819 11.1768 4.46021C11.1768 6.18545 9.97337 7.57363 8.53052 7.57363Z", "is-line")
+              + _sf("0 0 16.431 17.5643", "M1.66243 17.5539L14.7582 17.5539C15.8041 17.5539 16.431 17.064 16.431 16.2586C16.431 13.7375 13.2785 10.259 8.21136 10.259C3.15453 10.259 0 13.7375 0 16.2586C0 17.064 0.628977 17.5539 1.66243 17.5539ZM8.21558 8.51233C10.3175 8.51233 12.1237 6.63917 12.1237 4.19703C12.1237 1.79267 10.3111 0 8.21558 0C6.13038 0 4.3157 1.83407 4.3157 4.21773C4.3157 6.63917 6.12405 8.51233 8.21558 8.51233Z", "is-fill"))
+RAIL_EXP = (_sf("0 0 22.6038 18.9334", "M4.13241 4.10287L4.13241 17.9389L5.70099 17.9389L5.70099 4.10287ZM16.8924 4.10287L16.8924 17.9389L18.461 17.9389L18.461 4.10287ZM3.01736 18.9209L19.576 18.9209C21.6056 18.9209 22.6038 17.9456 22.6038 15.945L22.6038 6.44432C22.6038 4.44373 21.6056 3.46836 19.576 3.46836L3.01736 3.46836C1.00853 3.46836 3.55271e-15 4.44373 3.55271e-15 6.44432L3.55271e-15 15.945C3.55271e-15 17.9456 1.00853 18.9209 3.01736 18.9209ZM3.03807 17.3545C2.07757 17.3545 1.57069 16.8662 1.57069 15.8746L1.57069 6.52502C1.57069 5.52312 2.07757 5.03483 3.03807 5.03483L19.5657 5.03483C20.5158 5.03483 21.0227 5.52312 21.0227 6.52502L21.0227 15.8746C21.0227 16.8662 20.5158 17.3545 19.5657 17.3545ZM6.35217 4.31812L7.86076 4.31812L7.86076 2.58505C7.86076 1.84754 8.30131 1.42578 9.05359 1.42578L13.5377 1.42578C14.3024 1.42578 14.7326 1.84754 14.7326 2.58505L14.7326 4.29742L16.2516 4.29742L16.2516 2.69891C16.2516 0.857094 15.2804 3.55271e-15 13.5128 3.55271e-15L9.07851 3.55271e-15C7.41648 3.55271e-15 6.35217 0.857094 6.35217 2.69891Z", "is-line")
+            + _sf("0 0 22.6038 18.9334", "M3.64804 3.47047L5.21662 3.47047L5.21662 18.9209L3.64804 18.9209ZM17.3871 3.47047L18.9557 3.47047L18.9557 18.9209L17.3871 18.9209ZM3.01736 18.9209L19.576 18.9209C21.6056 18.9209 22.6038 17.9456 22.6038 15.945L22.6038 6.44432C22.6038 4.44373 21.6056 3.46836 19.576 3.46836L3.01736 3.46836C1.00853 3.46836 3.55271e-15 4.44373 3.55271e-15 6.44432L3.55271e-15 15.945C3.55271e-15 17.9456 1.00853 18.9209 3.01736 18.9209ZM6.35217 4.31812L7.86076 4.31812L7.86076 2.58505C7.86076 1.84754 8.30131 1.42578 9.05359 1.42578L13.5377 1.42578C14.3024 1.42578 14.7326 1.84754 14.7326 2.58505L14.7326 4.29742L16.2516 4.29742L16.2516 2.69891C16.2516 0.857094 15.2804 3.55271e-15 13.5128 3.55271e-15L9.07851 3.55271e-15C7.41648 3.55271e-15 6.35217 0.857094 6.35217 2.69891Z", "is-fill"))
+RAIL_EDU = (_sf("0 0 26.5394 28.2848", "M13.2697 17.4992C14.1084 17.5117 14.9346 17.2897 15.9771 16.8162L25.5832 12.4274C26.2262 12.1391 26.5394 11.5709 26.5394 10.9922C26.5394 10.4156 26.2262 9.83491 25.5832 9.54871L15.9771 5.15784C14.9346 4.68432 14.1084 4.46234 13.2697 4.4748C12.4413 4.46234 11.6069 4.68432 10.5644 5.15784L0.95618 9.54871C0.315343 9.83491 0 10.4156 0 10.9922C0 11.5709 0.315343 12.1391 0.95618 12.4274L10.5644 16.8162C11.6069 17.2897 12.4413 17.5117 13.2697 17.4992ZM13.2697 15.9492C12.6215 15.9492 11.9943 15.7914 11.1571 15.3988L2.16591 11.3102C1.99758 11.2334 1.91649 11.1231 1.91649 10.9922C1.91649 10.8509 1.99758 10.7406 2.16591 10.6638L11.1571 6.57518C11.9943 6.19291 12.6215 6.02479 13.2697 6.02479C13.9179 6.02479 14.5451 6.19291 15.3844 6.57518L24.3735 10.6638C24.5418 10.7406 24.6333 10.8509 24.6333 10.9922C24.6333 11.1231 24.5418 11.2334 24.3735 11.3102L15.3844 15.3988C14.5451 15.7914 13.9179 15.9492 13.2697 15.9492ZM3.80661 18.319C3.80661 21.2518 7.52199 23.7175 13.2697 23.7175C19.0299 23.7175 22.7328 21.2518 22.7328 18.319L22.7328 13.1758L21.1642 13.1758L21.1642 18.319C21.1642 20.3648 18.0808 22.24 13.2697 22.24C8.45857 22.24 5.3773 20.3648 5.3773 18.319L5.3773 13.1758L3.80661 13.1758ZM13.3111 12.0922C14.358 12.0922 15.383 11.6186 15.383 10.9901C15.383 10.3678 14.358 9.90466 13.3111 9.90466C12.2642 9.90466 11.2288 10.3678 11.2288 10.9901C11.2288 11.6186 12.2642 12.0922 13.3111 12.0922ZM7.37367 14.675L13.1577 11.6119L12.621 10.6067L6.10315 14.0014ZM6.10315 24.2441L7.37367 24.2441L7.37367 14.675L6.10315 14.0531ZM5.33479 24.4417L5.33479 27.0213C5.33479 27.789 5.83052 28.2848 6.59827 28.2848L6.86819 28.2848C7.63384 28.2848 8.13168 27.789 8.13168 27.0213L8.13168 24.4417C8.13168 23.676 7.63384 23.1782 6.86819 23.1782L6.59827 23.1782C5.83052 23.1782 5.33479 23.676 5.33479 24.4417Z", "is-line")
+            + _sf("0 0 26.1896 28.2848", "M25.2645 9.70186L15.708 5.3338C14.7069 4.88099 13.9014 4.66935 13.0958 4.68181C12.2882 4.66935 11.4827 4.88099 10.4816 5.3338L0.925128 9.70186C0.304993 9.97982 0 10.488 0 10.9922C0 11.4881 0.304993 11.9756 0.925128 12.2618L4.94809 14.0934L11.1221 11.2048C11.0697 11.1277 11.0529 11.0568 11.0529 10.9901C11.0529 10.3678 12.0779 9.90466 13.1372 9.90466C14.1842 9.90466 15.2071 10.3678 15.2071 10.9901C15.2071 11.6186 14.1842 12.0922 13.1372 12.0922C12.8067 12.0922 12.4868 12.0506 12.1981 11.9695L6.31177 14.7256L10.4816 16.6423C11.4848 17.1055 12.2882 17.3068 13.0958 17.2943C13.9014 17.3068 14.7069 17.1055 15.708 16.6423L25.2645 12.2618C25.8846 11.9756 26.1896 11.4881 26.1896 10.9922C26.1896 10.488 25.8846 9.97982 25.2645 9.70186ZM6.27036 16.1752L6.27036 22.1223C7.91461 23.1086 10.2526 23.7175 13.0958 23.7175C18.8436 23.7175 22.5589 21.2518 22.5589 18.319L22.5589 14.9612L16.268 17.8492C15.1302 18.3745 14.082 18.6402 13.0958 18.6277C12.1076 18.6402 11.0594 18.3745 9.92162 17.8492ZM3.63065 14.9737L3.63065 18.319C3.63065 19.1784 4.11471 20.2349 4.99984 21.1234L4.99984 15.6011ZM4.99984 24.3796L6.27036 24.3796L6.27036 22.1223C5.77715 21.8239 5.35639 21.4965 4.99984 21.1234ZM4.23148 24.4417L4.23148 27.0213C4.23148 27.789 4.72932 28.2848 5.49497 28.2848L5.76489 28.2848C6.53264 28.2848 7.02837 27.789 7.02837 27.0213L7.02837 24.4417C7.02837 23.676 6.53264 23.1782 5.76489 23.1782L5.49497 23.1782C4.72932 23.1782 4.23148 23.676 4.23148 24.4417Z", "is-fill"))
 
 def tools_bar():
     return (f'<div class="tools"><button type="button" data-theme-toggle aria-label="Switch theme">'
@@ -377,7 +389,7 @@ def home_timeline(projects):
             role = f'<a class="tl__go" href="work/{E(r["project"])}.html">{role}</a>'
         place = " · ".join(x for x in (r["org"], r.get("place")) if x)
         rows.append(
-            f'<div class="tl__row" data-row="{l:.4f}">'
+            f'<div class="tl__row" data-row="{l:.4f}" data-step>'
             f'<div class="tl__label"><p class="tl__role">{role}</p>'
             f'<p class="mono dim">{E(place)}</p>'
             f'<p class="mono dim tl__dates">{E(r["from"])} — {E(r["to"])}</p></div>'
@@ -390,8 +402,8 @@ def home_timeline(projects):
         f'<div class="section__head" data-snap><h2 class="mono dim">Experience</h2>'
         f'<p class="mono dim">{first} — Present</p></div>\n'
         f'      <p class="year" data-year aria-hidden="true" data-in="0.03" data-out="0.96">{first}</p>\n'
-        f'      <div class="tl" data-from="{ax["from"]}" data-to="{ax["to"]}">\n'
-        f'        <div class="tl__axis mono dim"><span></span>'
+        f'      <div class="tl" data-from="{ax["from"]}" data-to="{ax["to"]}" data-step-group data-step-at="shot">\n'
+        f'        <div class="tl__axis mono dim" data-step><span></span>'
         f'<div class="tl__scale">{ticks}<i class="playhead" data-playhead></i></div>'
         f'<span></span></div>\n        '
         + "\n        ".join(rows) + "\n      </div>")
@@ -507,28 +519,30 @@ def build_home(projects, preview):
     </div>
   </section>
 
-  <!-- ABOUT. Pinned (520vh). Each phrase appears at data-in (0–1 progress through the section) and
-       leaves at data-out. The camera and light are keyed to the same progress (ABOUT_KEYS):
+  <!-- ABOUT. Pinned (520vh), held in place on the way in and out. Each passage is a step group:
+       when its moment comes (data-step-at: "shot" = as the window takes this section's shape, or a
+       progress 0–1), its [data-step] children fade in one after another, in place, on that one
+       scroll step; data-step-out is where the group leaves. The camera and light are keyed to the same progress (ABOUT_KEYS):
        0–0.5 still frame over the field (first passage), 0.53+ golden light (second passage),
        0.84–1 glide into the Experience frame. Rewording is safe; keep phrases inside those ranges.
        The two body paragraphs come from site.json → about. -->
-  <section class="s-about" id="about" data-shot="about" data-pinned data-menu-at="0.44" data-label="About">
+  <section class="s-about" id="about" data-shot="about" data-pinned data-hold="both" data-menu-at="0.44" data-label="About">
     <div class="pin wrap" data-pin>
       <p class="mono dim pin__label" data-snap>About</p>
-      <div class="beats">
+      <div class="beats" data-step-group data-step-at="shot" data-step-out="0.5">
         <h3 class="h-lg beats__big">
-          <span data-in="0" data-out="0.5">I'm Conrado.</span>
-          <span data-in="0.10" data-out="0.5">I design <span class="serif-it">identity</span>,</span>
-          <span data-in="0.17" data-out="0.5"><span class="serif-it">information</span></span>
-          <span data-in="0.23" data-out="0.5">and <span class="serif-it">motion</span> &mdash;</span>
-          <span data-in="0.31" data-out="0.5">usually all three at once.</span>
+          <span data-step>I'm Conrado.</span>
+          <span data-step>I design <span class="serif-it">identity</span>,</span>
+          <span data-step><span class="serif-it">information</span></span>
+          <span data-step>and <span class="serif-it">motion</span> &mdash;</span>
+          <span data-step>usually all three at once.</span>
         </h3>
-        <p class="body-lg beats__body" data-in="0.39" data-out="0.5">{E(about[0])}</p>
+        <p class="body-lg beats__body" data-step>{E(about[0])}</p>
       </div>
-      <div class="beats">
-        <p class="h-lg beats__big"><span data-in="0.55">Marketing taught me how to make someone <span class="serif-it">care</span>.</span>
-          <span data-in="0.64">Litigation taught me how to make someone <span class="serif-it">understand</span>.</span></p>
-        <p class="body-lg beats__body" data-in="0.8">{E(beat2)}</p>
+      <div class="beats" data-step-group data-step-at="0.55">
+        <p class="h-lg beats__big"><span data-step>Marketing taught me how to make someone <span class="serif-it">care</span>.</span>
+          <span data-step>Litigation taught me how to make someone <span class="serif-it">understand</span>.</span></p>
+        <p class="body-lg beats__body" data-step>{E(beat2)}</p>
       </div>
     </div>
   </section>
@@ -536,7 +550,7 @@ def build_home(projects, preview):
   <!-- EXPERIENCE. Pinned (360vh); a playhead runs the axis and a whole day passes in the sky.
        Rows, bars and ticks are computed from site.json → experience and axis. The big year (.year)
        sizes itself to the room under the list (--year-size, set in meadow.js). -->
-  <section class="s-exp" id="experience" data-shot="track" data-pinned data-exit="left" data-label="Experience" data-meta="{SITE['axis']['ticks'][0]} &mdash; Present">
+  <section class="s-exp" id="experience" data-shot="track" data-pinned data-hold="both" data-exit="left" data-label="Experience" data-meta="{SITE['axis']['ticks'][0]} &mdash; Present">
     <div class="pin wrap" data-pin>
       {home_timeline(projects)}
     </div>
@@ -602,9 +616,9 @@ def build_home(projects, preview):
      of the three is on stage. Its links are ordinary hashes, so they go through the same
      jump as the menu. -->
 <nav class="rail" data-rail aria-label="About, experience and education">
-  <a href="#about" data-rail-for="about"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.4" r="2.6"/><path d="M2.9 14.2c.6-2.9 2.6-4.5 5.1-4.5s4.5 1.6 5.1 4.5" stroke-linecap="round"/></svg><span class="rail__tip">About</span></a>
-  <a href="#experience" data-rail-for="track"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><g stroke-linecap="round"><path d="M2 4h6.5M5 8h9M2 12h4"/></g></svg><span class="rail__tip">Experience</span></a>
-  <a href="#education" data-rail-for="tools"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3 1.5 6.2 8 9.4l6.5-3.2Z" stroke-linejoin="round"/><path d="M4.2 7.6v3.3c1 1 2.4 1.5 3.8 1.5s2.8-.5 3.8-1.5V7.6M14.5 6.2v3.6" stroke-linecap="round"/></svg><span class="rail__tip">Education</span></a>
+  <a href="#about" data-rail-for="about">{RAIL_ABOUT}<span class="rail__tip">About</span></a>
+  <a href="#experience" data-rail-for="track">{RAIL_EXP}<span class="rail__tip">Experience</span></a>
+  <a href="#education" data-rail-for="tools">{RAIL_EDU}<span class="rail__tip">Education</span></a>
 </nav>
 
 <div class="tools"><button type="button" data-theme-toggle aria-label="Switch to night"><svg class="ico ico--sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><g stroke-linecap="round"><path d="M8 .9v2M8 13.1v2M.9 8h2M13.1 8h2M3 3l1.4 1.4M11.6 11.6L13 13M13 3l-1.4 1.4M4.4 11.6L3 13"/></g></svg><svg class="ico ico--moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.4 9.8A5.8 5.8 0 0 1 6.2 2.6a5.9 5.9 0 1 0 7.2 7.2Z"/></svg></button></div>

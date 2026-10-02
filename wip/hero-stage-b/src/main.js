@@ -12,7 +12,9 @@ import { DofPass } from './dof.js';
 
 const qs = new URLSearchParams(location.search);
 const isMobile = matchMedia('(max-width: 760px), (pointer: coarse)').matches;
-const quality = qs.get('q') || (isMobile ? 'low' : 'high');
+// Phones get the middle tier: 'low' (90k blades at 1x) read as thin, pixelated grass on a modern
+// phone. The frame-rate governor in the loop still thins the grass on one that can't keep up.
+const quality = qs.get('q') || (isMobile ? 'mid' : 'high');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const Q = {
   high: { blades: 380000, flowers: 5200, dpr: 1.5, gridX: 900, gridY: 300, bloom: true },
@@ -757,7 +759,9 @@ const _k = new THREE.Vector3(), _kt = new THREE.Vector3(), _endP = new THREE.Vec
 const ABOUT_KEYS = [
   // I'm Conrado … all three at once: one still frame, looking down over the field. The words do the
   // work; the only thing that moves is the meadow itself, and the visitor's own breeze
-  { at: [0, 0.5], f: (v, time) => ({ p: [SPOT.x - 2.5, 5.2 + breathe(time, 0.04), SPOT.z + 2.2], t: [SPOT.x - 2.2 + breathe(time + 4, 0.08), -1.4, SPOT.z - 8], h: 72, focus: 10, ap: 0, clear: 1.2 }) },
+  // (a tall phone frame sees much further up the field, past where the grass is dense, so on a
+  // portrait window the camera looks further down and the frame stays full of meadow)
+  { at: [0, 0.5], f: (v, time, aspect) => ({ p: [SPOT.x - 2.5, 5.2 + breathe(time, 0.04), SPOT.z + 2.2], t: [SPOT.x - 2.2 + breathe(time + 4, 0.08), -1.4 - 4 * clamp01(1 - aspect), SPOT.z - 8], h: 72, focus: 10, ap: 0, clear: 1.2 }) },
   // care / understand: one scene for the whole passage. Low in the grass, into golden light, easing
   // forward; on "understand" the focus pulls from the nearest blades all the way to the trees.
   // It ends rising, ready to lift into the sky of the timeline, where the day carries on from this light.
@@ -766,18 +770,18 @@ const ABOUT_KEYS = [
       t: [lerp(SPOT.x - 9, SPOT.x - 5, v), 1.1 + breathe(time, 0.05), lerp(SPOT.z - 14, SPOT.z - 18, v)],
       h: 52, focus: lerp(1.1, 30, r * r), ap: lerp(1.1, 0.12, r), clear: 0.2 }; } },
 ];
-function keyState(key, u, time) {
+function keyState(key, u, time, aspect = 1.6) {
   const v = clamp01((u - key.at[0]) / Math.max(1e-4, key.at[1] - key.at[0]));
-  return key.f(v, time);
+  return key.f(v, time, aspect);
 }
 function aboutShot(u, time, aspect) {
   let i = 0; while (i < ABOUT_KEYS.length - 1 && u >= ABOUT_KEYS[i + 1].at[0]) i++;
-  const A = keyState(ABOUT_KEYS[i], u, time);
+  const A = keyState(ABOUT_KEYS[i], u, time, aspect);
   let S = A;
   const nx = ABOUT_KEYS[i + 1];
   if (nx && u > ABOUT_KEYS[i].at[1]) {
     const e = easeIO(clamp01((u - ABOUT_KEYS[i].at[1]) / (nx.at[0] - ABOUT_KEYS[i].at[1])));
-    const B = keyState(nx, u, time);
+    const B = keyState(nx, u, time, aspect);
     S = { p: A.p.map((q, j) => lerp(q, B.p[j], e)), t: A.t.map((q, j) => lerp(q, B.t[j], e)), h: lerp(A.h, B.h, e),
       focus: Math.exp(lerp(Math.log(A.focus), Math.log(B.focus), e)), ap: lerp(A.ap, B.ap, e), clear: lerp(A.clear, B.clear, e) };
   }
@@ -959,9 +963,12 @@ function placeRail(win, id) {
   const on = RAIL_ON.has(id) && !jump;
   if (on !== railOn) { railOn = on; railEl.classList.toggle('is-in', on); }
   if (!on) return;
-  // inside the window, a little in from its right edge, centred on its height
-  const W = canvas.clientWidth, inset = W < 820 ? 10 : 16;
-  const x = Math.round(win.x + win.w - inset - railEl.offsetWidth), y = Math.round(win.y + win.h / 2 - railEl.offsetHeight / 2);
+  // wide: a column a little in from the window's right edge, centred on its height.
+  // narrow: a row in the window's bottom-right corner, where a thumb is
+  const W = canvas.clientWidth, narrow = W < 820, inset = narrow ? 10 : 16;
+  if (narrow !== railEl.classList.contains('rail--row')) railEl.classList.toggle('rail--row', narrow);
+  const x = Math.round(win.x + win.w - inset - railEl.offsetWidth);
+  const y = Math.round(narrow ? win.y + win.h - inset - railEl.offsetHeight : win.y + win.h / 2 - railEl.offsetHeight / 2);
   const key = x + ',' + y + ',' + id;
   if (key === railKey) return;
   railKey = key;
@@ -1171,11 +1178,16 @@ addEventListener('scroll', () => { if (hoverRow >= 0 && performance.now() - poin
 
 const easeIO = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const _pa = new THREE.Vector3(), _ta = new THREE.Vector3(), _qa = new THREE.Quaternion(), _qb = new THREE.Quaternion();
-let shotName = '', lastInset = '';
+let shotName = '', lastInset = '', lastSH = 0;
 let progress = () => 0;
 let stage = -1; // which section's state is showing; fractional while switching
 function direct(time, dt) {
   const W = canvas.clientWidth, H = canvas.clientHeight;
+  // The visible height, as it really is right now (a phone's address bar changes it). The
+  // window's bottom edge is drawn from it, so everything that sits on that edge (the year,
+  // the words at the bottom of About, the footer, the band) is laid out from it too: the
+  // pins are this tall, and they move with the window when it changes.
+  if (H !== lastSH) { lastSH = H; root.style.setProperty('--sh', H + 'px'); }
   // each state holds until the next section reaches the middle of the screen, then the window
   // and the camera switch to it in about half a second (and back, the same way)
   let target = 0;
@@ -1323,6 +1335,45 @@ const pinExit = pins.map((el) => el.closest('[data-shot]').dataset.exit === 'lef
 // into place; the whole arrival and exit is opacity and a sideways drift
 const pinHold = pins.map((el) => el.closest('[data-shot]').dataset.hold === 'both');
 const setIf = (el, key, v) => { if (el['_' + key] !== v) { el['_' + key] = v; el.style[key] = v; } };
+/* ---------- step groups: words that arrive together, one after another, in place ----------
+   [data-step-group] waits for its moment — data-step-at="shot" (the scroll position where the
+   window takes this section's shape) or a progress 0–1 through the section — and then its
+   [data-step] pieces fade in one after another, on a clock rather than on the scroll, so the
+   whole passage arrives on one scroll step instead of being dragged in phrase by phrase.
+   data-step-out (progress) or the next section taking over sends it away, all together.
+   The light copy is driven from the same state as the ink copy. */
+const STEP = { dur: 0.55, gap: 0.12, out: 0.3, blur: 6 };
+const stepAll = [...document.querySelectorAll('[data-step-group]')];
+const stepN = lightLayer ? stepAll.length / 2 : stepAll.length;
+const steps = stepAll.slice(0, stepN).map((g, i) => {
+  const twins = [g, stepAll[i + stepN]].filter(Boolean);
+  return { id: g.closest('[data-shot]').dataset.shot, at: g.dataset.stepAt, out: g.dataset.stepOut ? parseFloat(g.dataset.stepOut) : 9,
+    kids: twins.map((t) => [...t.querySelectorAll('[data-step]')]), p: 0, vis: 0 };
+});
+let chorDt = 0.016;
+function stepGroups(H) {
+  for (const g of steps) {
+    const i = sections.findIndex((q) => q.id === g.id); if (i < 0) continue;
+    const take = sections[i].top - 0.5 * H, next = sections[i + 1] ? sections[i + 1].top - 0.5 * H : Infinity;
+    const u = progress(g.id);
+    const on = cur >= take && cur < next && (g.at === 'shot' || u >= parseFloat(g.at)) && u < g.out;
+    const n = g.kids[0].length, T = STEP.dur + Math.max(0, n - 1) * STEP.gap;
+    if (still || reduceMotion) { g.p = on ? 1 : 0; g.vis = on ? 1 : 0; }
+    else if (on) { g.p = Math.min(1, g.p + chorDt / T); g.vis = Math.min(1, g.vis + chorDt / 0.25); }
+    else { g.vis = Math.max(0, g.vis - chorDt / STEP.out); if (g.vis === 0) g.p = 0; }
+    for (const list of g.kids) list.forEach((el, k) => {
+      const x = clamp01((g.p * T - k * STEP.gap) / STEP.dur), e = x * x * (3 - 2 * x);
+      const a = Math.round(g.vis * e * 200) / 200;
+      setIf(el, 'visibility', a <= 0 ? 'hidden' : 'visible');
+      if (a <= 0) return;
+      setIf(el, 'opacity', String(a));
+      setIf(el, 'filter', a >= 1 ? 'none' : `blur(${((1 - a) * STEP.blur).toFixed(1)}px)`);
+    });
+  }
+}
+// a pinned stage whose words are step groups doesn't fade itself in: it is simply there
+// once its shot has the window, and the words do the arriving
+const pinStep = pins.map((el) => !!el.querySelector('[data-step-group]'));
 function choreograph() {
   const H = vh();
   pins.forEach((el, i) => {
@@ -1342,10 +1393,12 @@ function choreograph() {
     setIf(el, 'transform', `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`);
     // a pinned stage fades in as it arrives and out as it leaves, so two stages never overlap
     const k = Math.round(smooth(-0.5 * H, -0.08 * H, d) * (1 - out) * 100) / 100;
-    setIf(el, 'opacity', String(k));
-    setIf(el, 'visibility', k <= 0 ? 'hidden' : 'visible');
+    const shown = pinStep[i] ? (d >= -0.5 * H ? Math.round((1 - out) * 100) / 100 : 0) : k;
+    setIf(el, 'opacity', String(shown));
+    setIf(el, 'visibility', shown <= 0 ? 'hidden' : 'visible');
     pinPresence[pinSec[i]] = k;
   });
+  stepGroups(H);
   for (const bt of beats) {
     let k;
     if (bt.sync) {
@@ -1429,25 +1482,13 @@ inkLayer.addEventListener('focusin', (e) => {
 addEventListener('touchstart', () => { touching = true; snapAnim = null; workHold = -1; }, { passive: true });
 addEventListener('touchend', () => { touching = false; lastInput = performance.now(); settled = false; }, { passive: true });
 const navEl = document.querySelector('.nav'), veilEl = document.querySelector('.veil');
-let navLast = 0, navAway = false, navReach = false;
-// Reaching for the menu should be enough to bring it back. Scrolling down still
-// takes it away, but the pointer entering the strip it lives in returns it
-// without having to scroll up first to ask.
-addEventListener('pointermove', (e) => { navReach = e.clientY <= 92; }, { passive: true });
-addEventListener('pointerleave', () => { navReach = false; }, { passive: true });
-// and so is tabbing into it: a focused link must never be off screen
-let navFocus = false;
-navEl?.addEventListener('focusin', () => { navFocus = true; });
-navEl?.addEventListener('focusout', () => { navFocus = false; });
-function navHide() {
-  if (!navEl) return;
-  const y = scrollY;
-  if (Math.abs(y - navLast) >= 6) { navAway = y > 200 && y > navLast; navLast = y; }
-  const hide = navAway && !navReach && !navFocus;
-  if (hide === navEl.classList.contains('is-hidden')) return;
-  navEl.classList.toggle('is-hidden', hide);
-  veilEl?.classList.toggle('is-hidden', hide);
-}
+/* The menu stays. On this page the window is laid out under it (its top edge is the
+   menu's bottom), so hiding the menu never gave the window that room: it only left an
+   empty strip of paper. Showing it on demand would mean the window resizing every
+   time, which is a source of alignment bugs; the menu simply stays put. (Case-study
+   pages still tuck it away on scroll: there, text flows under it.) */
+let navLast = 0;
+function navHide() {}
 function magnet(now) {
   if (snapAnim) {
     const t = clamp01((now - snapAnim.t0) / snapAnim.dur);
@@ -1480,7 +1521,8 @@ function resize() {
 }
 function setDpr(r) { renderer.setPixelRatio(r); resize(); }
 const DPR_MAX = Math.min(devicePixelRatio, Q.dpr);
-addEventListener('resize', () => { if (viewportChanged()) { resize(); measure(); } });
+// the drawing follows every change of size (the window does); the page's measurements only a real one
+addEventListener('resize', () => { resize(); if (viewportChanged()) measure(); });
 resize();
 
 /* ---------- dev panel ---------- */
@@ -1557,6 +1599,9 @@ function frame() {
     direct(time, dt);
     markWork();
     touch(dt);
+    // the step clock runs on real time (up to a quarter second a frame): a slow or dropped
+    // frame shouldn't stretch a reveal that is meant to take a second
+    chorDt = Math.min(raw, 0.25);
     choreograph();
     applyNight();
     sky.position.copy(camera.position);

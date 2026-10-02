@@ -9,7 +9,7 @@ part that is specific to this site.
 ```
 python3 build.py
 node qc/qc.js                       # public build, desktop + phone, ~5 min in a sandbox
-node qc/qc.js --only=menu,links     # one or more checks: links layout menu hover keys cases
+node qc/qc.js --only=menu,links     # one or more checks: links layout menu hover steps viewport keys cases
 node qc/qc.js --dir=dist-preview    # the preview build instead
 ```
 
@@ -31,6 +31,9 @@ not the page anyone sees).
 | Hovering a project holds the window on it, no flicker | Casper (phone) — same root cause as the dead links. |
 | A tap on a project opens it (phone) | Casper: "I cannot click them either". |
 | Tab walks the page; every stop shows the ring and is brought on screen; the text layer never scrolls out of register | Casper: tab highlight "looks ugly"; the page scrolls by script, so a browser's own focus-scroll would break it. |
+| The menu stays on screen all the way down the homepage | Conrado, Oct 2: hiding it only left an empty strip above the window. |
+| About's words and the timeline hold their place as their shot arrives; a passage fills in on one scroll step, piece after piece, top to bottom, without sliding | Conrado, Oct 2: "instead of scrolling all up together, fade in one after the other on the same scroll step". |
+| Phone at 844 / 744 / 700px tall (the address bar): the year, About's words and the rail stay inside the window's bottom edge, the band stays under it | Conrado, Oct 2 (iPhone): the window changed height and the year and words were left behind. |
 | Case studies: footer clear of the button, no empty links, every relative link resolves, no script errors | Standing. |
 | No script or shader errors anywhere | Oct 2: a GLSL reserved word (`patch`) broke a shader only the QC run noticed. |
 
@@ -47,7 +50,8 @@ end — desktop 1440×900 and phone 390×844 — and look at every one. Then:
 - Fades in place for pinned content; enter and exit from the same side (left).
 - One corner radius (14px) for the window and every media frame.
 - Text sits on sky or paper, never on busy grass, unless it has its scrim.
-- Phone: the address bar sliding must not move the layout (`vh()` in main.js).
+- Phone: the address bar changes the visible height; everything on the window's bottom edge follows it (`--sh`, set in `direct()`), the scroll maths does not (`vh()`).
+- Look at the phone timeline: six roles spread over the sky, the last above the haze, the year above the rail.
 - The menu's veil ends above the window's top edge (68px), so that edge is never blurred.
 
 ## Things only a real device shows

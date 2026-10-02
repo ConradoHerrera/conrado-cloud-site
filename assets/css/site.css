@@ -552,6 +552,7 @@ a:focus-visible,a.is-focus{border-radius:4px}
   font-size:clamp(.95rem,1.05vw,1.0625rem);line-height:1.5;letter-spacing:-.011em}
 /* a figure held to a readable column, for art too tall to run full width */
 .cs__figure--narrow .frame{max-width:min(26rem,62vw)}
+.cs__figure--narrow .cs__grid--c1{max-width:min(22rem,62vw)}
 .frame--ratio{aspect-ratio:var(--ar) !important}
 .cs__figure .frame--ratio img{object-fit:contain}
 /* Media corners match the window on the homepage, so a still, a film and the

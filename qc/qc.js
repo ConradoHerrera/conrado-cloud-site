@@ -2,7 +2,7 @@
    conrado.cloud — QC. Run after every change, before saying it's done.
 
      node qc/qc.js                 # everything, desktop + phone
-     node qc/qc.js --only=links    # one check (links|layout|menu|hover|keys|cases)
+     node qc/qc.js --only=links    # one check (links|layout|menu|hover|steps|viewport|keys|cases)
      node qc/qc.js --dir=dist-preview  # which build to test (default dist, the public one)
 
    Needs Playwright with a Chromium. In a sandbox without a GPU, Chromium
@@ -140,15 +140,17 @@ async function checkStills(browser) {
     const ys = [];
     for (let y = 0; y <= max; y += st.H * 0.5) ys.push(Math.round(y));
     ys.push(Math.round(max));
-    let linkFails = [], overlapFails = [];
+    let linkFails = [], overlapFails = [], navFails = [];
     for (const y of ys) {
       const { ctx, page } = await still(browser, view, y);
       if (run('links')) for (const f of await page.evaluate(sweepLinks)) linkFails.push({ ...f, at: y });
+      if (run('layout')) { const top = await page.evaluate(() => document.querySelector('.nav').getBoundingClientRect().top); if (top < 0) navFails.push(y); }
       if (run('layout')) for (const f of await page.evaluate(sweepOverlaps)) overlapFails.push({ ...f, at: y });
       await ctx.close();
     }
     if (run('links')) log(linkFails.length === 0, `${view}: every visible link/button is clickable at ${ys.length} scroll positions`,
       linkFails.slice(0, 6).map((f) => `scroll ${f.at}: ${f.want} → ${f.got} at ${f.x},${f.y}`).join(' | '));
+    if (run('layout')) log(navFails.length === 0, `${view}: the menu stays on screen all the way down`, navFails.join(', '));
     if (run('layout')) log(overlapFails.length === 0, `${view}: no fixed control covers text`,
       overlapFails.slice(0, 6).map((f) => `scroll ${f.at}: ${f.control} over "${f.text}"`).join(' | '));
   }
@@ -184,8 +186,11 @@ async function checkMenu(browser) {
         log(allIn, `${view}: menu ${name} shows every project`, JSON.stringify(rows.map((r) => r.map(Math.round))));
       }
       if (href === '#about') {
-        const vis = await page.evaluate(() => [...document.querySelectorAll('[data-layer=ink] .s-about [data-in]')].filter((e) => parseFloat(getComputedStyle(e).opacity) > 0.9).length);
-        log(vis >= 6, `${view}: menu About lands with the whole first passage readable`, `${vis} beats visible`);
+        // the first passage arrives as a step: give its pieces their few seconds
+        await until(page, () => [...document.querySelectorAll('[data-layer=ink] .s-about [data-step-group]')][0].querySelectorAll('[data-step]').length ===
+          [...[...document.querySelectorAll('[data-layer=ink] .s-about [data-step-group]')][0].querySelectorAll('[data-step]')].filter((e) => getComputedStyle(e).visibility !== 'hidden' && parseFloat(getComputedStyle(e).opacity) > 0.95).length, null, 15000);
+        const vis = await page.evaluate(() => [...[...document.querySelectorAll('[data-layer=ink] .s-about [data-step-group]')][0].querySelectorAll('[data-step]')].filter((e) => getComputedStyle(e).visibility !== 'hidden' && parseFloat(getComputedStyle(e).opacity) > 0.9).length);
+        log(vis >= 6, `${view}: menu About lands with the whole first passage readable`, `${vis} pieces visible`);
       }
       if (href === '#contact') {
         const hit = await page.evaluate(() => { const a = document.querySelector('[data-layer=light] .contact__mail'); const b = a.getBoundingClientRect(); const h = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2); return h && h.closest('a') ? h.closest('a').getAttribute('href') : null; });
@@ -221,6 +226,79 @@ async function checkHover(browser) {
   await Promise.all([ph.page.waitForURL('**/work/**', { timeout: 30000 }).catch(() => {}), ph.page.touchscreen.tap(t.x, t.y)]);
   log(ph.page.url().includes('/work/'), 'phone: tapping project 1 opens its case study', ph.page.url().split('/').slice(-2).join('/'));
   await ph.ctx.close();
+}
+
+/* ---------- a passage arrives on one scroll step, piece after piece, in place ---------- */
+async function checkSteps(browser) {
+  // held in place on the way in: the timeline and About's words are in the same spot as their
+  // shot takes the window as they are once the section is pinned (they don't scroll up into place)
+  for (const view of ['desktop', 'phone']) {
+    const probe = await still(browser, view, 0);
+    const st = await qc(probe.page); await probe.ctx.close();
+    for (const [id, sel] of [['track', '.s-exp .tl__row'], ['about', '.s-about .beats__big']]) {
+      const sec = st.sections.find((q) => q.id === id);
+      const tops = [];
+      for (const y of [Math.round(sec.top - 0.4 * st.H), Math.round(sec.top)]) {
+        const { ctx, page } = await still(browser, view, y);
+        tops.push(await page.evaluate((sel) => document.querySelector('[data-layer=ink] ' + sel).getBoundingClientRect().top, sel));
+        await ctx.close();
+      }
+      log(Math.abs(tops[0] - tops[1]) < 1, `${view}: ${id === 'track' ? 'the timeline' : "About's words"}: in place as the shot arrives`, tops.map(Math.round).join(' → '));
+    }
+  }
+  for (const view of ['desktop', 'phone']) {
+    const { ctx, page } = await open(browser, view, HOME + '?q=low');
+    await until(page, () => !!window.__qc);
+    await page.waitForTimeout(1200);
+    await page.evaluate(() => { location.hash = '#experience'; });
+    await settle(page);
+    const y0 = (await qc(page)).scrollY;
+    // record when each row first becomes readable, without touching the scroll
+    const order = await page.evaluate(() => new Promise((res) => {
+      const rows = [...document.querySelectorAll('[data-layer=ink] .s-exp .tl__row')], seen = rows.map(() => 0), t0 = performance.now();
+      const top0 = rows[rows.length - 1].getBoundingClientRect().top;
+      const tick = () => {
+        rows.forEach((r, i) => { if (!seen[i] && getComputedStyle(r).visibility !== 'hidden' && parseFloat(getComputedStyle(r).opacity) > 0.5) seen[i] = performance.now() - t0 + 1; });
+        if (seen.every(Boolean) || performance.now() - t0 > 20000) res({ seen, moved: Math.abs(rows[rows.length - 1].getBoundingClientRect().top - top0) }); else setTimeout(tick, 30);
+      };
+      tick();
+    }));
+    const y1 = (await qc(page)).scrollY;
+    const moved = order.moved, seen = order.seen;
+    const all = seen.every(Boolean), inOrder = seen.every((t, i) => i === 0 || t >= seen[i - 1] - 1) && seen[seen.length - 1] - seen[0] > 100;
+    log(all && y1 === y0, `${view}: the timeline fills in without scrolling further`, all ? '' : `${seen.filter(Boolean).length}/${seen.length} rows`);
+    log(inOrder, `${view}: its rows arrive one after another, top to bottom`, seen.map((t) => Math.round(t)).join(','));
+    log(moved < 1, `${view}: and in place (nothing slides while they arrive)`, `moved ${moved.toFixed(1)}px`);
+    await ctx.close();
+  }
+}
+
+/* ---------- a phone's address bar: what sits on the window's bottom edge moves with it ---------- */
+async function checkViewport(browser) {
+  const ctx = await browser.newContext(VIEWS.phone);
+  const page = await ctx.newPage();
+  for (const [hash, label] of [['#experience', 'the year'], ['#about', 'About\'s words']]) {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(HOME + '?q=low' + hash, { waitUntil: 'load' });
+    await until(page, () => !!window.__qc);
+    await settle(page);
+    await page.waitForTimeout(2500);
+    for (const h of [744, 844, 700]) {
+      await page.setViewportSize({ width: 390, height: h });
+      await until(page, (h) => Math.abs(window.__qc().win.y + window.__qc().win.h - (h - 64)) < 2, h, 20000);
+      await page.waitForTimeout(600);
+      const r = await page.evaluate((hash) => {
+        const s = window.__qc(), wb = s.win.y + s.win.h;
+        const sel = hash === '#experience' ? '[data-layer=light] .s-exp .year' : '[data-layer=light] .s-about .beats';
+        const el = [...document.querySelectorAll(sel)].find((e) => getComputedStyle(e.closest('[data-pin]')).visibility !== 'hidden') || document.querySelector(sel);
+        const b = el.getBoundingClientRect(), rail = document.querySelector('.rail').getBoundingClientRect(), band = document.querySelector('.tools button').getBoundingClientRect();
+        return { wb: Math.round(wb), bottom: Math.round(b.bottom), railIn: rail.bottom <= wb + 1 && rail.top >= s.win.y, bandBelow: band.top >= wb - 1 };
+      }, hash);
+      log(r.bottom <= r.wb && r.railIn && r.bandBelow, `phone ${h}px tall: ${label}, the rail and the band stay with the window's bottom edge`,
+        `window bottom ${r.wb}, element bottom ${r.bottom}, rail in ${r.railIn}, band below ${r.bandBelow}`);
+    }
+  }
+  await ctx.close();
 }
 
 async function checkKeys(browser) {
@@ -281,6 +359,8 @@ async function checkCases(browser) {
   if (run('links') || run('layout')) await checkStills(browser);
   if (run('menu')) await checkMenu(browser);
   if (run('hover')) await checkHover(browser);
+  if (run('steps')) await checkSteps(browser);
+  if (run('viewport')) await checkViewport(browser);
   if (run('keys')) await checkKeys(browser);
   if (run('cases')) await checkCases(browser);
   await browser.close();

@@ -469,7 +469,7 @@
         "body": "Rebuilt 27 Sep from review batch 1.",
         "list": [
           "The 136k line is in, phrased so it claims nothing you would have to defend: her following passed it while you ran the digital side.",
-          "Webinar Storytime moved out of the LOCH folder, where it had been filed by mistake, and onto this page.",
+          "The 'Expand your business' webinar promo is LOCH's, not Caro's (your correction, Oct 2026): it is on the LOCH page now. The two duplicate files (a second webinar encode and a second copy of the procrastination workshop film) went to _to_delete/.",
           "The Vision Board screenshot is 883 by 2560, which is why it looked cropped in a square tile. It has its own tall frame now, aligned to the top.",
           "Still thin on visuals compared with the other pages. If any ebook spreads or course manual layouts survive, they belong here."
         ]
@@ -587,6 +587,19 @@
         ],
         "poster": [
           "loch/poster-agency.jpg"
+        ]
+      },
+      {
+        "kind": "video",
+        "cols": 1,
+        "aspect": "9/16",
+        "narrow": true,
+        "caption": "Expand Your Business to New Frontiers. Promo for LOCH's own free webinar on the Mexican market.",
+        "src": [
+          "loch/webinar.mp4"
+        ],
+        "poster": [
+          "loch/webinar-poster.jpg"
         ]
       },
       {

@@ -12,8 +12,11 @@ html,body{background:var(--paper);transition:background-color .6s var(--ease)}
    animation the next step interrupted: the page crawled and the menu fought the
    magnet. Off on this page only; the case studies keep it. */
 html{scroll-behavior:auto}
-/* the light copy is a duplicate for the eye only: clicks belong to the real one */
-.layer--light{pointer-events:none}
+/* The light copy MUST stay clickable. The ink copy is clip-pathed away inside the
+   window, and a clip-path cuts hit-testing too, so inside the window the light copy
+   is the only thing under the pointer. (Turning its pointer events off, 30 Sep,
+   made every link inside the window dead and the work rows flicker between two
+   projects as the window chased the pointer. Never again.) */
 /* paper and ink follow the sunset, a little behind the sky */
 .layer,.layer .dim,.layer .muted,.layer .rule,.layer .section__head,.layer .index__row,.layer .tl__row,.layer .tl,.layer .hero__foot{
   transition:color .6s var(--ease),border-color .6s var(--ease)}
@@ -22,6 +25,18 @@ html{scroll-behavior:auto}
 /* the header blur leaves with the nav */
 .veil{transition:transform .5s var(--ease)}
 .veil.is-hidden{transform:translateY(-100%)}
+/* the menu stays above the window: a slimmer bar, and a veil that ends before the
+   window's top edge (68px, windowFor in meadow.js) so that edge is never blurred */
+.veil{height:62px}
+/* short veil, so it has to be solid for most of its height: whatever scrolls up
+   behind the menu disappears into paper before the soft edge */
+.veil__tint{background:linear-gradient(to bottom,rgb(var(--paper-rgb)/1) 0%,rgb(var(--paper-rgb)/.97) 55%,rgb(var(--paper-rgb)/.6) 80%,rgb(var(--paper-rgb)/0) 100%)}
+.nav{padding-block:.85rem}
+/* a jump from the menu or the rail: the words leave, the window travels on its own,
+   the words return with it (meadow.js toggles the class) */
+.layer{transition:opacity .2s var(--ease)}
+html.is-jumping .layer{opacity:0;transition-duration:.16s}
+html.is-landing .layer{transition-duration:.5s}
 #meadow{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none;clip-path:inset(100%)}
 .layer{position:fixed;inset:0;overflow:hidden;z-index:1}
 .layer--light{z-index:2;
@@ -51,6 +66,10 @@ html{scroll-behavior:auto}
 /* work: the list keeps to the left; the window holds the right */
 .s-work{padding-top:16vh;padding-bottom:40vh}
 .s-work .col{max-width:none}
+/* the card the window is on loses the hairlines above and below it: a line drawn
+   across a rounded window reads as a scratch (meadow.js sets is-sel / is-pre) */
+.s-work .index__row,.s-work .section__head{transition:border-color .3s var(--ease)}
+.s-work .index__row.is-sel,.s-work .index__row.is-pre,.s-work .section__head.is-pre{border-bottom-color:transparent}
 /* the selected card is the window: its copy inside is a touch shaded for the white text */
 .layer--light .s-work .index__row{background:rgba(6,14,6,.16)}
 /* work: a steady rhythm. number | title with its status under it | disciplines, every row the same height */
@@ -61,6 +80,11 @@ html{scroll-behavior:auto}
 .s-work .index__disc{gap:.3rem .9rem;line-height:1.3}
 /* hero: the words sit inside the window, not on its edge */
 .s-hero .hero__foot{margin-inline:clamp(1.25rem,3vw,3rem)}
+/* no rule over the intro row: when the window closes around it, that line ran
+   straight across the scene */
+.s-hero .hero__foot{border-top:0}
+/* the descriptor is a label like Disciplines and Contact; the lede under it is display-sized, so it gets a little air */
+.s-hero .hero__foot .lede{margin-top:.45rem}
 .s-hero{margin-bottom:24vh;min-height:100vh} /* one screen; what follows is the window's travel to Work */
 /* the intro row over the scene: it sits in the sky, so a crisp shadow on the letters is all it needs */
 .layer--light .s-hero .hero__foot{text-shadow:0 1px 2px rgba(0,0,0,.34),0 0 14px rgba(20,40,70,.22)}
@@ -182,6 +206,10 @@ html{scroll-behavior:auto}
   /* a phone screen is tall against this much copy, so the air after the intro
      row is cut to about a third of what it is on a wide screen */
   .s-hero{margin-bottom:8vh}
+  /* the section rail stands on the window's right edge; on a phone About's words
+     run the full width, so they stop short of it */
+  .s-about .beats{right:calc(var(--inner) + 2.4rem)}
+  .s-exp .tl{margin-right:3.4rem}
 }
 @media(max-width:1000px){
   /* experience on a phone or narrow window: one compact line per role (title · dates) with its bar under it, so all six fit the window */
@@ -200,6 +228,29 @@ html{scroll-behavior:auto}
   .s-exp .tl__label a{border-bottom:0;padding-bottom:0}
   .s-exp .tl__row{border-bottom:0}
 }
+
+/* ---------- the section rail ----------
+   Three icon buttons on the window's right edge while About, Experience and
+   Education are on stage. They sit over the scene, so they are drawn like the
+   light copy: white line icons on a little frosted disc; the section you are in
+   is the filled one. The name slides out on hover or keyboard focus. */
+.rail{position:fixed;top:0;left:0;z-index:78;display:flex;flex-direction:column;gap:.55rem;
+  opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility 0s linear .35s;
+  will-change:transform}
+.rail.is-in{opacity:1;visibility:visible;transition:opacity .35s var(--ease),visibility 0s}
+.rail a{position:relative;display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:50%;
+  color:#F6F4EF;background:rgba(8,16,8,.22);border:1px solid rgba(255,255,255,.34);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  transition:background .3s var(--ease),color .3s var(--ease),border-color .3s var(--ease)}
+.rail a:hover{background:rgba(8,16,8,.38);border-color:rgba(255,255,255,.6)}
+.rail a[aria-current="true"]{background:#F6F4EF;color:#12110F;border-color:#F6F4EF}
+.rail .ico{width:1rem;height:1rem}
+.rail__tip{position:absolute;right:calc(100% + .5rem);top:50%;white-space:nowrap;pointer-events:none;
+  font-family:var(--mono);font-size:.625rem;letter-spacing:.08em;text-transform:uppercase;line-height:1;
+  padding:.5rem .7rem;border-radius:99px;color:#F6F4EF;background:rgba(8,16,8,.42);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  opacity:0;transform:translate(6px,-50%);transition:opacity .25s var(--ease),transform .35s var(--ease)}
+.rail a:hover .rail__tip,.rail a:focus-visible .rail__tip{opacity:1;transform:translate(0,-50%)}
 
 /* dev panel (H hides) */
 .hud{position:fixed;left:50%;transform:translateX(-50%);bottom:1rem;z-index:80;display:flex;gap:1rem;align-items:center;white-space:nowrap;

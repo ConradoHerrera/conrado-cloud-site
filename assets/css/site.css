@@ -72,6 +72,21 @@ body{
 /* --- Layout --- */
 .wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:var(--pad)}
 .rule{border:0;border-top:1px solid var(--rule);margin:0}
+/* one item of a slash list (see slash_list in build.py): its words never part */
+.li{white-space:nowrap}
+/* ---------- keyboard focus ----------
+   One ring for everything you can tab to: a thin line in the accent, held a few
+   pixels off the element with the corner it already has, and only for the
+   keyboard (never on a click). The light copy on the homepage gets the same ring
+   on .is-focus, set by the page when its ink twin has focus. */
+:focus{outline:none}
+:focus-visible,.is-focus{outline:1.5px solid var(--accent);outline-offset:4px}
+a:focus-visible,a.is-focus{border-radius:4px}
+.layer--light .is-focus{outline-color:#F6F4EF}
+.nav :focus-visible{outline-color:currentColor}
+.tools button:focus-visible,.rail a:focus-visible{outline-offset:3px;border-radius:50%}
+.rail a:focus-visible{outline-color:#F6F4EF}
+.index__link:focus-visible,.layer--light .index__link.is-focus{outline-offset:-6px;border-radius:12px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
 /* --- Typography --- */
@@ -118,7 +133,6 @@ body{
   transform:scaleX(0);transform-origin:100% 50%;transition:transform .45s var(--ease);
 }
 .nav__links a:hover::after,.nav__links a:focus-visible::after{transform:scaleX(1);transform-origin:0 50%}
-@media(max-width:600px){.nav__clock{display:none}}
 
 /* --- Hero --- */
 .hero{
@@ -137,6 +151,7 @@ body{
   padding-top:1.15rem;border-top:1px solid var(--rule);align-items:start;
 }
 .hero__foot > *:nth-child(1){grid-column:span 4}
+.hero__foot .lede{margin-top:.45rem}
 .hero__foot > *:nth-child(2){grid-column:span 4}
 .hero__foot > *:nth-child(3){grid-column:span 4;justify-self:end;text-align:right}
 @media(max-width:800px){
@@ -198,7 +213,6 @@ body{
 }
 .index__row:focus-within{padding-left:1.25rem}
 .index__link{position:absolute;inset:0;z-index:2}
-.index__link:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
 .index__num{font-family:var(--mono);font-size:.6875rem;letter-spacing:.09em;color:var(--ink-45);padding-top:.45em}
 .index__title{
   font-size:clamp(1.5rem,3.6vw,3.1rem);line-height:1.02;letter-spacing:-.035em;font-weight:500;
@@ -299,6 +313,9 @@ body{
 
 /* --- Footer --- */
 .foot{padding-block:clamp(2rem,4vw,3rem);border-top:1px solid var(--rule);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+/* the day/night button floats over the bottom-right corner: the footer's last
+   words keep clear of it instead of sliding underneath */
+.foot > :last-child{margin-right:3.4rem}
 
 /* --- Case study --- */
 .cs__hero{padding-top:clamp(7rem,17vh,12rem);padding-bottom:clamp(2rem,5vw,4rem)}

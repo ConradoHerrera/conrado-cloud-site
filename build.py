@@ -27,13 +27,36 @@ CANON = SITE["disciplines_canonical"]
 # Cache stamp on every stylesheet and script. The markup and the CSS change
 # together (a class rename is useless if a browser keeps yesterday's CSS), so
 # they are versioned together. Bump this whenever assets/css or assets/js change.
-ASSET_V = "202610010510"
+ASSET_V = "202610020100"
 
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []
 
 
 # ---------------------------------------------------------------- vocabulary
+
+def slash_list(items):
+    """A list set as one line of words with slashes between them.
+
+    Each item keeps its words together and carries its own trailing slash, so
+    the line can only wrap AFTER a separator: never inside "Litigation
+    Graphics", never with a slash opening the next line. (Casper's review,
+    Oct 2026: a list is not a paragraph and must not break like one.)
+    """
+    items = list(items)
+    out = []
+    for i, it in enumerate(items):
+        sep = "&nbsp;/" if i < len(items) - 1 else ""
+        out.append(f'<span class="li">{E(it)}{sep}</span>')
+    return " ".join(out)
+
+
+def describe():
+    """The descriptor ('Conrado Herrera / Designer / Brooklyn') and the lede as
+    one plain sentence, for meta descriptions where markup can't go."""
+    d = SITE.get("descriptor") or [SITE["name"]]
+    return f'{d[0]}, {", ".join(x.lower() if x == "Designer" else x for x in d[1:])}. {SITE["lede"]}'
+
 def derive_disciplines(projects):
     """The words the site is allowed to say, in canonical order, earned by live work."""
     used = {d for p in projects for d in p["disciplines"]}
@@ -102,7 +125,6 @@ def nav(depth=0):
     <a href="{up}index.html#about">About</a>
     <a href="{up}index.html#contact">Contact</a>
   </div>
-  <span class="nav__clock" data-clock></span>
 </nav>"""
 
 
@@ -216,7 +238,7 @@ def build_index(projects, preview):
         f'<a href="{E(l["url"])}"{" target=_blank rel=noopener" if l["url"].startswith("http") else ""}>{E(l["label"])}</a>'
         for l in SITE["links"])
 
-    return f"""{head(SITE['name'] + ' — ' + SITE['identity'], SITE['lede'])}
+    return f"""{head(SITE['name'] + ' — ' + SITE['identity'], describe())}
 {nav()}
 <div class="peek" aria-hidden="true"><div class="peek__inner">{''.join(peeks)}</div></div>
 <main>
@@ -229,8 +251,8 @@ def build_index(projects, preview):
     <h1 class="display reveal-words" data-split>{E(SITE['headline'])}</h1>
   </div>
   <div class="hero__foot">
-    <div><p class="lede" data-anim>{E(SITE['lede'])}</p></div>
-    <div data-anim><p class="mono dim">Disciplines</p><p class="mono">{E(' / '.join(disciplines))}</p></div>
+    <div data-anim><p class="mono dim">{slash_list(SITE['descriptor'])}</p><p class="lede">{E(SITE['lede'])}</p></div>
+    <div data-anim><p class="mono dim">Disciplines</p><p class="mono">{slash_list(disciplines)}</p></div>
     <div data-anim><p class="mono dim">Contact</p><p class="mono"><a href="mailto:{E(SITE['email'])}">{E(SITE['email'])}</a></p></div>
   </div>
 </header>
@@ -317,7 +339,10 @@ def home_rows(projects):
         # again as its first tag; the other words are the ones doing work there.
         disc = "".join(f"<span>{E(d)}</span>" for d in p["disciplines"]
                        if d.lower() != p["title"].lower())
-        out.append(f'<article class="index__row" tabindex="0">{link}'
+        # One tab stop per row: the link when there is one; an unfinished row
+        # takes focus itself so the keyboard can still show it in the window.
+        stop = "" if p["live"] else ' tabindex="0"'
+        out.append(f'<article class="index__row"{stop}>{link}'
                    f'<p class="index__num">N.{i:02d}</p>'
                    f'<h3 class="index__title">{E(p["title"])}{tag}</h3>'
                    f'<div class="index__disc">{disc}</div></article>')
@@ -374,7 +399,6 @@ def home_timeline(projects):
 
 def build_home(projects, preview):
     n, rows = home_rows(projects)
-    disciplines = " / ".join(derive_disciplines(projects))
     edu = "".join(f'<li><span class="mono dim">{E(r["year"])}</span>'
                   f'<span>{E(r["what"])}</span></li>' for r in SITE["education"])
     tools = "".join(f'<div><dt class="mono dim">{E(g["group"])}</dt>'
@@ -413,7 +437,7 @@ def build_home(projects, preview):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{E(title)}</title>
-<meta name="description" content="{E(SITE['lede'])}">{robots}
+<meta name="description" content="{E(describe())}">{robots}
 <script>
   // set the theme before anything paints (same key as the rest of the site, so the choice carries over)
   (function () {{ var t = new URLSearchParams(location.search).get('theme');
@@ -436,7 +460,7 @@ def build_home(projects, preview):
 <meta name="theme-color" media="(prefers-color-scheme:dark)" content="#14171A">
 <link rel="canonical" href="{base}/">
 <meta property="og:title" content="{E(title)}">
-<meta property="og:description" content="{E(SITE['lede'])}">
+<meta property="og:description" content="{E(describe())}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{base}/">
 <meta property="og:image" content="{base}/assets/og.png">
@@ -464,8 +488,8 @@ def build_home(projects, preview):
     <div class="hero__meta mono"><span>{E(SITE['name'])} &mdash; {E(SITE['identity'])}</span></div>
     <h1 class="display">{E(SITE['headline'])}</h1>
     <div class="hero__foot">
-      <div><p class="lede">{E(SITE['lede'])}</p></div>
-      <div><p class="mono dim">Disciplines</p><p class="mono">{E(disciplines)}</p></div>
+      <div><p class="mono dim">{slash_list(SITE['descriptor'])}</p><p class="lede">{E(SITE['lede'])}</p></div>
+      <div><p class="mono dim">Disciplines</p><p class="mono">{slash_list(derive_disciplines(projects))}</p></div>
       <div><p class="mono dim">Contact</p><p class="mono"><a href="mailto:{E(SITE['email'])}">{E(SITE['email'])}</a></p></div>
     </div>
   </header>
@@ -474,7 +498,7 @@ def build_home(projects, preview):
        data/projects.json. The window becomes the card nearest the middle of the screen (or the
        hovered/tapped one); each card is a magnetic stop; the camera climbs one step per card
        toward About's first view. -->
-  <section class="s-work wrap" id="work" data-shot="view">
+  <section class="s-work wrap" id="work" data-shot="view" data-menu-fit=".index__row">
     <div class="col">
       <div class="section__head" data-snap><h2 class="mono dim">Selected work</h2><p class="mono dim">{n:02d} project{'' if n == 1 else 's'}</p></div>
       <div class="index">
@@ -512,7 +536,7 @@ def build_home(projects, preview):
   <!-- EXPERIENCE. Pinned (360vh); a playhead runs the axis and a whole day passes in the sky.
        Rows, bars and ticks are computed from site.json → experience and axis. The big year (.year)
        sizes itself to the room under the list (--year-size, set in meadow.js). -->
-  <section class="s-exp" data-shot="track" data-pinned data-exit="left" data-label="Experience" data-meta="{SITE['axis']['ticks'][0]} &mdash; Present">
+  <section class="s-exp" id="experience" data-shot="track" data-pinned data-exit="left" data-label="Experience" data-meta="{SITE['axis']['ticks'][0]} &mdash; Present">
     <div class="pin wrap" data-pin>
       {home_timeline(projects)}
     </div>
@@ -521,7 +545,7 @@ def build_home(projects, preview):
   <!-- EDUCATION & TOOLS. A pinned stage like the others: the block holds in the middle of the
        left column, opposite the window, and arrives and leaves from the left there instead of
        riding up the page. The shot itself is static, so the pin costs the camera nothing. -->
-  <section class="s-tools" data-shot="tools" data-pinned data-hold="both">
+  <section class="s-tools" id="education" data-shot="tools" data-pinned data-hold="both">
     <div class="pin wrap" data-pin>
     <div class="col et" data-snap data-sync="shot" data-slide="left">
       <div class="et__block">
@@ -563,7 +587,6 @@ def build_home(projects, preview):
 <nav class="nav mono">
   <a class="nav__brand" href="#top">{E(SITE['name'])}</a>
   <div class="nav__links"><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></div>
-  <span class="nav__clock" data-clock></span>
 </nav>
 
 <!-- Where you are. Inside the window this name sits on grass or sky and
@@ -572,6 +595,17 @@ def build_home(projects, preview):
      labels does not move either. The headings it stands in for are still in the
      markup, so screen readers and the scroll snapping are unaffected. -->
 <div class="stage mono dim" data-stage aria-hidden="true"><span data-stage-name></span><span data-stage-meta></span></div>
+
+<!-- SECTION RAIL. While the window holds still (About, Experience, Education) its right
+     edge does too, so the way between those three lives there: icon only, the name on
+     hover or focus. meadow.js places it on the window's edge and shows it only while one
+     of the three is on stage. Its links are ordinary hashes, so they go through the same
+     jump as the menu. -->
+<nav class="rail" data-rail aria-label="About, experience and education">
+  <a href="#about" data-rail-for="about"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5.4" r="2.6"/><path d="M2.9 14.2c.6-2.9 2.6-4.5 5.1-4.5s4.5 1.6 5.1 4.5" stroke-linecap="round"/></svg><span class="rail__tip">About</span></a>
+  <a href="#experience" data-rail-for="track"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><g stroke-linecap="round"><path d="M2 4h6.5M5 8h9M2 12h4"/></g></svg><span class="rail__tip">Experience</span></a>
+  <a href="#education" data-rail-for="tools"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3 1.5 6.2 8 9.4l6.5-3.2Z" stroke-linejoin="round"/><path d="M4.2 7.6v3.3c1 1 2.4 1.5 3.8 1.5s2.8-.5 3.8-1.5V7.6M14.5 6.2v3.6" stroke-linecap="round"/></svg><span class="rail__tip">Education</span></a>
+</nav>
 
 <div class="tools"><button type="button" data-theme-toggle aria-label="Switch to night"><svg class="ico ico--sun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3.1"/><g stroke-linecap="round"><path d="M8 .9v2M8 13.1v2M.9 8h2M13.1 8h2M3 3l1.4 1.4M11.6 11.6L13 13M13 3l-1.4 1.4M4.4 11.6L3 13"/></g></svg><svg class="ico ico--moon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13.4 9.8A5.8 5.8 0 0 1 6.2 2.6a5.9 5.9 0 1 0 7.2 7.2Z"/></svg></button></div>
 
@@ -586,9 +620,19 @@ def build_home(projects, preview):
     light.querySelectorAll('[id]').forEach(function (e) {{ e.removeAttribute('id'); }});
     light.querySelectorAll('a,[tabindex]').forEach(function (e) {{ e.setAttribute('tabindex', '-1'); }});
     ink.after(light);
+    // Keyboard focus lives in the ink copy, which is cut away inside the window, so
+    // the ring would vanish exactly where the eye is. The light twin of whatever has
+    // focus wears the same ring.
+    var sel = 'a[href],button,[tabindex]';
+    var src = ink.querySelectorAll(sel), dst = light.querySelectorAll(sel);
+    function twin(e) {{ var i = Array.prototype.indexOf.call(src, e.target); return i < 0 ? null : dst[i]; }}
+    ink.addEventListener('focusin', function (e) {{
+      var t = twin(e), fv = true;
+      try {{ fv = e.target.matches(':focus-visible'); }} catch (err) {{}}
+      if (t && fv) t.classList.add('is-focus');
+    }});
+    ink.addEventListener('focusout', function (e) {{ var t = twin(e); if (t) t.classList.remove('is-focus'); }});
   }})();
-  (function tick(){{var t=new Date().toLocaleTimeString('en-US',{{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/New_York'}})+' NY';
-    document.querySelectorAll('[data-clock]').forEach(function(el){{el.textContent=t;}});setTimeout(tick,15000);}})();
 </script>
 <script src="assets/js/meadow.js?v={ASSET_V}" defer></script>
 </body>

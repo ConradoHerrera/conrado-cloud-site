@@ -306,7 +306,70 @@ function makeTreeLine() {
   });
   const mesh = new THREE.Mesh(g, m); mesh.frustumCulled = false; return mesh;
 }
-scene.add(makeTreeLine());
+/* The far distance. Three options, chosen with ?bg= while Conrado decides
+   (Casper, Oct 2026: "Mountains? Clouds? Doesn't look like either"):
+     open   — nothing: the meadow runs to a hazy horizon (the default)
+     hills  — three ridges of grassland going blue with distance
+     trees  — the original pale tree line, the one that read as neither
+   (A woodland edge was tried too: at this distance and haze it read as
+   mountains again, so it went.) All of them are drawn from code: no image,
+   no download, a few hundred triangles at most. */
+const BG = qs.get('bg') || 'open';
+if (BG === 'trees') scene.add(makeTreeLine());
+else if (BG === 'hills') for (const m of makeHills()) scene.add(m);
+
+function ringGeometry(seg, r, h) {
+  const pos = [], top = [], idx = [];
+  for (let i = 0; i <= seg; i++) {
+    const a = (i / seg) * Math.PI * 2, ca = Math.cos(a), sa = Math.sin(a), rr = r(a);
+    pos.push(ca * rr, -2, sa * rr, ca * rr, h(a), sa * rr);
+    top.push(0, 1);
+    if (i < seg) { const k = i * 2; idx.push(k, k + 2, k + 1, k + 1, k + 2, k + 3); }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('aTop', new THREE.Float32BufferAttribute(top, 1));
+  g.setIndex(idx);
+  return g;
+}
+function makeHills() {
+  // three ridges of grassland, each further, lower in contrast and bluer than the one before
+  const layers = [
+    { r: 150, amp: 9, base: 1, f: [2, 5, 9], ph: 0.3, haze: 0.16 },
+    { r: 240, amp: 18, base: 3, f: [3, 4, 7], ph: 1.9, haze: 0.36 },
+    { r: 380, amp: 34, base: 6, f: [2, 3, 5], ph: 4.1, haze: 0.56 },
+  ];
+  return layers.map((L, i) => {
+    const h = (a) => {
+      const v = 0.5 + 0.25 * Math.sin(a * L.f[0] + L.ph) + 0.15 * Math.sin(a * L.f[1] + L.ph * 2.3) + 0.1 * Math.sin(a * L.f[2] + L.ph * 0.7);
+      return L.base + L.amp * v * v;
+    };
+    const g = ringGeometry(1200, () => L.r, h);
+    const m = new THREE.ShaderMaterial({
+      uniforms: { uFogCol: { value: PAL.horizon }, uMid: { value: PAL.grassMid }, uTip: { value: PAL.grassTip }, uDark: { value: PAL.tree },
+        uSunDir: { value: SUN_DIR }, uSunCol: { value: PAL.sun }, uSkyAmb: { value: PAL.skyAmb }, uHaze: { value: L.haze }, uFogK: FOGK },
+      side: THREE.DoubleSide, depthWrite: true,
+      vertexShader: /* glsl */`attribute float aTop; varying float vTop; varying vec3 vWorld;
+        void main(){ vTop=aTop; vec4 w = modelMatrix*vec4(position,1.0); vWorld=w.xyz; gl_Position = projectionMatrix*viewMatrix*w; }`,
+      fragmentShader: /* glsl */`uniform vec3 uFogCol, uMid, uTip, uDark, uSunDir, uSunCol, uSkyAmb; uniform float uHaze, uFogK; varying float vTop; varying vec3 vWorld;
+        ${NOISE}
+        void main(){
+          vec2 q = vec2(atan(vWorld.z, vWorld.x)*90.0, vWorld.y*0.35);
+          float n = fbm3(q);
+          // grassland in the sun
+          vec3 c = mix(uMid, uTip, 0.35 + 0.35*n) * 0.8;
+          c *= uSkyAmb*0.6 + uSunCol*0.75*max(uSunDir.y, 0.08);
+          // the crest catches a little more light than the foot of each hill
+          c *= 0.7 + 0.45*vTop;
+          float fog = clamp(uHaze*uFogK + (1.0 - vTop)*0.22, 0.0, 0.92);
+          gl_FragColor = vec4(mix(c, uFogCol, fog), 1.0);
+          #include <tonemapping_fragment>
+          #include <colorspace_fragment>
+        }`,
+    });
+    const mesh = new THREE.Mesh(g, m); mesh.frustumCulled = false; mesh.renderOrder = -5 + i; return mesh;
+  });
+}
 
 /* ---------- grass ---------- */
 const PATCH_R = 26;
@@ -774,9 +837,11 @@ const SHOTS = {
     const u = local, d = easeIO(smooth(0, 0.42, u));
     const x0 = SPOT.x + Math.sin(3.0) * 0.3, z0 = SPOT.z - 9;
     const z = z0 - u * 3.2, x = x0 - 0.5 * d + Math.sin(u * 3.0) * 0.25 + breathe(time, 0.05);
-    const y = lerp(1.0, 0.13, d) + breathe(time + 1, 0.012);
+    // eye level a little above the soil and tipped up toward the sky: still in the
+    // grass, blades all round, but the bare ground under them stays out of frame
+    const y = lerp(1.0, 0.26, d) + breathe(time + 1, 0.012);
     _p.set(x, y, z);
-    const pitch = lerp(-0.12, 0.22, d);
+    const pitch = lerp(-0.12, 0.5, d);
     return { pos: _p, target: _t.set(x - 0.08 + breathe(time + 3, 0.06), y + pitch, z - 1), fov: vfovFor(84, aspect, 56),
       focus: lerp(30, 0.45, d * d), aperture: lerp(0, 0.75, d), clear: lerp(0.8, 0.09, d) };
   },
@@ -862,7 +927,7 @@ let pendingHash = false;
 /* ---------- work: the window becomes the selected project's card ---------- */
 const workRows = [...scrollers[0].querySelectorAll('.s-work .index__row')];
 const workPans = workRows.map((r) => parseFloat(r.dataset.pan || 0));
-let hoverRow = -1, sel = -1;
+let hoverRow = -1, sel = -1, workHold = -1, holdFirst = false;
 /* ---------- where you are: the section's name in the band under the window ---------- */
 const stageEl = document.querySelector('[data-stage]');
 const stageName = stageEl && stageEl.querySelector('[data-stage-name]');
@@ -884,15 +949,38 @@ function setStage(label, meta) {
   if (wasIn) stageSwap = setTimeout(apply, 340); else apply();
 }
 
+/* ---------- the section rail: on the window's right edge while it holds still ---------- */
+const railEl = document.querySelector('[data-rail]');
+const railLinks = railEl ? [...railEl.querySelectorAll('[data-rail-for]')] : [];
+const RAIL_ON = new Set(railLinks.map((a) => a.dataset.railFor));
+let railKey = '', railOn = null;
+function placeRail(win, id) {
+  if (!railEl) return;
+  const on = RAIL_ON.has(id) && !jump;
+  if (on !== railOn) { railOn = on; railEl.classList.toggle('is-in', on); }
+  if (!on) return;
+  // inside the window, a little in from its right edge, centred on its height
+  const W = canvas.clientWidth, inset = W < 820 ? 10 : 16;
+  const x = Math.round(win.x + win.w - inset - railEl.offsetWidth), y = Math.round(win.y + win.h / 2 - railEl.offsetHeight / 2);
+  const key = x + ',' + y + ',' + id;
+  if (key === railKey) return;
+  railKey = key;
+  railEl.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  for (const a of railLinks) {
+    if (a.dataset.railFor === id) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+  }
+}
+
 const heroFoot = scrollers[0].querySelector('.s-hero .hero__foot');
-const heroBox = { y: 0, h: 0 }; let heroK = 0, heroSnap = 0, heroHorizon = 0.75;
+const heroBox = { y: 0, h: 0 }; let heroK = 0, heroSnap = 0, heroHorizon = 0.75, heroCut = false;
 let heroDt = 0.016;
 function stepHero() {
-  if (!heroFoot || cur > vh() * 2.2) return;
+  if (!heroFoot || cur > vh() * 2.2) { heroCut = false; return; }
   const b = heroFoot.getBoundingClientRect(); heroBox.y = b.top; heroBox.h = b.height;
   // scroll sets where it's heading; the window follows with a little weight of its own
   const k = heroSnap > 0 ? clamp01((cur - heroSnap * 0.15) / (heroSnap * 0.85)) : 0;
-  heroK = (still || reduceMotion) ? k : heroK + (k - heroK) * (1 - Math.exp(-heroDt * 5));
+  heroK = (still || reduceMotion || heroCut) ? k : heroK + (k - heroK) * (1 - Math.exp(-heroDt * 5));
+  heroCut = false;
 }
 const workBoxes = workRows.map(() => ({ x: 0, y: 0, w: 0, h: 0 }));
 function stepWork(dt) {
@@ -906,9 +994,23 @@ function stepWork(dt) {
     const d = Math.abs(b.top + b.height / 2 - H * 0.5);
     if (d < bd) { bd = d; best = i; }
   });
-  const target = hoverRow >= 0 ? hoverRow : best;
+  const target = hoverRow >= 0 ? hoverRow : workHold >= 0 ? workHold : best;
   if (sel < 0 || reduceMotion || still) sel = target;
   else { sel += (target - sel) * (1 - Math.exp(-dt * 11)); if (Math.abs(target - sel) < 0.002) sel = target; }
+}
+// The card the window sits on loses its hairlines (its own and the one above it),
+// in both copies of the list. Only while the window is actually on Work.
+const workRowsAll = [...document.querySelectorAll('.s-work .index__row')];
+const workHeads = [...document.querySelectorAll('.s-work .section__head')];
+let workMark = -2;
+function markWork() {
+  const onWork = sections[Math.round(Math.max(0, stage))]?.id === 'view' && !jump;
+  const ri = onWork && sel >= 0 ? Math.round(sel) : -1;
+  if (ri === workMark) return;
+  workMark = ri;
+  const n = workRows.length;
+  workRowsAll.forEach((r, k) => { const i = k % n; r.classList.toggle('is-sel', i === ri); r.classList.toggle('is-pre', i === ri - 1); });
+  for (const h of workHeads) h.classList.toggle('is-pre', ri === 0);
 }
 function workRect() {
   if (sel < 0 || !workRows.length) return null;
@@ -930,6 +1032,20 @@ function restFor(el, forMenu) {
   // data-menu-at: where the menu should land inside a pinned section, as a
   // fraction of its own progress. About holds its words across five screens, so
   // its start is just "I'm Conrado." and the menu aims past that instead.
+  // data-menu-fit: the menu lands with the section's heading and all of these in
+  // view, centred between the menu and the band, and the window held on the first
+  // of them until the reader moves. Work uses it, so the menu opens on project 1
+  // with the whole list showing, not on whichever card happened to be nearest.
+  if (forMenu && sec.dataset.menuFit) {
+    const items = [...sec.querySelectorAll(sec.dataset.menuFit)];
+    if (items.length) {
+      const H = vh(), top = 64, bottom = H - (stableW < 820 ? 64 : 76), room = bottom - top;
+      const head = sec.querySelector('[data-snap]') || items[0], last = items[items.length - 1];
+      const t = offsetIn(head, sc), h = offsetIn(last, sc) + last.offsetHeight - t;
+      holdFirst = true;
+      return Math.max(0, h <= room ? t - top - (room - h) / 2 : t - top - 12);
+    }
+  }
   const at = parseFloat(sec.dataset.menuAt);
   if (forMenu && at > 0 && sec.hasAttribute('data-pinned'))
     return Math.max(0, offsetIn(sec, sc) + at * Math.max(0, sec.offsetHeight - vh()));
@@ -977,6 +1093,7 @@ function updateScroll(dt) {
    own anchor jump lands nowhere useful. Every in-page hash is translated here, and
    the move is handed to the magnet's animator so only one thing is ever scrolling. */
 function hashTarget(hash) {
+  holdFirst = false;
   if (!hash || hash === '#' || hash === '#top') return 0;
   let el = null;
   try { el = scrollers[0].querySelector(hash); } catch (err) { return null; }
@@ -984,10 +1101,45 @@ function hashTarget(hash) {
 }
 function goTo(y, animate) {
   y = Math.max(0, Math.min(y, maxScroll()));
-  if (!animate || reduceMotion || still) { snapAnim = null; scrollTo(0, y); cur = y; lastY = y; settled = true; return; }
-  snapAnim = { from: scrollY, to: y, t0: performance.now(),
-               dur: Math.min(1100, Math.max(420, Math.abs(y - scrollY) / vh() * 700)) };
-  settled = true;          // the magnet keeps its hands off while this runs
+  if (!animate || reduceMotion || still) { cut(y); return; }
+  jumpTo(y);
+}
+// Put the page at y in one step: no scroll to watch, and the eased values that
+// would otherwise chase the new position (the stage, the hero, the work card) are
+// told to be there already.
+function cut(y) {
+  // whole pixels, and lastY from what the browser actually did: a phone rounds a
+  // fractional scroll to its own device pixels, and a mismatch reads as the reader
+  y = Math.round(y);
+  snapAnim = null; scrollTo(0, y); cur = scrollY; lastY = scrollY; settled = true;
+  stage = -1; sel = -1; heroCut = true;
+  workHold = holdFirst ? 0 : -1; holdFirst = false;
+  // a cut is not the reader scrolling down: the menu they just used stays put
+  navLast = y;
+}
+/* ---------- the jump ----------
+   The menu and the rail never show the page scrolling past. The words fade out, the
+   page is cut to its new place underneath, and the one thing that travels is the
+   window: from the shape and view it had to the new section's, in a single morph,
+   with the words fading back in as it lands. Nothing in between is ever drawn, so
+   no section can be caught half-way or out of place. */
+let jump = null, jumpTimer = 0;
+const JUMP_OUT = 170, JUMP_MORPH = 820;
+function jumpTo(y) {
+  if (Math.abs(y - scrollY) < 2 && !jump) return;
+  clearTimeout(jumpTimer);
+  root.classList.remove('is-landing');
+  root.classList.add('is-jumping');
+  jumpTimer = setTimeout(() => {
+    jump = { win: { ...winNow }, pos: camera.position.clone(), quat: camera.quaternion.clone(), fov: camera.fov,
+             focus: dof.focus, aperture: dof.aperture, clear: grass.material.uniforms.uClear.value, t0: performance.now() };
+    cut(y);
+    // the words start back as the window is a little past half-way
+    jumpTimer = setTimeout(() => {
+      root.classList.replace('is-jumping', 'is-landing');
+      jumpTimer = setTimeout(() => root.classList.remove('is-landing'), 600);
+    }, JUMP_MORPH * 0.42);
+  }, JUMP_OUT);
 }
 document.addEventListener('click', (e) => {
   const t = e.target instanceof Element ? e.target : e.target.parentElement;
@@ -1037,7 +1189,10 @@ function direct(time, dt) {
   const local = (s) => s.pinned ? clamp01((cur - s.top + s.lead * H) / Math.max(1, s.h - H + s.lead * H)) : clamp01((cur - s.top + H) / (s.h + H));
   progress = (id) => { const s = sections.find((q) => q.id === id); return s ? local(s) : 0; };
   const A = windowFor(a.id, W, H), B = windowFor(b.id, W, H);
-  const win = stage === i0 ? { ...B } : morph(A, B, stage - i0);
+  let win = stage === i0 ? { ...B } : morph(A, B, stage - i0);
+  // a jump: the window travels from where it was straight to its new shape
+  const jk = jump ? clamp01((performance.now() - jump.t0) / JUMP_MORPH) : 1;
+  if (jump) win = morph(jump.win, win, jk);
   const aspect = win.w / Math.max(1, win.h);
   winNow.x = win.x; winNow.y = win.y; winNow.w = win.w; winNow.h = win.h;
   // both shots stay live through the change
@@ -1053,8 +1208,17 @@ function direct(time, dt) {
     camera.quaternion.slerpQuaternions(_qa, _qb, t);
     fov = lerp(sa.fov, fov, t); focus = lerp(sa.focus, focus, t); aperture = lerp(sa.aperture, aperture, t); clear = lerp(sa.clear, clear, t);
   } else camera.quaternion.copy(_qb);
+  // …and the camera with it, from the view it had to the new section's own
+  if (jump) {
+    const e = easeIO(jk);
+    _pa.lerpVectors(jump.pos, _pa, e);
+    _qb.copy(camera.quaternion); camera.quaternion.slerpQuaternions(jump.quat, _qb, e);
+    fov = lerp(jump.fov, fov, e); focus = Math.exp(lerp(Math.log(Math.max(0.05, jump.focus)), Math.log(Math.max(0.05, focus)), e));
+    aperture = lerp(jump.aperture, aperture, e); clear = lerp(jump.clear, clear, e);
+    if (jk >= 1) jump = null;
+  }
   shotName = t < 1 ? `${a.id} → ${b.id} ${(t * 100) | 0}%` : b.id;
-  { const cs = t < 0.5 ? a : b; setStage(cs.label, cs.meta); }
+  { const cs = t < 0.5 ? a : b; setStage(cs.label, cs.meta); placeRail(win, cs.id); }
   camera.position.copy(_pa);
   camera.fov = fov; camera.aspect = aspect;
   camera.updateProjectionMatrix();
@@ -1218,7 +1382,9 @@ function choreograph() {
   aboutLight.warm = aw * smooth(0.53, 0.59, au) * (1 - smooth(0.84, 1, au));
   aboutLight.crisp = aw * smooth(0.63, 0.71, au) * 0.5;
   for (const b of bars) setIf(b.el, 'transform', `scaleX(${clamp01((ph - b.l) / b.w).toFixed(3)})`);
-  for (const h of heads) setIf(h, 'left', (ph * 100).toFixed(2) + '%');
+  // the playhead is not drawn until it moves: parked at the start it sat on "2018"
+  const phIn = smooth(0.08, 0.2, u) * 0.9;
+  for (const h of heads) { setIf(h, 'left', (ph * 100).toFixed(2) + '%'); setIf(h, 'opacity', phIn.toFixed(2)); }
   // a whole day plays across the timeline, starting and ending on the page's own theme:
   // day → sunset → night → sunrise → day (or the reverse at night), midnight around 2022
   const c = smooth(0.02, 0.98, ph), half = c < 0.5, q = half ? c * 2 : (c - 1) * -2;
@@ -1240,11 +1406,27 @@ function choreograph() {
 let snapAnim = null, lastInput = performance.now(), lastY = scrollY, dir = 1, touching = false, settled = true;
 addEventListener('scroll', () => {
   if (snapAnim) return;
-  if (scrollY !== lastY) dir = Math.sign(scrollY - lastY) || dir;
+  if (scrollY === lastY) return;     // our own scrollTo (a cut or a snap step), not the reader
+  workHold = -1;
+  dir = Math.sign(scrollY - lastY) || dir;
   lastY = scrollY; lastInput = performance.now(); settled = false;
 }, { passive: true });
 for (const ev of ['wheel', 'keydown', 'pointerdown']) addEventListener(ev, () => { snapAnim = null; pendingHash = false; lastInput = performance.now(); settled = false; }, { passive: true });
-addEventListener('touchstart', () => { touching = true; snapAnim = null; }, { passive: true });
+// Tab can land on a link anywhere on the page. The browser would try to scroll the
+// clipped layer to it, which this page never scrolls; instead the page is brought
+// to it the same way the menu does, and the layer is kept at zero.
+const clipper = inkLayer.querySelector('.clipper');
+clipper?.addEventListener('scroll', () => { clipper.scrollTop = 0; clipper.scrollLeft = 0; });
+inkLayer.addEventListener('focusin', (e) => {
+  const el = e.target; if (!(el instanceof Element)) return;
+  if (clipper) { clipper.scrollTop = 0; clipper.scrollLeft = 0; }
+  const b = el.getBoundingClientRect(), H = vh(), band = stableW < 820 ? 64 : 76;
+  if (b.top >= 76 && b.bottom <= H - band && b.height > 0) return;   // already in view
+  const row = el.closest('.index__row');
+  const y = row ? offsetIn(row, scrollers[0]) + row.offsetHeight / 2 - H / 2 : restFor(el, true);
+  if (y !== null) goTo(y, true);
+});
+addEventListener('touchstart', () => { touching = true; snapAnim = null; workHold = -1; }, { passive: true });
 addEventListener('touchend', () => { touching = false; lastInput = performance.now(); settled = false; }, { passive: true });
 const navEl = document.querySelector('.nav'), veilEl = document.querySelector('.veil');
 let navLast = 0, navAway = false, navReach = false;
@@ -1253,11 +1435,15 @@ let navLast = 0, navAway = false, navReach = false;
 // without having to scroll up first to ask.
 addEventListener('pointermove', (e) => { navReach = e.clientY <= 92; }, { passive: true });
 addEventListener('pointerleave', () => { navReach = false; }, { passive: true });
+// and so is tabbing into it: a focused link must never be off screen
+let navFocus = false;
+navEl?.addEventListener('focusin', () => { navFocus = true; });
+navEl?.addEventListener('focusout', () => { navFocus = false; });
 function navHide() {
   if (!navEl) return;
   const y = scrollY;
   if (Math.abs(y - navLast) >= 6) { navAway = y > 200 && y > navLast; navLast = y; }
-  const hide = navAway && !navReach;
+  const hide = navAway && !navReach && !navFocus;
   if (hide === navEl.classList.contains('is-hidden')) return;
   navEl.classList.toggle('is-hidden', hide);
   veilEl?.classList.toggle('is-hidden', hide);
@@ -1369,6 +1555,7 @@ function frame() {
     heroDt = dt; stepHero();
     stepWork(dt);
     direct(time, dt);
+    markWork();
     touch(dt);
     choreograph();
     applyNight();
@@ -1401,6 +1588,10 @@ function frame() {
 }
 renderer.info.autoReset = false;
 window.__stats = () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, dpr: renderer.getPixelRatio() });
+// for qc/qc.js: the scene's own state, read-only
+window.__qc = () => ({ cur, scrollY, stage, sel, hoverRow, jump: !!jump, jumping: root.classList.contains('is-jumping'),
+  win: { ...winNow }, H: vh(), snaps: [...snaps], sections: sections.map((q) => ({ id: q.id, top: q.top, h: q.h })),
+  nav: navEl?.classList.contains('is-hidden') ? 'hidden' : 'shown', rail: !!railOn });
 requestAnimationFrame(() => { document.documentElement.classList.add('is-ready'); frame(); });
 // A hash we arrived with, once the page has been measured. Fonts land later and
 // move things, so the positions are taken again when they do.

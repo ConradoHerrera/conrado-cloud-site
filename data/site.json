@@ -5,7 +5,13 @@
   "identity": "Designer — Information, Brand, Motion",
   "location": "Brooklyn, New York",
   "headline": "I make complicated things clear.",
-  "lede": "Conrado Herrera, designer, Brooklyn. Nearly seven years in digital marketing, then two designing the exhibits that go in front of federal juries.",
+  "descriptor": [
+    "Conrado Herrera",
+    "Designer",
+    "Brooklyn"
+  ],
+  "_lede_note": "The descriptor is a list, not a sentence (Casper's review, Oct 2026), so it is set as a label over the lede rather than opening it. Keep the lede true to the dates: LOCH ran Dec 2017 to Aug 2024, so 'nearly seven', never 'seven'.",
+  "lede": "Nearly seven years in digital marketing, then two designing the exhibits that go in front of federal juries.",
   "links": [
     {
       "label": "LinkedIn",

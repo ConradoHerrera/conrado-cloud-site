@@ -53,19 +53,6 @@ window.__ready = true;  /* tells the head script the reveal CSS is safe to keep 
     }, { passive: true });
   }
 
-  /* ---------- 4. New York clock ---------- */
-  var clock = $('[data-clock]');
-  if (clock) {
-    var tick = function () {
-      try {
-        clock.textContent = new Intl.DateTimeFormat('en-US', {
-          timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', hour12: false
-        }).format(new Date()) + ' NY';
-      } catch (e) { clock.textContent = 'New York'; }
-    };
-    tick(); setInterval(tick, 15000);
-  }
-
   /* ---------- 5. Cursor-following work preview ---------- */
   var peek = $('.peek'), rows = $$('.index__row');
   if (peek && rows.length && window.matchMedia('(hover:hover)').matches && !reduce) {

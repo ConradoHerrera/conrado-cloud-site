@@ -35,6 +35,12 @@ scene and ink on paper, split exactly at the window's edge.
 - Anything interactive inside rows must work from either copy (listeners are bound with
   `querySelectorAll`, and the row index is taken from its position among its siblings).
 - Styles meant only for text over the scene go under `.layer--light …`.
+- **Never give the light copy `pointer-events:none`.** The ink copy is clip-pathed away inside the
+  window and a clip-path also cuts hit-testing, so inside the window the light copy is the only
+  thing that can be clicked. (Done once on 30 Sep: every link in the window died and the work rows
+  flickered. `qc/qc.js` now checks every link at every half-screen.)
+- Keyboard focus lives in the ink copy; the light twin of the focused element gets `.is-focus` so
+  the ring shows inside the window too.
 
 ## Section contract
 
@@ -63,6 +69,11 @@ Adding a new section means adding a `data-shot` entry in both `windowFor()` and 
 | `data-snap` | an element | magnetic stop: the page settles with this element under the nav |
 | `data-snap-end` | section | magnetic stop at the section's end; nav links go there too |
 | `data-scrim="id"` + `data-scrim-in` | `.scrim` in the ink layer | soft shade shown only in the window, tied to that pinned section's presence (and, optionally, its progress) |
+| `data-menu-at="0.44"` | pinned section | where the menu lands inside it, as progress (About: past "I'm Conrado." to where everything is readable) |
+| `data-menu-fit=".index__row"` | section | the menu lands with the heading and all of these in view, and holds the window on the first until the reader moves (Work) |
+| `data-exit="left"` / `data-hold="both"` | pinned section | the stage slides out left as the window morphs / also holds still through its fade in |
+| `data-sync="shot"` + `data-slide="left"` | element | fades keyed to the two scroll positions where the window changes shape, arriving from the left |
+| `data-rail-for="about"` | link in `.rail` | the section rail: shown on the window's right edge while About, Experience or Education is on stage |
 | `data-theme-toggle` | button | day/night; stores `cc-theme` in localStorage (same key as the live site), sets `html[data-theme]` |
 
 Section lengths (`height: 520vh` etc.) *are* the pacing of the pinned stories. Change them deliberately.
@@ -128,8 +139,24 @@ Rewording the text is safe; keep each passage inside its range.
 - **Open item:** there is no fallback yet for browsers without WebGL. A poster image behind the canvas
   would be a cheap safety net.
 
+## The menu, the rail and keyboard focus: the jump
+
+In-page links (menu, rail, a hash arriving from a case study after load) never scroll the page
+visibly. `goTo(y, true)` → `jumpTo`: the text layers fade out (`html.is-jumping`), the page is cut
+to `y` underneath, and the window and camera travel in one morph from where they were to the new
+section's (the `jump` blend in `direct()`), with the words fading back as it lands. A cut resets
+the eased values (stage, hero, work card) so nothing in between is ever drawn. Tabbing to a link
+that is off screen goes through the same jump.
+
+## The far distance
+
+`?bg=open|hills|trees`. Default `open` (the meadow runs to a hazy horizon). `hills` = three ridges
+of grassland; `trees` = the original tree line, which reviewers read as "mountains? clouds?". All
+procedural, no image files.
+
 ## Testing and debugging
 
+- **Run `node qc/qc.js` before calling anything done** (see `QC.md` at the repo root).
 - `?still&y=1200` renders two frames at that scroll position and stops (screenshots).
 - `?theme=dark`, `?night=0..1`, `?t=12` (scene clock).
 - Press **H** for the dev panel (shot name, fps, pause). The `.hud` element can be removed in production.

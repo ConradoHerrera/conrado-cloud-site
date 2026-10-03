@@ -27,7 +27,7 @@ CANON = SITE["disciplines_canonical"]
 # Cache stamp on every stylesheet and script. The markup and the CSS change
 # together (a class rename is useless if a browser keeps yesterday's CSS), so
 # they are versioned together. Bump this whenever assets/css or assets/js change.
-ASSET_V = "202610030100"
+ASSET_V = "202610030200"
 
 E = lambda s: html.escape(str(s), quote=True)
 warnings = []
@@ -548,9 +548,10 @@ def build_home(projects, preview):
   </section>
 
   <!-- EXPERIENCE. Pinned (360vh); a playhead runs the axis and a whole day passes in the sky.
+       data-menu-at="0.9": a link to #experience (the rail) lands past 0.86, where every bar is drawn.
        Rows, bars and ticks are computed from site.json → experience and axis. The big year (.year)
        sizes itself to the room under the list (--year-size, set in meadow.js). -->
-  <section class="s-exp" id="experience" data-shot="track" data-pinned data-hold="both" data-exit="left" data-label="Experience" data-meta="{SITE['axis']['ticks'][0]} &mdash; Present">
+  <section class="s-exp" id="experience" data-shot="track" data-pinned data-hold="both" data-exit="left" data-menu-at="0.9" data-label="Experience" data-meta="{SITE['axis']['ticks'][0]} &mdash; Present">
     <div class="pin wrap" data-pin>
       {home_timeline(projects)}
     </div>

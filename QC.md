@@ -31,6 +31,7 @@ not the page anyone sees).
 | Hovering a project holds the window on it, no flicker | Casper (phone) — same root cause as the dead links. |
 | A tap on a project opens it (phone) | Casper: "I cannot click them either". |
 | Tab walks the page; every stop shows the ring and is brought on screen; the text layer never scrolls out of register | Casper: tab highlight "looks ugly"; the page scrolls by script, so a browser's own focus-scroll would break it. |
+| The rail's Experience opens on the finished timeline: every bar drawn | Conrado, Oct 3. |
 | The menu stays on screen all the way down the homepage | Conrado, Oct 2: hiding it only left an empty strip above the window. |
 | About's words and the timeline hold their place as their shot arrives; a passage fills in on one scroll step, piece after piece, top to bottom, without sliding | Conrado, Oct 2: "instead of scrolling all up together, fade in one after the other on the same scroll step". |
 | Phone at 844 / 744 / 700px tall (the address bar): the year, About's words and the rail stay inside the window's bottom edge, the band stays under it | Conrado, Oct 2 (iPhone): the window changed height and the year and words were left behind. |

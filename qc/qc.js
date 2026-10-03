@@ -265,6 +265,9 @@ async function checkSteps(browser) {
     }));
     const y1 = (await qc(page)).scrollY;
     const moved = order.moved, seen = order.seen;
+    // the rail's Experience lands on the finished timeline: every bar drawn to its end
+    const bars = await page.evaluate(() => [...document.querySelectorAll('[data-layer=ink] .s-exp [data-bar]')].map((b) => { const m = getComputedStyle(b).transform; if (m === 'none') return 1; const v = m.match(/matrix\(([^,]+)/); return v ? parseFloat(v[1]) : 0; }));
+    log(bars.length > 0 && bars.every((v) => v > 0.999), `${view}: Experience opens on the whole timeline, every bar drawn`, bars.map((v) => v.toFixed(2)).join(','));
     const all = seen.every(Boolean), inOrder = seen.every((t, i) => i === 0 || t >= seen[i - 1] - 1) && seen[seen.length - 1] - seen[0] > 100;
     log(all && y1 === y0, `${view}: the timeline fills in without scrolling further`, all ? '' : `${seen.filter(Boolean).length}/${seen.length} rows`);
     log(inOrder, `${view}: its rows arrive one after another, top to bottom`, seen.map((t) => Math.round(t)).join(','));

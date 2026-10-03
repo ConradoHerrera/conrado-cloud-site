@@ -2,7 +2,7 @@
    conrado.cloud — QC. Run after every change, before saying it's done.
 
      node qc/qc.js                 # everything, desktop + phone
-     node qc/qc.js --only=links    # one check (links|layout|menu|hover|steps|viewport|keys|cases)
+     node qc/qc.js --only=links    # one check (links|layout|menu|hover|steps|viewport|icons|keys|cases)
      node qc/qc.js --dir=dist-preview  # which build to test (default dist, the public one)
 
    Needs Playwright with a Chromium. In a sandbox without a GPU, Chromium
@@ -301,6 +301,30 @@ async function checkViewport(browser) {
   await ctx.close();
 }
 
+/* ---------- icons Conrado supplies are drawn as supplied: outline at rest, filled on hover/current ---------- */
+async function checkIcons(browser) {
+  const { ctx, page } = await open(browser, 'desktop', HOME + '?q=low#about');
+  await until(page, () => !!window.__qc);
+  await settle(page);
+  await until(page, () => document.querySelector('.rail').classList.contains('is-in'), null, 20000);
+  const look = () => page.evaluate(() => [...document.querySelectorAll('.rail a')].map((a) => {
+    const shown = [...a.querySelectorAll('svg')].filter((s) => getComputedStyle(s).display !== 'none');
+    const cs = shown[0] && getComputedStyle(shown[0]);
+    return { for: a.dataset.railFor, current: a.getAttribute('aria-current') === 'true', shown: shown.map((s) => s.classList.contains('is-fill') ? 'fill' : 'line'),
+      painted: !!cs && cs.fill !== 'none' && (cs.stroke === 'none' || parseFloat(cs.strokeWidth) === 0) };
+  }));
+  let st = await look();
+  log(st.every((i) => i.painted && i.shown.length === 1), 'rail icons are painted as solid shapes, one version at a time (not stroked)', JSON.stringify(st));
+  log(st.every((i) => i.shown[0] === (i.current ? 'fill' : 'line')), 'rail: outline at rest, filled for the current section', st.map((i) => `${i.for}:${i.shown[0]}`).join(' '));
+  const idle = st.find((i) => !i.current);
+  const b = await page.evaluate((f) => { const r = document.querySelector(`.rail a[data-rail-for="${f}"]`).getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }, idle.for);
+  await page.mouse.move(b.x, b.y);
+  await page.waitForTimeout(300);
+  st = await look();
+  log(st.find((i) => i.for === idle.for).shown[0] === 'fill', 'rail: hovering an icon fills it');
+  await ctx.close();
+}
+
 async function checkKeys(browser) {
   const { ctx, page } = await open(browser, 'desktop', HOME + '?q=low');
   await until(page, () => !!window.__qc);
@@ -361,6 +385,7 @@ async function checkCases(browser) {
   if (run('hover')) await checkHover(browser);
   if (run('steps')) await checkSteps(browser);
   if (run('viewport')) await checkViewport(browser);
+  if (run('icons')) await checkIcons(browser);
   if (run('keys')) await checkKeys(browser);
   if (run('cases')) await checkCases(browser);
   await browser.close();

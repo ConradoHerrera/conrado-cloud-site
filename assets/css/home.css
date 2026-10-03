@@ -255,9 +255,15 @@ html.is-landing .layer{transition-duration:.5s}
 .rail a:hover{background:rgba(8,16,8,.38);border-color:rgba(255,255,255,.6)}
 .rail a[aria-current="true"]{background:#F6F4EF;color:#12110F;border-color:#F6F4EF}
 .rail .ico{width:1.05rem;height:1.05rem}
+/* Conrado's SF Symbols are solid shapes, drawn as supplied. The site's generic .ico
+   rule strokes outlines (fill:none, stroke), which turned both versions into wiry
+   tracings of themselves; these are painted, never stroked. */
+.rail .ico--sf{fill:currentColor;stroke:none}
+/* the outline version at rest; the filled one on hover, keyboard focus, and for the
+   section you are in */
 .rail .ico.is-fill{display:none}
-.rail a[aria-current="true"] .ico.is-line{display:none}
-.rail a[aria-current="true"] .ico.is-fill{display:block}
+.rail a:hover .ico.is-line,.rail a:focus-visible .ico.is-line,.rail a[aria-current="true"] .ico.is-line{display:none}
+.rail a:hover .ico.is-fill,.rail a:focus-visible .ico.is-fill,.rail a[aria-current="true"] .ico.is-fill{display:block}
 /* on a phone: a row in the window's bottom-right corner, within reach of a thumb */
 .rail.rail--row{flex-direction:row}
 .rail--row .rail__tip{right:auto;left:50%;top:auto;bottom:calc(100% + .5rem);transform:translate(-50%,6px)}

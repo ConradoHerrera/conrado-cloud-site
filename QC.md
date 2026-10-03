@@ -9,7 +9,7 @@ part that is specific to this site.
 ```
 python3 build.py
 node qc/qc.js                       # public build, desktop + phone, ~5 min in a sandbox
-node qc/qc.js --only=menu,links     # one or more checks: links layout menu hover steps viewport keys cases
+node qc/qc.js --only=menu,links     # one or more checks: links layout menu hover steps viewport icons keys cases
 node qc/qc.js --dir=dist-preview    # the preview build instead
 ```
 
@@ -34,6 +34,7 @@ not the page anyone sees).
 | The menu stays on screen all the way down the homepage | Conrado, Oct 2: hiding it only left an empty strip above the window. |
 | About's words and the timeline hold their place as their shot arrives; a passage fills in on one scroll step, piece after piece, top to bottom, without sliding | Conrado, Oct 2: "instead of scrolling all up together, fade in one after the other on the same scroll step". |
 | Phone at 844 / 744 / 700px tall (the address bar): the year, About's words and the rail stay inside the window's bottom edge, the band stays under it | Conrado, Oct 2 (iPhone): the window changed height and the year and words were left behind. |
+| Rail icons are painted solid as supplied (not stroked), outline at rest, filled on hover and for the current section | Conrado, Oct 3: the site's generic icon style was stroking his SF Symbols into wiry tracings. |
 | Case studies: footer clear of the button, no empty links, every relative link resolves, no script errors | Standing. |
 | No script or shader errors anywhere | Oct 2: a GLSL reserved word (`patch`) broke a shader only the QC run noticed. |
 
